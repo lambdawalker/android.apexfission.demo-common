@@ -3,6 +3,7 @@
 from base64 import b64decode, b64encode
 import json
 import os
+from pathlib import Path
 import tempfile
 
 from nacl.exceptions import CryptoError
