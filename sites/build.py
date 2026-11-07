@@ -1,7 +1,6 @@
 """Build the static English/Spanish docs and immutable release routes."""
 import argparse
 import html
-import json
 from pathlib import Path
 import re
 import shutil
@@ -23,6 +22,21 @@ def source(ref, path):
     if ref is None:
         return (ROOT / path).read_text(encoding='utf-8')
     return subprocess.check_output(['git', 'show', f'{ref}:{path}'], cwd=ROOT, text=True)
+
+
+def localized_source(ref, path, lang):
+    translated = f'docs/es/{Path(path).name}'
+    if lang == 'es':
+        if ref is None and (ROOT / translated).is_file():
+            return source(None, translated), False
+        if ref is not None:
+            exists = subprocess.run(
+                ['git', 'cat-file', '-e', f'{ref}:{translated}'], cwd=ROOT,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+            ).returncode == 0
+            if exists:
+                return source(ref, translated), False
+    return source(ref, path), lang == 'es'
 
 
 def write(path, body):
@@ -77,27 +91,31 @@ def build(base):
             folder = f'{name}/{lang}'
             url = f'{base}/{folder}'
             other = 'es' if lang == 'en' else 'en'
+            labels = ({'index': 'Resumen', 'quickstart': 'Guía rápida', 'api': 'API',
+                       'install': 'Instalación', 'releases': 'Publicación'} if lang == 'es'
+                      else {**GUIDES, 'install': 'Installation', 'releases': 'Publishing'})
             install = (documentation_history.installation(entry, lang) if entry else
                        source(None, 'IMPORT.md'))
             write(f'{folder}/IMPORT.md', install)
-            for page, title in {**GUIDES, 'install': 'Installation', 'releases': 'Publishing'}.items():
+            for page, title in labels.items():
                 versions_menu = ' '.join(
                     f'<a href="{base}/{v}/{lang}/{page}.html">{html.escape(v)}</a>'
                     for v, _, _ in versions
                 )
-                nav = ' '.join(f'<a href="{url}/{p}.html">{label}</a>' for p, label in
-                               {**GUIDES, 'install': 'Installation', 'releases': 'Publishing'}.items())
+                nav = ' '.join(f'<a href="{url}/{p}.html">{label}</a>' for p, label in labels.items())
                 nav += f' <a href="../{other}/{page}.html">{other.upper()}</a>'
-                fallback = ('<p>Guía en inglés para esta versión.</p>' if lang == 'es'
-                            and (page != 'install' or entry is None) else '')
                 path = f'docs/agents/{page}.md' if page in GUIDES else 'docs/releases.md'
-                text = install if page == 'install' else source(ref, path)
-                body = f'<p>Version: {html.escape(name)} · {versions_menu}</p>{fallback}'
+                if page == 'install':
+                    text, fallback = install, lang == 'es' and entry is None
+                else:
+                    text, fallback = localized_source(ref, path, lang)
+                notice = '<p lang="es">Guía en inglés para esta versión.</p>' if fallback else ''
+                body = f'<p>Version {html.escape(name)} · {versions_menu}</p>{notice}'
                 body += render(guide_links(text, url, ref, raw=False))
-                if page == 'index' and name == 'development':
+                if page == 'index':
                     body += ('<div class="gallery"><img src="' + base +
-                             '/media/catalog-light.png" alt="Populated light catalog"><img src="' +
-                             base + '/media/catalog-dark.png" alt="Populated dark catalog"></div>')
+                             '/media/' + name + '/catalog-light.png" alt="Populated light catalog"><img src="' +
+                             base + '/media/' + name + '/catalog-dark.png" alt="Populated dark catalog"></div>')
                 write(f'{folder}/{page}.html', layout(lang, title, nav, body, base))
                 if page in GUIDES:
                     write(f'{folder}/agents/{page}.md', guide_links(text, url, ref, raw=True))
@@ -108,10 +126,16 @@ def build(base):
     shutil.copytree(DEST / f'{latest}/en/agents', DEST / 'agents')
     write('llms.txt', f'# Demo Common\n\n- [Integration guide]({base}/agents/index.md)\n'
           f'- [Installation]({base}/IMPORT.md)\n')
-    media = DEST / 'media'
-    media.mkdir()
-    for image in sorted((ROOT / 'docs/screenshots').glob('*.png')):
-        shutil.copy(image, media / image.name)
+    for name, ref, _ in versions:
+        media = DEST / 'media' / name
+        media.mkdir(parents=True)
+        for filename in ('catalog-light.png', 'catalog-dark.png'):
+            path = f'docs/screenshots/{filename}'
+            if ref is None:
+                shutil.copy(ROOT / path, media / filename)
+            else:
+                image = subprocess.check_output(['git', 'show', f'{ref}:{path}'], cwd=ROOT)
+                (media / filename).write_bytes(image)
 
 
 if __name__ == '__main__':
