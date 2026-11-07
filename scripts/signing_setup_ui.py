@@ -1,11 +1,16 @@
 """Textual presentation for the APK signing setup wizard."""
 
 import asyncio
+import math
+import time
 
 from textual import on
 from textual.app import App, ComposeResult
 from textual.containers import VerticalScroll
 from textual.widgets import Button, Footer, Header, Input, Select, Static
+
+
+PROMPT_SECONDS = 20
 
 
 class SigningSetupApp(App):
@@ -19,6 +24,7 @@ class SigningSetupApp(App):
     #heading { text-style: bold; color: $accent; margin-bottom: 1; }
     #details, #passwords { height: auto; margin-bottom: 1; }
     #passwords { border: round $warning; padding: 0 1; }
+    #countdown { color: $text-muted; }
     #next { margin-top: 1; }
     """
 
@@ -34,6 +40,7 @@ class SigningSetupApp(App):
             yield Static("Signing setup", id="heading", markup=False)
             yield Static("", id="details", markup=False)
             yield Static("", id="prompt", markup=False)
+            yield Static("", id="countdown", markup=False)
             yield Static("", id="passwords", markup=False)
             yield Input(id="entry")
             yield Select([], id="operations")
@@ -54,7 +61,7 @@ class SigningSetupApp(App):
         panel.update("\n".join(f"{label}: {value}" for label, value in generated))
         panel.display = bool(generated)
 
-    async def prompt(self, label, *, secret=False, options=None):
+    async def prompt(self, label, *, secret=False, options=None, default="", default_label="Skip"):
         entry = self.query_one("#entry", Input)
         choices = self.query_one("#operations", Select)
         button = self.query_one("#next", Button)
@@ -66,15 +73,34 @@ class SigningSetupApp(App):
         choices.display = options is not None
         if options:
             values, default = options
+            default_label = next(name for name, value in values if value == default)
             choices.set_options(values)
             choices.value = default
             choices.focus()
         else:
             entry.focus()
         button.display = True
+        countdown = self.query_one("#countdown", Static)
+        countdown.display = not secret
+        timer = None
+        if not secret:
+            deadline = time.monotonic() + PROMPT_SECONDS
+            answer = self.answer
+
+            def tick():
+                remaining = math.ceil(deadline - time.monotonic())
+                if remaining <= 0 and not answer.done():
+                    answer.set_result(default)
+                countdown.update(f"Default: {default_label} · {max(0, remaining)}s")
+
+            tick()
+            timer = self.set_interval(0.2, tick)
         try:
             return await self.answer
         finally:
+            if timer is not None:
+                timer.stop()
+            countdown.display = False
             entry.value = ""
             entry.display = choices.display = button.display = False
             self.query_one("#prompt", Static).update("")

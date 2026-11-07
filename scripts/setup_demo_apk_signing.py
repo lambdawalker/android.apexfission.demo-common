@@ -5,6 +5,7 @@
 #     "httpx==0.28.1",
 #     "PyNaCl==1.6.2",
 #     "textual==8.2.8",
+#     "filelock==3.20.0",
 # ]
 # ///
 """Provision the Demo Common APK signing environment from a trusted terminal."""
@@ -25,8 +26,11 @@ import subprocess
 import sys
 import tempfile
 
+from filelock import FileLock, Timeout
+
 from github_environment_api import GitHubAPI, SetupError
 from signing_setup_ui import SigningSetupApp
+from signing_setup_vault import SetupVault
 
 
 REPOSITORY = "lambdawalker/android.apexfission.demo-common"
@@ -52,10 +56,12 @@ def generate_password():
             return password
 
 
-async def read_password(ui, label, *, allow_generate):
-    prompt = " [Enter to generate]" if allow_generate else ""
+async def read_password(ui, label, *, allow_generate, saved=None):
+    prompt = " [Enter to use saved password]" if saved else (" [Enter to generate]" if allow_generate else "")
     while True:
         value = await ui.prompt(f"{label}{prompt}", secret=True)
+        if not value and saved:
+            return saved, False
         if not value and allow_generate:
             return generate_password(), True
         if len(value) < 6 or any(ord(char) < 32 or ord(char) == 127 for char in value):
@@ -109,7 +115,7 @@ async def inspect_environment(api):
     return environment, set(await api.list_values(ENVIRONMENT, "secrets"))
 
 
-async def ensure_main_only(api, environment):
+async def ensure_main_only(api, environment, *, allow_create=True):
     path = api.environment_path(ENVIRONMENT)
     if environment is None:
         await api.request("PUT", path, json={"deployment_branch_policy": BRANCH_POLICY})
@@ -118,7 +124,7 @@ async def ensure_main_only(api, environment):
 
     policies = await api.request("GET", f"{path}/deployment-branch-policies", params={"per_page": 100})
     entries = policies.get("branch_policies", [])
-    if not entries and not policies.get("total_count", 0):
+    if allow_create and not entries and not policies.get("total_count", 0):
         await api.request("POST", f"{path}/deployment-branch-policies",
                           json={"name": "main", "type": "branch"})
     elif (policies.get("total_count") != 1 or len(entries) != 1
@@ -137,15 +143,6 @@ LABELS = {"key": "signing keystore", "github": "GitHub environment"}
 def state_path(repository):
     repository_id = sha256(repository.casefold().encode()).hexdigest()[:16]
     return DEFAULT_KEYSTORE.parent / f"setup-{repository_id}.json"
-
-
-def save_state(path, state):
-    path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix=".setup-", dir=path.parent) as directory:
-        temporary = Path(directory) / "state.json"
-        temporary.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
-        os.chmod(temporary, 0o600)
-        temporary.replace(path)
 
 
 def load_state(path):
@@ -173,8 +170,27 @@ def default_operation(state):
     return next((choice for choice, operations in OPERATIONS.items() if set(operations) == steps), "q")
 
 
-async def select_operations(ui, record, state):
+async def unlock_vault(ui, record):
+    path = record.with_suffix(".vault")
+    if path.exists():
+        password = await ui.prompt("Unlock local setup vault", secret=True)
+        return await asyncio.to_thread(SetupVault.unlock, path, password)
+
+    ui.note("Choose a vault password to encrypt saved setup answers on this device.")
     while True:
+        password = await ui.prompt("Create vault password (at least 12 characters)", secret=True)
+        if len(password) >= 12 and password == await ui.prompt("Confirm vault password", secret=True):
+            break
+        ui.note("Use at least 12 characters and enter the same password twice.")
+    vault = await asyncio.to_thread(SetupVault.unlock, path, password, initial=load_state(record))
+    vault.save()
+    record.unlink(missing_ok=True)
+    return vault
+
+
+async def select_operations(ui, vault):
+    while True:
+        state = vault.state
         if state["pending"]:
             ui.note("Incomplete steps: " + ", ".join(LABELS[step] for step in state["pending"]))
         choices = [
@@ -183,21 +199,23 @@ async def select_operations(ui, record, state):
             ("Both operations", "3"),
             ("Exit", "q"),
         ]
-        if record.exists():
-            choices.insert(-1, ("Reset local setup progress", "r"))
+        if state["pending"] or state["complete"]:
+            choices.insert(-1, ("Reset local setup progress and saved answers", "r"))
         choice = await ui.prompt("Choose setup operations", options=(choices, default_operation(state)))
         if choice == "q":
-            return (), state
+            return ()
         if choice in OPERATIONS:
-            return OPERATIONS[choice], state
-        if await ui.prompt("Type RESET to clear local progress. Keystore and GitHub secrets are preserved.") == "RESET":
-            record.unlink()
-            state = load_state(record)
+            return OPERATIONS[choice]
+        if await ui.prompt("Type RESET to clear local progress and answers. Keystore and GitHub secrets are preserved.",
+                           default_label="Keep saved setup") == "RESET":
+            state.clear()
+            state.update(pending=[], complete=[])
+            vault.save()
 
 
 async def choose_keystore(ui, state):
     default_path = state.get("keystore", DEFAULT_KEYSTORE)
-    raw_path = (await ui.prompt(f"Keystore path (default {default_path})")).strip()
+    raw_path = (await ui.prompt("Keystore path", default_label=str(default_path))).strip()
     path = Path(raw_path or default_path).expanduser().absolute()
     if path.is_symlink() or (path.exists() and not path.is_file()):
         raise SetupError("Choose a regular file path for the keystore.")
@@ -205,7 +223,7 @@ async def choose_keystore(ui, state):
     if path.is_relative_to(Path(__file__).resolve().parents[1]):
         raise SetupError("Keep the keystore outside this repository checkout.")
     default_alias = state.get("alias", DEFAULT_ALIAS)
-    alias = (await ui.prompt(f"Signing key alias (default {default_alias})")).strip() or default_alias
+    alias = (await ui.prompt("Signing key alias", default_label=default_alias)).strip() or default_alias
     if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]{0,63}", alias):
         raise SetupError("Use a key alias with 1–64 letters, digits, dots, underscores or hyphens.")
     return path, alias
@@ -214,11 +232,11 @@ async def choose_keystore(ui, state):
 async def confirm_password_backup(ui, generated):
     if not generated:
         return True
-    if await ui.prompt("In a private terminal, type SHOW to reveal the generated passwords.") != "SHOW":
+    if await ui.prompt("In a private terminal, type SHOW to reveal the generated passwords.", default_label="Cancel") != "SHOW":
         return False
     ui.show_passwords(generated)
     try:
-        return await ui.prompt("Save these in your password manager, then type SAVED.") == "SAVED"
+        return await ui.prompt("Save these in your password manager, then type SAVED.", default_label="Hide passwords and cancel") == "SAVED"
     finally:
         ui.show_passwords([])
 
@@ -243,8 +261,9 @@ async def upload_secrets(ui, api, environment, existing, missing, path, alias, s
 async def setup(ui, repository, keytool):
     if not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repository):
         raise SetupError("Repository must be owner/name.")
-    record = state_path(repository)
-    operations, state = await select_operations(ui, record, load_state(record))
+    vault = await unlock_vault(ui, state_path(repository))
+    operations = await select_operations(ui, vault)
+    state = vault.state
     if not operations:
         return
 
@@ -253,22 +272,36 @@ async def setup(ui, repository, keytool):
             state["pending"].remove(step)
         if step not in state["complete"]:
             state["complete"].append(step)
-        save_state(record, state)
+        vault.save()
 
     state["pending"] = list(dict.fromkeys([*state["pending"], *operations]))
     state["complete"] = [step for step in state["complete"] if step not in operations]
-    save_state(record, state)
+    vault.save()
     async with AsyncExitStack() as stack:
         missing = []
         if "github" in operations:
-            token = (await ui.prompt("GitHub token", secret=True)).strip()
+            saved_token = state.get("github_token", "")
+            token_prompt = "GitHub token (Enter to use saved token)" if saved_token else "GitHub token"
+            entered_token = (await ui.prompt(token_prompt, secret=True)).strip()
+            token = entered_token or saved_token
             if not token:
                 raise SetupError("A GitHub token is required.")
             api = await stack.enter_async_context(GitHubAPI(repository, token))
-            del token
             environment, existing = await inspect_environment(api)
+            if entered_token:
+                remember = await ui.prompt(
+                    "Save this GitHub token in the encrypted vault?",
+                    options=([("Use for this run only", "no"), ("Save in vault", "yes")], "no"),
+                )
+                if remember == "yes":
+                    state["github_token"] = token
+                else:
+                    state.pop("github_token", None)
+                vault.save()
+            del token, entered_token, saved_token
             missing = [name for name in SECRET_NAMES if name not in existing]
             if not missing:
+                await ensure_main_only(api, environment, allow_create=False)
                 ui.note("All APK signing secrets already exist. Existing values were preserved.")
                 if operations == OPERATIONS["2"]:
                     mark_complete("github")
@@ -282,17 +315,23 @@ async def setup(ui, repository, keytool):
             if not reuse:
                 raise SetupError("GitHub already has signing secrets. Use the original keystore.")
             if missing and await ui.prompt(
-                "Partial upload found. Type RESUME to confirm this is the original keystore and alias: "
+                "Partial upload found. Type RESUME to confirm this is the original keystore and alias.",
+                default_label="Cancel",
             ) != "RESUME":
                 raise SetupError("To resume, use the original keystore, alias, and passwords.")
 
-        store_password, new_store_password = await read_password(ui, "Keystore password", allow_generate=not reuse)
-        key_password, new_key_password = await read_password(ui, "Key password", allow_generate=not reuse)
+        saved = state.get("signing_passwords", {})
+        if not reuse or (saved.get("keystore"), saved.get("alias")) != (str(path), alias):
+            saved = {}
+        store_password, new_store_password = await read_password(
+            ui, "Keystore password", allow_generate=not reuse, saved=saved.get("store"))
+        key_password, new_key_password = await read_password(
+            ui, "Key password", allow_generate=not reuse, saved=saved.get("key"))
         ui.note(f"Repository {repository}\nKeystore {path}")
         ui.note("Reuse existing keystore." if reuse else "Create a new keystore.")
         if missing:
             ui.note(f"Environment {ENVIRONMENT} (main only)\nUpload missing secrets: " + ", ".join(missing))
-        if await ui.prompt("Review the changes above, then type APPLY.") != "APPLY":
+        if await ui.prompt("Review the changes above, then type APPLY.", default_label="Cancel") != "APPLY":
             ui.note("Cancelled.")
             return
 
@@ -305,9 +344,10 @@ async def setup(ui, repository, keytool):
             return
 
         state.update(keystore=str(path), alias=alias)
-        save_state(record, state)
+        vault.save()
         await asyncio.to_thread(prepare_keystore, keytool, path, alias, store_password, key_password, reuse=reuse)
         ui.note(f"Keystore ready at {path}. Keep an offline backup.")
+        state["signing_passwords"] = dict(keystore=str(path), alias=alias, store=store_password, key=key_password)
         mark_complete("key")
         if missing:
             await upload_secrets(ui, api, environment, existing, missing, path, alias, store_password, key_password)
@@ -327,20 +367,26 @@ def main():
     async def run(ui):
         try:
             await setup(ui, args.repo, keytool)
-        except (SetupError, OSError) as error:
+        except Exception as error:
             ui.note(str(error) if isinstance(error, SetupError) else
-                    "Could not access the keystore or run keytool. Check path and permissions.")
+                    "Setup failed. Check local file access and GitHub configuration, then retry.")
             ui.note("Rerun the wizard to retry unfinished steps.")
-            await ui.prompt("Press Enter to close.")
+            await ui.prompt("Press Enter to close.", default_label="Close")
             ui.exit(return_code=1)
         else:
             if ui.messages:
-                await ui.prompt("Press Enter to close.")
+                await ui.prompt("Press Enter to close.", default_label="Close")
             ui.exit()
 
-    app = SigningSetupApp(run)
-    app.run()
-    return app.return_code
+    lock_path = state_path(args.repo).with_suffix(".lock")
+    lock_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    try:
+        with FileLock(str(lock_path), timeout=0):
+            app = SigningSetupApp(run)
+            app.run()
+            return app.return_code
+    except Timeout:
+        parser.exit(1, "Another setup wizard is running for this repository. Close it before retrying.\n")
 
 
 if __name__ == "__main__":
