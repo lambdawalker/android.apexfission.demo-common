@@ -75,7 +75,7 @@ Run this from a private terminal with a JDK and uv.
 
 Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
 
-Choose keystore creation, GitHub setup with an existing key, or both.
+In the terminal wizard, choose keystore creation, GitHub setup with an existing key, or both.
 The first run defaults to both. Later runs default to the incomplete steps,
 or Exit after both steps are complete. The wizard records progress locally
 without passwords or tokens. Choose **Tear down local setup progress** to
