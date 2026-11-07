@@ -73,9 +73,13 @@ successful release finalization.
 
 Run this from a private terminal with a JDK and uv.
 
-```sh
-uv run scripts/setup_demo_apk_signing.py
-```
+Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
+
+Choose keystore creation, GitHub setup with an existing key, or both.
+The first run defaults to both. Later runs default to the incomplete steps,
+or Exit after both steps are complete. The wizard records progress locally
+without passwords or tokens. Choose **Tear down local setup progress** to
+reset the wizard while preserving the keystore and remote signing secrets.
 
 Use a fine-grained GitHub token scoped to this repository with
 **Administration: read/write** and **Environments: read/write**.
