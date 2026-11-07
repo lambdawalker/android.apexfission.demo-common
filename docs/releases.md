@@ -67,3 +67,30 @@ CI also assembles unsigned local publications for both destinations and
 validates the AAR, sources, documentation archive, POM, and Gradle metadata.
 The Pages build runs on pull requests and deploys from main, including after
 successful release finalization.
+
+
+## Prepare signing for a demo APK
+
+Run this from a private terminal with a JDK and Python 3.12 or newer.
+
+```sh
+python -m pip install -r scripts/requirements-setup.txt
+python scripts/setup_demo_apk_signing.py
+```
+
+Use a fine-grained GitHub token scoped to this repository with
+**Administration: read/write** and **Environments: read/write**.
+The script prepares `demo-apk-release` for the `main` branch and prompts
+for review before writing to GitHub. It defaults to the `demo-common`
+alias and `~/.demo-common-signing/demo-common.jks`. Keep the keystore
+outside the checkout and back it up securely.
+
+Enter separate keystore and key passwords or press Enter at either
+prompt to generate a 25-character password. Save generated passwords
+in a password manager when prompted. They are displayed only after
+you opt in, so use a terminal without session recording. Existing
+signing secrets are preserved. If an upload stops partway through,
+rerun with the original keystore, alias, and passwords.
+
+This setup prepares the signing environment. Building and attaching
+a signed APK to a GitHub Release is a separate workflow.
