@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Ejemplo de Demo Common</string>
+    <string name="welcome_note">Explora tarjetas reutilizables en un catálogo con tema.</string>
+    <string name="demo_title">Ejemplo interactivo</string>
+    <string name="demo_note">La aplicación controla el estado y las acciones de esta tarjeta.</string>
+    <string name="demo_action">Alternar detalles</string>
+    <string name="demo_details">La aplicación de ejemplo declara este contenido.</string>
+</resources>

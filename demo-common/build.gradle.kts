@@ -44,9 +44,33 @@ dependencies {
 }
 
 val releaseVersion = providers.gradleProperty("releaseVersion")
+val releaseModule = providers.gradleProperty("releaseModule")
+val jitpackBuild = providers.gradleProperty("jitpackBuild").map(String::toBoolean).getOrElse(false)
+val groupId = providers.gradleProperty("GROUP").get()
+val artifactId = providers.gradleProperty("POM_ARTIFACT_ID").get()
+val repositoriesConfig = java.util.Properties().apply {
+    rootProject.file("publishing/repositories.properties").inputStream().use { load(it) }
+}
+val destination = providers.environmentVariable("RELEASE_REPOSITORY").getOrElse("maven-central")
+val publisher = repositoriesConfig.getProperty("$destination.publisher")
+require(publisher in setOf("central", "jitpack")) { "Unknown release destination" }
+if (releaseVersion.isPresent) {
+    require(releaseModule.orNull == name) { "Select -PreleaseModule=demo-common for a release" }
+}
+if (jitpackBuild) {
+    require(releaseVersion.isPresent && providers.gradleProperty("jitpackScopedTag").orNull == "true") {
+        "A destination-scoped JitPack release identity is required"
+    }
+}
+
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.demo-common"
 mavenPublishing {
-    coordinates("com.apexfission.android", "demo-common", releaseVersion.getOrElse("0.0.0-SNAPSHOT"))
+    val version = releaseVersion.getOrElse("0.0.0-SNAPSHOT")
+    coordinates(
+        if (jitpackBuild) "com.github.lambdawalker" else groupId,
+        if (jitpackBuild) rootProject.name else artifactId,
+        if (jitpackBuild) "demo-common~v$version-jitpack" else version,
+    )
     configure(AndroidSingleVariantLibrary(
         variant = "release",
         javadocJar = JavadocJar.Empty(),
@@ -56,8 +80,10 @@ mavenPublishing {
         require(releaseVersion.get().matches(Regex("(0|[1-9][0-9]*)[.](0|[1-9][0-9]*)[.](0|[1-9][0-9]*)"))) {
             "releaseVersion must be a stable semantic version such as 0.1.0"
         }
-        publishToMavenCentral()
-        signAllPublications()
+        if (!jitpackBuild && publisher == "central") {
+            publishToMavenCentral()
+            if (providers.gradleProperty("signingInMemoryKey").isPresent) signAllPublications()
+        }
     }
     pom {
         name.set("Apexfission Demo Common")
@@ -81,4 +107,40 @@ mavenPublishing {
             developerConnection.set("scm:git:ssh://git@github.com/lambdawalker/android.apexfission.demo-common.git")
         }
     }
+}
+
+tasks.withType<com.vanniktech.maven.publish.tasks.JavadocJar>().configureEach {
+    from(rootProject.file("LICENSE"))
+    from(rootProject.file("docs/releases.md"))
+    from(rootProject.file("docs/agents")) { into("agents") }
+}
+
+tasks.withType<org.gradle.jvm.tasks.Jar>().configureEach {
+    isPreserveFileTimestamps = false
+    isReproducibleFileOrder = true
+}
+
+extensions.configure<org.gradle.api.publish.PublishingExtension> {
+    repositories.maven {
+        name = "verification"
+        url = rootProject.layout.buildDirectory.dir("verification-repository").get().asFile.toURI()
+    }
+}
+
+val verifyPublicationReservation by tasks.registering(Exec::class) {
+    workingDir(rootDir)
+    commandLine("python3", "scripts/module_release.py", "guard",
+        "--module", project.name, "--version", releaseVersion.getOrElse(""))
+    doFirst {
+        require(!jitpackBuild && publisher == "central" && releaseModule.orNull == project.name) {
+            "Maven Central upload requires the selected library and a Central reservation"
+        }
+        listOf("mavenCentralUsername", "mavenCentralPassword", "signingInMemoryKey").forEach {
+            require(!providers.gradleProperty(it).orNull.isNullOrBlank()) { "Missing release credential: $it" }
+        }
+    }
+}
+
+tasks.matching { it.name.contains("MavenCentral", ignoreCase = true) }.configureEach {
+    dependsOn(verifyPublicationReservation)
 }

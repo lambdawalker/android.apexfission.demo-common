@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "android.apexfission.demo-common"
 include(":demo-common")
+include(":sample")

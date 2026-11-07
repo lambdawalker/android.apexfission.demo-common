@@ -1,0 +1,7 @@
+# Gradle/AGP run on 21; library bytecode and Kotlin toolchains remain Java 17.
+jdk:
+  - openjdk17
+  - openjdk21
+install:
+  - python3 --version
+  - python3 scripts/jitpack_build.py
