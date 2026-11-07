@@ -3,3 +3,6 @@
 .idea/
 build/
 local.properties
+
+__pycache__/
+sites/dist/

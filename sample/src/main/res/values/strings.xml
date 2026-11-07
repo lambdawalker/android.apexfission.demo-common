@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Demo Common sample</string>
+    <string name="welcome_note">Explore reusable cards inside a themed catalog.</string>
+    <string name="demo_title">Interactive example</string>
+    <string name="demo_note">The host owns this card’s state and actions.</string>
+    <string name="demo_action">Toggle details</string>
+    <string name="demo_details">This content was declared by the sample app.</string>
+</resources>
