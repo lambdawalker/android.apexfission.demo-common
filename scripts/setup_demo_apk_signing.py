@@ -5,6 +5,7 @@
 #     "httpx==0.28.1",
 #     "PyNaCl==1.6.2",
 #     "textual==8.2.8",
+#     "filelock==3.20.0",
 # ]
 # ///
 """Provision the Demo Common APK signing environment from a trusted terminal."""
@@ -24,6 +25,8 @@ import string
 import subprocess
 import sys
 import tempfile
+
+from filelock import FileLock, Timeout
 
 from github_environment_api import GitHubAPI, SetupError
 from signing_setup_ui import SigningSetupApp
@@ -112,7 +115,7 @@ async def inspect_environment(api):
     return environment, set(await api.list_values(ENVIRONMENT, "secrets"))
 
 
-async def ensure_main_only(api, environment):
+async def ensure_main_only(api, environment, *, allow_create=True):
     path = api.environment_path(ENVIRONMENT)
     if environment is None:
         await api.request("PUT", path, json={"deployment_branch_policy": BRANCH_POLICY})
@@ -121,7 +124,7 @@ async def ensure_main_only(api, environment):
 
     policies = await api.request("GET", f"{path}/deployment-branch-policies", params={"per_page": 100})
     entries = policies.get("branch_policies", [])
-    if not entries and not policies.get("total_count", 0):
+    if allow_create and not entries and not policies.get("total_count", 0):
         await api.request("POST", f"{path}/deployment-branch-policies",
                           json={"name": "main", "type": "branch"})
     elif (policies.get("total_count") != 1 or len(entries) != 1
@@ -298,6 +301,7 @@ async def setup(ui, repository, keytool):
             del token, entered_token, saved_token
             missing = [name for name in SECRET_NAMES if name not in existing]
             if not missing:
+                await ensure_main_only(api, environment, allow_create=False)
                 ui.note("All APK signing secrets already exist. Existing values were preserved.")
                 if operations == OPERATIONS["2"]:
                     mark_complete("github")
@@ -363,9 +367,9 @@ def main():
     async def run(ui):
         try:
             await setup(ui, args.repo, keytool)
-        except (SetupError, OSError) as error:
+        except Exception as error:
             ui.note(str(error) if isinstance(error, SetupError) else
-                    "Could not access the keystore or run keytool. Check path and permissions.")
+                    "Setup failed. Check local file access and GitHub configuration, then retry.")
             ui.note("Rerun the wizard to retry unfinished steps.")
             await ui.prompt("Press Enter to close.", default_label="Close")
             ui.exit(return_code=1)
@@ -374,9 +378,15 @@ def main():
                 await ui.prompt("Press Enter to close.", default_label="Close")
             ui.exit()
 
-    app = SigningSetupApp(run)
-    app.run()
-    return app.return_code
+    lock_path = state_path(args.repo).with_suffix(".lock")
+    lock_path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    try:
+        with FileLock(str(lock_path), timeout=0):
+            app = SigningSetupApp(run)
+            app.run()
+            return app.return_code
+    except Timeout:
+        parser.exit(1, "Another setup wizard is running for this repository. Close it before retrying.\n")
 
 
 if __name__ == "__main__":

@@ -105,3 +105,14 @@ rerun with the original keystore, alias, and passwords.
 
 This setup prepares the signing environment. Building and attaching
 a signed APK to a GitHub Release is a separate workflow.
+
+The wizard allows one local process per repository to prevent concurrent
+vault updates. This does not coordinate different devices: run remote
+environment setup from one device at a time. Completed environments are
+checked again for main-only deployment rules. Unexpected setup failures
+use a generic error message to avoid printing credential-bearing tracebacks.
+
+Credential-free regression checks:
+```sh
+PYTHONPATH=scripts uv run --with-requirements scripts/requirements-setup.txt python -m unittest discover -s scripts/tests -v
+```
