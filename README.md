@@ -1,1 +1,90 @@
-# android.apexfission.demo-common
+# Apexfission Demo Common
+
+Reusable Material 3 Compose components extracted from the
+[Card Detector welcome screen](https://github.com/lambdawalker/android.apexfission.carddetector/blob/main/app/src/main/java/com/apexfission/android/carddetector/demo/WelcomeActivity.kt).
+
+## Requirements and installation
+
+The library targets Compose Material 3 and Android API 28 or later. Building this
+repository requires Android SDK 37 and JDK 17 for compilation. CI runs Gradle
+with JDK 21. The library has no permissions, navigation, or lifecycle setup.
+
+To try it before the first release, publish the snapshot locally.
+
+```shell
+./gradlew :demo-common:publishToMavenLocal
+```
+
+Add `mavenLocal()` to the consuming project's dependency repositories, then add
+`implementation("com.apexfission.android:demo-common:0.0.0-SNAPSHOT")`. After
+a Maven Central release is available, use `mavenCentral()` and the confirmed
+release version. Only the library's release variant is published. The
+maintainer can supply `-PreleaseVersion=<version>` with Central credentials and
+signing configured to run `:demo-common:publishToMavenCentral`.
+
+## Declare a demo catalog
+
+Call from an existing Material 3 theme. Pass localized strings from the
+consuming app. Supply your own navigation callbacks and actions.
+
+```kotlin
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import com.apexfission.android.democommon.CardTitle
+import com.apexfission.android.democommon.DemoCard
+import com.apexfission.android.democommon.DemoScreen
+
+@Composable
+fun ExampleCatalog(onOpenExample: () -> Unit) {
+    DemoScreen(
+        title = "Demo catalog",
+        welcomeNote = "Choose an example to get started.",
+        eyebrow = "EXAMPLES",
+    ) {
+        item(key = "example") {
+            DemoCard {
+                CardTitle(title = "Interactive example", subtitle = "ExampleComponent")
+                Text("Try the example with your own input.")
+                FilledTonalButton(
+                    onClick = onOpenExample,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = MaterialTheme.shapes.small,
+                ) {
+                    Text("Open example")
+                }
+            }
+        }
+    }
+}
+```
+
+`DemoScreen` uses the standard `LazyListScope` DSL, so callers can declare
+individual items, keyed lists, and footers. `DemoCard` takes a `ColumnScope`
+slot for any Compose content. Use `CardTitle` inside or outside a card with an
+optional subtitle and decorative icon. The screen and card accept padding and
+spacing overrides, and the screen accepts a maximum content width.
+
+## Preview and screenshot coverage
+
+The populated catalog exercises `DemoScreen`, `DemoCard`, and `CardTitle` with
+both an icon and subtitle and a title-only card. The empty catalog exercises
+`DemoScreen` without an eyebrow or items. Both scenarios cover light and dark
+mode under a fixture host theme with custom colors, type, and shapes. A narrow
+320 dp preview at 1.6× font scale exercises wrapping with the Spanish locale
+and fixed English fixture copy.
+
+```shell
+./gradlew :demo-common:assembleRelease :demo-common:lintDebug
+./gradlew :demo-common:updateDebugScreenshotTest
+./gradlew :demo-common:validateDebugScreenshotTest
+```
+
+Use the update task to generate candidates. Review the five PNGs in
+`demo-common/src/screenshotTestDebug/reference/` before committing them as
+baselines. Once committed, CI uses the validation task and uploads reports
+and an image checksum manifest. Until then, CI renders candidates and checks
+that all five images were generated.
