@@ -74,6 +74,9 @@ successful release finalization.
 Run this from a private terminal with a JDK and uv.
 
 Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
+Both launchers use a pinned revision of the shared
+[Android Repository Setup wizard](https://github.com/lambdawalker/python.android-repo-setup).
+The launcher opens your existing encrypted vault in place.
 
 In the terminal wizard, choose keystore creation, GitHub setup with an existing key, or both.
 The first run defaults to both. Later runs default to the incomplete steps,
