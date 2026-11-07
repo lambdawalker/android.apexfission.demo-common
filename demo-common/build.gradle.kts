@@ -1,3 +1,4 @@
+import java.util.Properties
 import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
 import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.SourcesJar
@@ -48,7 +49,7 @@ val releaseModule = providers.gradleProperty("releaseModule")
 val jitpackBuild = providers.gradleProperty("jitpackBuild").map(String::toBoolean).getOrElse(false)
 val groupId = providers.gradleProperty("GROUP").get()
 val artifactId = providers.gradleProperty("POM_ARTIFACT_ID").get()
-val repositoriesConfig = java.util.Properties().apply {
+val repositoriesConfig = Properties().apply {
     rootProject.file("publishing/repositories.properties").inputStream().use { load(it) }
 }
 val destination = providers.environmentVariable("RELEASE_REPOSITORY").getOrElse("maven-central")
@@ -127,7 +128,7 @@ extensions.configure<org.gradle.api.publish.PublishingExtension> {
     }
 }
 
-val verifyPublicationReservation by tasks.registering(Exec::class) {
+val verifyPublicationReservation = tasks.register<Exec>("verifyPublicationReservation") {
     workingDir(rootDir)
     commandLine("python3", "scripts/module_release.py", "guard",
         "--module", project.name, "--version", releaseVersion.getOrElse(""))
