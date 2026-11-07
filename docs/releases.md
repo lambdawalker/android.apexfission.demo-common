@@ -77,9 +77,17 @@ Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
 
 In the terminal wizard, choose keystore creation, GitHub setup with an existing key, or both.
 The first run defaults to both. Later runs default to the incomplete steps,
-or Exit after both steps are complete. The wizard records progress locally
-without passwords or tokens. Choose **Tear down local setup progress** to
-reset the wizard while preserving the keystore and remote signing secrets.
+or Exit after both steps are complete. The wizard shows a 20-second countdown on non-secret prompts. Timeout
+uses the displayed default. Upload, reset, and password-reveal confirmations
+default to cancelling or preserving the current state. Password and token
+prompts wait for input.
+
+The per-repository vault in `~/.demo-common-signing/` encrypts setup
+progress, keystore details, and verified signing passwords. It can
+remember a GitHub token if you explicitly opt in. Unlock the vault with
+your separate vault password on each run. Losing that password means
+losing access to the saved answers. Resetting local setup clears those
+answers while preserving the keystore and GitHub secrets.
 
 Use a fine-grained GitHub token scoped to this repository with
 **Administration: read/write** and **Environments: read/write**.
