@@ -1,4 +1,13 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "httpx==0.28.1",
+#     "PyNaCl==1.6.2",
+#     "PyYAML==6.0.3",
+#     "textual==8.2.8",
+# ]
+# ///
 """Interactive, review-before-apply setup of publishing GitHub environments."""
 import argparse
 from dataclasses import dataclass, field

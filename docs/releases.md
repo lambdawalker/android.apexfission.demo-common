@@ -5,8 +5,8 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-Install `python -m pip install -r scripts/requirements-setup.txt` and run
-`python scripts/setup_github_environments.py`. Use a repository-scoped
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and run
+`uv run scripts/setup_github_environments.py`. Use a repository-scoped
 GitHub token with the environment administration permissions shown by
 the wizard. Review the changes before applying. Central requires
 `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`,
@@ -71,11 +71,10 @@ successful release finalization.
 
 ## Prepare signing for a demo APK
 
-Run this from a private terminal with a JDK and Python 3.12 or newer.
+Run this from a private terminal with a JDK and uv.
 
 ```sh
-python -m pip install -r scripts/requirements-setup.txt
-python scripts/setup_demo_apk_signing.py
+uv run scripts/setup_demo_apk_signing.py
 ```
 
 Use a fine-grained GitHub token scoped to this repository with

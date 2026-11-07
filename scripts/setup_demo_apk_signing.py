@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.12"
+# dependencies = [
+#     "httpx==0.28.1",
+#     "PyNaCl==1.6.2",
+# ]
+# ///
 """Provision the Demo Common APK signing environment from a trusted terminal."""
 
 import argparse
