@@ -4,17 +4,31 @@ import re
 from urllib.parse import quote
 
 import httpx
-from nacl.public import PublicKey, SealedBox
+try:
+    from nacl.public import PublicKey, SealedBox
+except ImportError:  # pragma: no cover - optional in credential-free unit test environments
+    PublicKey = SealedBox = None
 
 
 class SetupError(Exception):
     """A safe, human-readable error containing no remote response body."""
 
 
+def validate_repository(repository):
+    if not isinstance(repository, str):
+        raise SetupError('Repository must be owner/name.')
+    parts = repository.split('/')
+    if (
+        len(parts) != 2
+        or any(part in ('.', '..') or not re.fullmatch(r'[A-Za-z0-9_.-]+', part) for part in parts)
+    ):
+        raise SetupError('Repository must be owner/name.')
+    return repository
+
+
 class GitHubAPI:
     def __init__(self, repository, token, *, transport=None):
-        if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repository):
-            raise SetupError('Repository must be owner/name.')
+        validate_repository(repository)
         self.root = f'/repos/{repository}'
         self.client = httpx.AsyncClient(
             base_url='https://api.github.com', transport=transport, timeout=30,
@@ -23,9 +37,11 @@ class GitHubAPI:
                      'X-GitHub-Api-Version': '2022-11-28'},
         )
 
-    async def __aenter__(self): return self
+    async def __aenter__(self):
+        return self
 
-    async def __aexit__(self, *_): await self.aclose()
+    async def __aexit__(self, *_):
+        await self.aclose()
 
     async def aclose(self):
         self.client.headers.pop('Authorization', None)
@@ -42,12 +58,19 @@ class GitHubAPI:
         if allow_missing and response.status_code == 404:
             return None
         if not 200 <= response.status_code < 300:
-            hints = {401: 'Check the token.', 403: 'Check token permissions, organization approval/SSO, and rate limits.',
-                     404: 'Check repository access and environment availability.',
-                     422: 'Check the setting and repository environment support.'}
-            raise SetupError(f'GitHub request failed (HTTP {response.status_code}). '
-                             + hints.get(response.status_code, 'Retry after checking GitHub availability.'))
-        if not response.content: return {}
+            hints = {
+                401: 'Check the token.',
+                403: 'Check token permissions, organization approval/SSO, and rate limits.',
+                404: 'Check repository access and environment availability.',
+                409: 'The environment or variable changed concurrently. Rerun to inspect current state.',
+                422: 'Check the setting and repository environment support.',
+            }
+            raise SetupError(
+                f'GitHub request failed (HTTP {response.status_code}). '
+                + hints.get(response.status_code, 'Retry after checking GitHub availability.')
+            )
+        if not response.content:
+            return {}
         try:
             return response.json()
         except ValueError:
@@ -57,8 +80,11 @@ class GitHubAPI:
         result = {}
         page = 1
         while True:
-            data = await self.request('GET', f'{self.environment_path(environment)}/{kind}',
-                                      params={'per_page': 30, 'page': page})
+            data = await self.request(
+                'GET',
+                f'{self.environment_path(environment)}/{kind}',
+                params={'per_page': 100, 'page': page},
+            )
             rows = data.get(kind, [])
             for row in rows:
                 result[row['name']] = row.get('value') if kind == 'variables' else None
@@ -68,7 +94,8 @@ class GitHubAPI:
 
     async def snapshot(self, environment):
         exists = await self.request('GET', self.environment_path(environment), allow_missing=True)
-        if exists is None: return False, {}, set()
+        if exists is None:
+            return False, {}, set()
         variables = await self.list_values(environment, 'variables')
         secrets = await self.list_values(environment, 'secrets')
         return True, variables, set(secrets)
@@ -85,15 +112,21 @@ class GitHubAPI:
 
     async def write_variable(self, environment, name, value, exists=False):
         path = f'{self.environment_path(environment)}/variables'
-        if exists: path += '/' + quote(name, safe='')
+        if exists:
+            path += '/' + quote(name, safe='')
         await self.request('PATCH' if exists else 'POST', path, json={'name': name, 'value': value})
 
     async def write_secret(self, environment, name, value):
         path = f'{self.environment_path(environment)}/secrets'
         key = await self.request('GET', path + '/public-key')
+        if SealedBox is None or PublicKey is None:
+            raise SetupError('PyNaCl is required to encrypt secrets.')
         try:
             encrypted = SealedBox(PublicKey(b64decode(key['key']))).encrypt(value.encode('utf-8'))
         except (ValueError, KeyError, TypeError):
             raise SetupError('GitHub returned an invalid encryption key.') from None
-        await self.request('PUT', path + '/' + quote(name, safe=''),
-                           json={'key_id': key['key_id'], 'encrypted_value': b64encode(encrypted).decode('ascii')})
+        await self.request(
+            'PUT',
+            path + '/' + quote(name, safe=''),
+            json={'key_id': key['key_id'], 'encrypted_value': b64encode(encrypted).decode('ascii')},
+        )

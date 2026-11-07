@@ -2,7 +2,6 @@
 
 Standard library only. Network failures are never treated as an empty registry.
 """
-import argparse
 import io
 import json
 import os
@@ -16,14 +15,20 @@ import zipfile
 CENTRAL = 'https://repo.maven.apache.org/maven2'
 SEMVER = r'(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)'
 SUFFIXES = ('.pom', '.aar', '-sources.jar', '-javadoc.jar', '.module')
+
+
 def version_key(value):
     if not re.fullmatch(SEMVER, value):
         raise ValueError(f'Expected stable X.Y.Z, got {value!r}')
     return tuple(map(int, value.split('.')))
 
 
-
-
+def _parse_xml(data):
+    raw = data.encode('utf-8') if isinstance(data, str) else bytes(data)
+    upper = raw.upper()
+    if b'<!DOCTYPE' in upper or b'<!ENTITY' in upper:
+        raise ValueError('XML DTD and entity declarations are not allowed')
+    return ET.fromstring(raw)
 
 
 def fetch(url, missing=False, attempts=3):
@@ -52,7 +57,7 @@ def published_versions(group, artifact):
     data = fetch(artifact_base(group, artifact) + '/maven-metadata.xml', missing=True)
     if data is None:
         return []
-    xml = ET.fromstring(data)
+    xml = _parse_xml(data)
     if xml.tag != 'metadata' or xml.findtext('groupId') != group or xml.findtext('artifactId') != artifact:
         raise ValueError('Invalid Central metadata identity')
     versions = xml.findall('./versioning/versions/version')
@@ -62,7 +67,7 @@ def published_versions(group, artifact):
 
 
 def verify_pom(data, group, artifact, version):
-    xml = ET.fromstring(data)
+    xml = _parse_xml(data)
     for node in xml.iter():
         node.tag = node.tag.split('}')[-1]
     if tuple(xml.findtext(k) for k in ('groupId', 'artifactId', 'version')) != (group, artifact, version):
@@ -117,6 +122,6 @@ def outputs(values):
     text = ''.join(f'{k}={v}\n' for k, v in values.items())
     print(text, end='')
     if os.environ.get('GITHUB_OUTPUT'):
-        with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+        with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as stream:
             stream.write(text)
     return values

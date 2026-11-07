@@ -124,7 +124,7 @@ def build(base):
           f'<a href="{base}/{latest}/en/index.html">Open Demo Common documentation</a>', base))
     shutil.copyfile(DEST / f'{latest}/en/IMPORT.md', DEST / 'IMPORT.md')
     shutil.copytree(DEST / f'{latest}/en/agents', DEST / 'agents')
-    write('llms.txt', f'# Demo Common\n\n- [Integration guide]({base}/agents/index.md)\n'
+    write('llms.txt', f'# Demo Common\n\n- [Integration guide]({base}/agents/index.md)\\n'
           f'- [Installation]({base}/IMPORT.md)\n')
     for name, ref, _ in versions:
         media = DEST / 'media' / name
@@ -141,4 +141,6 @@ def build(base):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base', default='/android.apexfission.demo-common')
-    build(parser.parse_args().base.rstrip('/'))
+    parser.add_argument('--check', action='store_true', help='Verify site build succeeds')
+    args = parser.parse_args()
+    build(args.base.rstrip('/'))

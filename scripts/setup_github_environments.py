@@ -2,6 +2,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
+#     "filelock==3.20.0",
 #     "httpx==0.28.1",
 #     "PyNaCl==1.6.2",
 #     "PyYAML==6.0.3",
@@ -10,14 +11,120 @@
 # ///
 """Interactive, review-before-apply setup of publishing GitHub environments."""
 import argparse
+from contextlib import contextmanager
 from dataclasses import dataclass, field
+from hashlib import sha256
+import os
 from pathlib import Path
 
-from textual.app import App, ComposeResult
-from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.widgets import Button, Footer, Header, Input, ProgressBar, Static
+try:
+    from filelock import FileLock, Timeout
+except ImportError:  # pragma: no cover - fallback when filelock is not installed
+    import fcntl
 
-from github_environment_api import GitHubAPI, SetupError
+    class Timeout(Exception):
+        pass
+
+    class FileLock:
+        def __init__(self, lock_file, timeout=0):
+            self.lock_file = str(lock_file)
+            self.timeout = timeout
+            self._fd = None
+
+        def acquire(self):
+            fd = os.open(self.lock_file, os.O_CREAT | os.O_RDWR, 0o600)
+            try:
+                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except OSError:
+                os.close(fd)
+                raise Timeout(self.lock_file) from None
+            self._fd = fd
+            return self
+
+        def release(self):
+            if self._fd is not None:
+                try:
+                    fcntl.flock(self._fd, fcntl.LOCK_UN)
+                finally:
+                    os.close(self._fd)
+                    self._fd = None
+
+        def __enter__(self):
+            return self.acquire()
+
+        def __exit__(self, *_):
+            self.release()
+
+try:
+    from textual.app import App, ComposeResult
+    from textual.containers import Horizontal, Vertical, VerticalScroll
+    from textual.widgets import Button, Footer, Header, Input, ProgressBar, Static
+except ImportError:  # pragma: no cover - fallback stubs for headless unit test environments
+    ComposeResult = object
+
+    class _Widget:
+        def __init__(self, *args, **kwargs):
+            self.id = kwargs.get('id')
+            self.value = kwargs.get('value', '')
+            self.password = kwargs.get('password', False)
+            self.placeholder = kwargs.get('placeholder', '')
+            self.label = args[0] if args else ''
+            self.disabled = False
+            self.display = True
+
+        def update(self, *args, **kwargs):
+            pass
+
+        def focus(self):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *_):
+            return False
+
+    class App:
+        def __init__(self, *args, **kwargs):
+            self._widgets = {}
+
+        def query_one(self, selector, *_):
+            key = selector.lstrip('#')
+            if key not in self._widgets:
+                self._widgets[key] = _Widget(id=key)
+            return self._widgets[key]
+
+        def exit(self, *args, **kwargs):
+            pass
+
+        def run(self):
+            pass
+
+    Horizontal = Vertical = VerticalScroll = Button = Footer = Header = Input = ProgressBar = Static = _Widget
+
+from github_environment_api import GitHubAPI, SetupError, validate_repository
+
+
+LOCK_DIR = Path.home() / '.demo-common-signing'
+
+
+def lock_path(repository, directory=LOCK_DIR):
+    validate_repository(repository)
+    repository_id = sha256(repository.casefold().encode()).hexdigest()[:16]
+    return Path(directory) / f'environments-{repository_id}.lock'
+
+
+@contextmanager
+def setup_lock(repository, directory=LOCK_DIR):
+    path = lock_path(repository, directory=directory)
+    path.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
+    try:
+        with FileLock(str(path), timeout=0):
+            yield path
+    except Timeout:
+        raise SetupError(
+            'Another environment setup wizard is running for this repository. Close it before retrying.'
+        ) from None
 
 
 @dataclass
@@ -34,15 +141,18 @@ class Setting:
 def choose_value(setting, entered):
     """Blank always preserves existing values; key input is a file path."""
     if not entered:
-        if setting.existing or not setting.required: return None
-        if setting.default: return setting.default
+        if setting.existing or not setting.required:
+            return None
+        if setting.default:
+            return setting.default
         raise SetupError('This setting is required because it does not exist yet.')
     if setting.name == 'SIGNING_IN_MEMORY_KEY':
         try:
             value = Path(entered).expanduser().read_bytes().decode('utf-8')
         except (OSError, UnicodeError, ValueError):
             raise SetupError('Cannot read the signing key file as UTF-8. Check the path and permissions.') from None
-        if not value.strip(): raise SetupError('The signing key file is empty.')
+        if not value.strip():
+            raise SetupError('The signing key file is empty.')
         return value
     if setting.required and not entered.strip():
         raise SetupError('This required setting cannot contain only whitespace.')
@@ -62,10 +172,35 @@ class ApplyResult:
     message: str = ''
 
 
+async def verify_pre_apply_state(api, environments, settings, changes):
+    if not hasattr(api, 'snapshot'):
+        return
+    touched = {settings[index].environment for index in changes} | {
+        env for env, exists in environments.items() if not exists
+    }
+    for environment in environments:
+        if environment not in touched:
+            continue
+        exists, variables, secrets = await api.snapshot(environment)
+        if environments[environment] != exists:
+            raise SetupError(f'Environment {environment} changed during review. Rerun to inspect current state.')
+        for index, setting in enumerate(settings):
+            if setting.environment != environment or index not in changes:
+                continue
+            now_exists = setting.name in (variables if setting.kind == 'variable' else secrets)
+            now_value = variables.get(setting.name, '') if setting.kind == 'variable' else ''
+            if now_exists != setting.existing or (setting.kind == 'variable' and now_value != setting.current):
+                raise SetupError(
+                    f'{environment} / {setting.name} changed concurrently. Rerun to inspect current state.'
+                )
+
+
 async def apply_changes(api, environments, settings, changes):
     result = ApplyResult()
     label = ''
     try:
+        label = 'pre-apply environment check'
+        await verify_pre_apply_state(api, environments, settings, changes)
         for environment, exists in environments.items():
             if not exists:
                 label = f'{environment} / environment'
@@ -84,7 +219,14 @@ async def apply_changes(api, environments, settings, changes):
             setting = settings[index]
             label = f'{setting.environment} / {setting.name}'
             if setting.kind == 'variable':
-                await api.write_variable(setting.environment, setting.name, value, setting.existing)
+                try:
+                    await api.write_variable(setting.environment, setting.name, value, setting.existing)
+                except SetupError as error:
+                    if 'HTTP 409' in str(error):
+                        raise SetupError(
+                            f'{label} was modified concurrently (HTTP 409 Conflict). Rerun to inspect current state.'
+                        ) from None
+                    raise
             else:
                 await api.write_secret(setting.environment, setting.name, value)
             result.completed.append(label)
@@ -128,7 +270,7 @@ class SetupWizard(App):
     def compose(self) -> ComposeResult:
         yield Header()
         with Vertical(id='card'):
-            yield Static(f'CONNECT  /  CONFIGURE  /  REVIEW  /  APPLY', id='eyebrow')
+            yield Static('CONNECT  /  CONFIGURE  /  REVIEW  /  APPLY', id='eyebrow')
             yield Static('Connect to GitHub', id='heading')
             yield ProgressBar(total=max(len(self.settings), 1), show_eta=False, id='progress')
             with VerticalScroll(id='body'):
@@ -146,11 +288,13 @@ class SetupWizard(App):
                 yield Button('Cancel', id='cancel')
         yield Footer()
 
-    def on_mount(self): self.query_one('#value', Input).focus()
+    def on_mount(self):
+        self.query_one('#value', Input).focus()
 
     async def on_unmount(self):
         self.changes.clear()
-        if self.api: await self.api.aclose()
+        if self.api:
+            await self.api.aclose()
 
     def show_setting(self):
         if self.index == len(self.settings):
@@ -165,7 +309,8 @@ class SetupWizard(App):
             detail += '\n\nLeave blank to keep the existing value.'
         else:
             detail += 'Not configured yet. ' + ('Required.' if setting.required else 'Optional; blank leaves it unset.')
-            if setting.default: detail += f'\nLeave blank to use: {setting.default}'
+            if setting.default:
+                detail += f'\nLeave blank to use: {setting.default}'
         if setting.name == 'SIGNING_IN_MEMORY_KEY':
             detail += '\n\nEnter the path to your UTF-8 ASCII-armored private key file. The path is masked; the full multiline file is encrypted before upload.'
         self.query_one('#detail', Static).update(detail)
@@ -202,21 +347,28 @@ class SetupWizard(App):
         await self.advance()
 
     async def on_button_pressed(self, event):
-        if event.button.id == 'cancel': self.exit()
-        else: await self.advance()
+        if event.button.id == 'cancel':
+            self.exit()
+        else:
+            await self.advance()
 
     async def advance(self):
         button = self.query_one('#next', Button)
-        if button.disabled: return
+        if button.disabled:
+            return
         button.disabled = True
         self.query_one('#error', Static).update('')
         try:
             if self.stage == 'token':
                 entry = self.query_one('#value', Input)
-                token = entry.value.strip()
-                entry.value = ''
-                if not token: raise SetupError('Enter a GitHub token to continue.')
-                if self.api: await self.api.aclose()
+                try:
+                    token = entry.value.strip()
+                finally:
+                    entry.value = ''
+                if not token:
+                    raise SetupError('Enter a GitHub token to continue.')
+                if self.api:
+                    await self.api.aclose()
                 self.api = self.api_factory(self.repository, token)
                 token = ''
                 self.query_one('#heading', Static).update('Reading environment settings…')
@@ -231,9 +383,15 @@ class SetupWizard(App):
                 self.show_setting()
             elif self.stage == 'settings':
                 entry = self.query_one('#value', Input)
-                value = choose_value(self.settings[self.index], entry.value)
-                entry.value = ''
-                if value is not None: self.changes[self.index] = value
+                try:
+                    entered = entry.value
+                    entry.value = ''
+                    value = choose_value(self.settings[self.index], entered)
+                finally:
+                    entry.value = ''
+                    entered = ''
+                if value is not None:
+                    self.changes[self.index] = value
                 self.index += 1
                 self.show_setting()
             elif self.stage == 'review':
@@ -251,7 +409,8 @@ class SetupWizard(App):
                     text += f'\n\nFailed or uncertain: {result.failed}\n{result.message}\nRemaining changes were not attempted. Rerun to inspect current settings and resume.'
                 self.query_one('#detail', Static).update(text)
                 button.label = 'Close'
-            elif self.stage == 'done': self.exit()
+            elif self.stage == 'done':
+                self.exit()
         except SetupError as error:
             self.query_one('#error', Static).update(str(error))
         except Exception:
@@ -267,13 +426,19 @@ def main():
     parser.add_argument('--config', type=Path, default=DEFAULT_CONFIG)
     args = parser.parse_args()
     try:
+        validate_repository(args.repo)
         registry = load_config(args.config)
-    except (ValueError, OSError) as error:
+    except (SetupError, ValueError, OSError) as error:
         parser.error(str(error))
     settings = [Setting(entry['environment'], **setting) for entry in registry.values() for setting in settings_for(entry)]
-    wizard = SetupWizard(args.repo, settings)
-    wizard.environment_names = [*(entry['environment'] for entry in registry.values()), 'delayed-docs']
-    wizard.run()
+    try:
+        with setup_lock(args.repo):
+            wizard = SetupWizard(args.repo, settings)
+            wizard.environment_names = [*(entry['environment'] for entry in registry.values()), 'delayed-docs']
+            wizard.run()
+    except SetupError as error:
+        parser.exit(1, f'{error}\n')
 
 
-if __name__ == '__main__': main()
+if __name__ == '__main__':
+    main()

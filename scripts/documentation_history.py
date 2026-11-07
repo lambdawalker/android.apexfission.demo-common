@@ -49,7 +49,7 @@ def archive_record(root, record):
     target = _record(record)
     path = archive_path(record)
     absolute = root / path
-    entry = validate(json.loads(absolute.read_text())) if absolute.exists() else dict(
+    entry = validate(json.loads(absolute.read_text(encoding='utf-8'))) if absolute.exists() else dict(
         schema=1, module=record['module'], version=record['version'], source=record['source'],
         documentation_ref=record['source'], destinations={})
     if entry['source'] != record['source']:
@@ -69,7 +69,7 @@ def latest_records(root):
     # Deliberately exclude the history hierarchy and null retired destinations.
     paths = list(folder.glob('*.json')) + [p for p in folder.glob('*/*.json') if p.parent.name != 'history']
     for path in sorted(paths):
-        record = json.loads(path.read_text())
+        record = json.loads(path.read_text(encoding='utf-8'))
         if record is not None:
             yield record
 
@@ -82,7 +82,7 @@ def seed(root):
 def load_catalog(root):
     entries = []
     for path in sorted((root / HISTORY).glob('*/*.json')):
-        entry = validate(json.loads(path.read_text()))
+        entry = validate(json.loads(path.read_text(encoding='utf-8')))
         if path.relative_to(root) != HISTORY / entry['module'] / (route_version(entry) + '.json'):
             raise ValueError('Archive filename identity conflict')
         entries.append(entry)
@@ -98,6 +98,18 @@ def verify(root):
             raise ValueError('Latest confirmation missing from archive; run documentation_history.py seed')
 
 
+SPANISH_REPLACEMENTS = {
+    '#### Version catalog': '#### Catálogo de versiones',
+    'In `settings.gradle.kts`:': 'En `settings.gradle.kts`:',
+    "In the app's `build.gradle.kts`:": 'En el archivo `build.gradle.kts` de la aplicación:',
+    'In `settings.gradle`:': 'En `settings.gradle`:',
+    "In the app's `build.gradle`:": 'En el archivo `build.gradle` de la aplicación:',
+    'Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:': 'Usa los repositorios indicados arriba. Añade lo siguiente a `gradle/libs.versions.toml`:',
+    "Then use this instead of the direct dependency in the app's `build.gradle.kts`:": 'Después, usa este alias en lugar de la dependencia directa en `build.gradle.kts`:',
+    'Add these repositories and dependency to `pom.xml`:': 'Añade estos repositorios y esta dependencia a `pom.xml`:',
+}
+
+
 def installation(entry, language='en'):
     validate(entry)
     es = language == 'es'
@@ -110,16 +122,10 @@ def installation(entry, language='en'):
         examples = import_docs._examples(module, record)
         if es:
             # Only authored prose changes. Dependency examples remain byte-identical.
-            replacements = {
-                '#### Version catalog':'#### Catálogo de versiones',
-                'In `settings.gradle.kts`:':'En `settings.gradle.kts`:',
-                "In the app's `build.gradle.kts`:":'En el archivo `build.gradle.kts` de la aplicación:',
-                'In `settings.gradle`:':'En `settings.gradle`:',
-                "In the app's `build.gradle`:":'En el archivo `build.gradle` de la aplicación:',
-                'Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:':'Usa los repositorios indicados arriba. Añade lo siguiente a `gradle/libs.versions.toml`:',
-                "Then use this instead of the direct dependency in the app's `build.gradle.kts`:":'Después, usa este alias en lugar de la dependencia directa en `build.gradle.kts`:',
-                'Add these repositories and dependency to `pom.xml`:':'Añade estos repositorios y esta dependencia a `pom.xml`:',
-            }
+            replacements = dict(SPANISH_REPLACEMENTS)
+            missing = [original for original in replacements if original not in examples]
+            if missing:
+                raise ValueError(f'Missing Spanish translation source phrase: {missing[0]!r}')
             for original, translation in replacements.items():
                 examples = examples.replace(original, translation)
         text += examples + '\n'

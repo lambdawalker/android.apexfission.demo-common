@@ -45,6 +45,12 @@ release** with the same destination and reserved version. It verifies and
 finalizes without another upload. If branch protection rejects a final push,
 keep the reservation and have a maintainer reconcile it.
 
+If an interrupted Central attempt was never published and Central Portal
+confirms no deployment exists, archive the unconfirmed `release-pending` and
+`release-uploading` markers to `release-failed/` with
+`python3 scripts/module_release.py abort-unconfirmed --module demo-common --version X.Y.Z`
+(which verifies `published_versions` on Maven Central before archiving).
+
 A terminal JitPack failure with no public artifacts can be archived by a
 new attempt from corrected source. For JitPack only, an explicit newer
 version can opt into bypassing older pending attempts. The override retains
@@ -57,10 +63,12 @@ The reservation tags preserve release state independently of the queue.
 ## Verify without publishing
 
 ```sh
-python -m pip install -r scripts/requirements-publishing.txt
-python scripts/publishing_config.py check
-PYTHONPATH=scripts python -m unittest discover -s scripts/tests -v
-./gradlew verifyImportDocs :demo-common:lintRelease :demo-common:assembleRelease
+python3 -m pip install -r scripts/requirements-setup.txt -r sites/requirements.txt
+python3 scripts/publishing_config.py check
+python3 scripts/import_docs.py --check
+python3 sites/build.py --check
+PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v
+./gradlew verifyImportDocs :demo-common:testDebugUnitTest :demo-common:lintRelease :demo-common:assembleRelease
 ```
 
 CI also assembles unsigned local publications for both destinations and
@@ -74,7 +82,7 @@ successful release finalization.
 Run this from a private terminal with a JDK and uv.
 
 Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
-Both launchers use version `v0.1.0` of the shared
+Both launchers use pinned revision `b3294108af351fd5ee8a7743fa641b2fc6143617` of the shared
 [Android Repository Setup wizard](https://github.com/lambdawalker/python.android-repo-setup).
 The launcher opens your existing encrypted vault in place.
 
@@ -117,5 +125,5 @@ use a generic error message to avoid printing credential-bearing tracebacks.
 
 Credential-free regression checks:
 ```sh
-PYTHONPATH=scripts uv run --with-requirements scripts/requirements-setup.txt python -m unittest discover -s scripts/tests -v
+PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v
 ```
