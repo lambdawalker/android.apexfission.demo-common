@@ -24,10 +24,15 @@ import androidx.compose.ui.unit.dp
 
 @Preview(name = "Populated light", widthDp = 393, heightDp = 740)
 @Preview(name = "Populated dark", widthDp = 393, heightDp = 740, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "Narrow large text", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1.6f)
 @Composable
 private fun PopulatedPreview() {
     DemoCatalogFixture(populated = true)
+}
+
+@Preview(name = "Narrow large text", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1.6f)
+@Composable
+private fun NarrowCatalogPreview() {
+    DemoCatalogFixture(populated = true, longCopy = true)
 }
 
 @Preview(name = "Empty light", widthDp = 393, heightDp = 740)
@@ -68,7 +73,7 @@ private fun CardTitlePreview() {
 
 /** Debug-only fixture shared with the screenshot test source set. */
 @Composable
-internal fun DemoCatalogFixture(populated: Boolean) {
+internal fun DemoCatalogFixture(populated: Boolean, longCopy: Boolean = false) {
     CatalogPreviewTheme {
         DemoScreen(
             title = "Demo catalog",
@@ -77,7 +82,7 @@ internal fun DemoCatalogFixture(populated: Boolean) {
         ) {
             if (populated) {
                 item {
-                    ExampleDemoCard()
+                    ExampleDemoCard(longCopy = longCopy)
                 }
                 item {
                     DemoCard {
@@ -109,13 +114,17 @@ private fun CatalogPreviewTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun ExampleDemoCard() {
+private fun ExampleDemoCard(longCopy: Boolean = false) {
     DemoCard(
-        title = "Interactive example",
+        title = if (longCopy) "Captura automática de ambos lados de una identificación" else "Interactive example",
         subtitle = "ExampleComponent",
         icon = playIcon,
-        description = "Try the interactive example and see how it responds to your input.",
-        actionLabel = "Open example",
+        description = if (longCopy) {
+            "Coloca la identificación dentro del marco y sigue las instrucciones para capturar ambos lados."
+        } else {
+            "Try the interactive example and see how it responds to your input."
+        },
+        actionLabel = if (longCopy) "Abrir demostración" else "Open example",
         onClick = {},
     )
 }
