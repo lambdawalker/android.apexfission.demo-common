@@ -270,7 +270,7 @@ class GitHubEnvironmentSetupTests(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(
             default_lock.parent,
-            Path.home() / '.projects' / 'android.apexfission.demo-common' / 'secrets',
+            Path.home() / '.projects' / 'lambdawalker--android.apexfission.demo-common' / 'secrets',
         )
 
         with tempfile.TemporaryDirectory() as folder:
