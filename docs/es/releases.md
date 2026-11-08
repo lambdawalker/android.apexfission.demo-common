@@ -52,8 +52,8 @@ PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v
 ## Preparar la firma de un APK de demostración
 
 Ejecuta `./setup.sh` en Linux o macOS, o `setup.bat` en Windows desde una
-terminal privada con JDK y uv. Ambos lanzadores usan la revisión fijada
-`b3294108af351fd5ee8a7743fa641b2fc6143617` del asistente compartido
+terminal privada con JDK y uv. Ambos lanzadores usan la versión
+`v0.1.1` del asistente compartido
 [Android Repository Setup](https://github.com/lambdawalker/python.android-repo-setup)
 y abren la bóveda cifrada local en `~/.projects/android.apexfission.demo-common/secrets/`.
 
