@@ -1,6 +1,9 @@
 package com.apexfission.android.democommon.sample
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -33,7 +36,15 @@ class SampleActivity : ComponentActivity() {
                 ),
             ) {
                 var showDetails by rememberSaveable { mutableStateOf(false) }
-                DemoScreen(stringResource(R.string.app_name), stringResource(R.string.welcome_note)) {
+                DemoScreen(
+                    title = stringResource(R.string.app_name),
+                    welcomeNote = stringResource(R.string.welcome_note),
+                    onOpenSettings = {
+                        startActivity(
+                            Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)),
+                        )
+                    },
+                ) {
                     item(key = "interactive") {
                         DemoCard(
                             title = stringResource(R.string.demo_title),

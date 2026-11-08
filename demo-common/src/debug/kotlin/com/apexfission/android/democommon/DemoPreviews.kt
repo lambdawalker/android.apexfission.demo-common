@@ -79,6 +79,8 @@ internal fun DemoCatalogFixture(populated: Boolean, longCopy: Boolean = false) {
             title = "Demo catalog",
             welcomeNote = "Choose an example to explore what this library can do.",
             eyebrow = if (populated) "EXAMPLES" else null,
+            showEmptyState = !populated,
+            onOpenSettings = {},
         ) {
             if (populated) {
                 item {

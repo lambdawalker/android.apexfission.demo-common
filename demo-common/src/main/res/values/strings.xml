@@ -1,0 +1,5 @@
+<resources>
+    <string name="demo_common_empty_title">No demos available</string>
+    <string name="demo_common_empty_note">When demos are available, they’ll appear here.</string>
+    <string name="demo_common_app_settings">App settings</string>
+</resources>

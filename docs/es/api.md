@@ -13,6 +13,10 @@ combinados y consumidos sin recortar el desplazamiento de borde a borde, y
 elementos se muestra el encabezado. Proporciona una altura acotada y evita
 anidarlo dentro de otro contenedor de desplazamiento vertical.
 
+Usa `showEmptyState = true` cuando no haya demostraciones. Proporciona
+`onOpenSettings` para mostrar el botón de ajustes en ambos estados. La
+aplicación anfitriona controla la navegación.
+
 ## DemoCard
 
 Recibe un bloque de contenido `ColumnScope`. Usa el ancho disponible,

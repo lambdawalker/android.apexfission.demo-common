@@ -10,27 +10,38 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
  * A centered, scrolling catalog with a caller-provided [title] and [welcomeNote].
  *
- * Declare cards, actions, or footers with [content], using the standard lazy list DSL.
+ * Declare cards or footers with [content]. Set [showEmptyState] when there are no demos.
+ * Supply [onOpenSettings] to offer the App settings action in either state.
  * The screen combines its scaffold's [contentWindowInsets] with [contentPadding] and
  * consumes those insets so edge-to-edge scrolling is not clipped.
  */
@@ -44,7 +55,9 @@ public fun DemoScreen(
     contentPadding: PaddingValues = PaddingValues(24.dp),
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     itemSpacing: Dp = 16.dp,
-    content: LazyListScope.() -> Unit,
+    showEmptyState: Boolean = false,
+    onOpenSettings: (() -> Unit)? = null,
+    content: LazyListScope.() -> Unit = {},
 ) {
     Scaffold(
         modifier = modifier,
@@ -88,8 +101,52 @@ public fun DemoScreen(
                     }
                     Spacer(Modifier.height(8.dp))
                 }
+                if (showEmptyState) {
+                    item { DemoCatalogEmptyState() }
+                }
                 content()
+                if (onOpenSettings != null) {
+                    item {
+                        OutlinedButton(onClick = onOpenSettings, modifier = Modifier.fillMaxWidth()) {
+                            Icon(
+                                painter = painterResource(R.drawable.demo_common_settings),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(stringResource(R.string.demo_common_app_settings))
+                        }
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+private fun DemoCatalogEmptyState() {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.demo_common_empty_title),
+                modifier = Modifier.semantics { heading() },
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                text = stringResource(R.string.demo_common_empty_note),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
