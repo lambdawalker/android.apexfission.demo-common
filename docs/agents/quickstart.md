@@ -72,8 +72,7 @@ The populated catalog exercises `DemoScreen`, `DemoCard`, and `CardTitle` with
 both an icon and subtitle and a title-only card. The empty catalog exercises
 `DemoScreen` without an eyebrow or items. Both scenarios cover light and dark
 mode under a fixture host theme with custom colors, type, and shapes. A narrow
-320 dp preview at 1.6× font scale exercises wrapping with the Spanish locale
-and fixed English fixture copy.
+320 dp preview at 1.6× font scale exercises wrapping with a long Spanish card title, description, and action.
 
 ```shell
 ./gradlew :demo-common:assembleRelease :demo-common:lintDebug

@@ -19,6 +19,10 @@ Recibe un bloque de contenido `ColumnScope`. Usa el ancho disponible,
 la forma mediana del tema, 20 dp de margen interno y 12 dp de separación
 por defecto. La aplicación controla los botones y su estado.
 
+Para una tarjeta del catálogo, usa la sobrecarga con `title`, `description`,
+`actionLabel` y `onClick`. Incluye un título con icono y subtítulo opcionales,
+una descripción y un botón de ancho completo.
+
 ## CardTitle
 
 Requiere `title` y admite `subtitle` e `icon`. El título se anuncia como

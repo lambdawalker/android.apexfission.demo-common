@@ -40,6 +40,11 @@ The card fills the available width and uses the host's medium shape.
 Content owns interaction state, accessibility labels, and callbacks.
 Use a Material button in the content slot to open the selected demo.
 
+For the standard welcome catalog card, call the overload with `title`,
+`description`, `actionLabel`, and `onClick`. It renders a `CardTitle` with
+an optional `icon` and `subtitle`, followed by the description and a
+full-width filled tonal button. Use the content slot above for custom cards.
+
 ```kotlin
 @Composable
 public fun CardTitle(

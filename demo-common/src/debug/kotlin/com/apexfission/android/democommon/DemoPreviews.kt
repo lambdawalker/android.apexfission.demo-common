@@ -1,11 +1,12 @@
 package com.apexfission.android.democommon
 
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
@@ -23,10 +24,15 @@ import androidx.compose.ui.unit.dp
 
 @Preview(name = "Populated light", widthDp = 393, heightDp = 740)
 @Preview(name = "Populated dark", widthDp = 393, heightDp = 740, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "Narrow large text", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1.6f)
 @Composable
 private fun PopulatedPreview() {
     DemoCatalogFixture(populated = true)
+}
+
+@Preview(name = "Narrow large text", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1.6f)
+@Composable
+private fun NarrowCatalogPreview() {
+    DemoCatalogFixture(populated = true, longCopy = true)
 }
 
 @Preview(name = "Empty light", widthDp = 393, heightDp = 740)
@@ -36,22 +42,39 @@ private fun EmptyPreview() {
     DemoCatalogFixture(populated = false)
 }
 
+@Preview(name = "Card light", widthDp = 360, showBackground = true)
+@Preview(name = "Card dark", widthDp = 360, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun DemoCardPreview() {
+    CatalogPreviewTheme {
+        Surface {
+            Column(Modifier.padding(16.dp)) {
+                ExampleDemoCard()
+            }
+        }
+    }
+}
+
+@Preview(name = "Title light", widthDp = 360, showBackground = true)
+@Preview(name = "Title dark", widthDp = 360, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun CardTitlePreview() {
+    CatalogPreviewTheme {
+        Surface {
+            CardTitle(
+                title = "Interactive example",
+                modifier = Modifier.padding(16.dp),
+                subtitle = "ExampleComponent",
+                icon = playIcon,
+            )
+        }
+    }
+}
+
 /** Debug-only fixture shared with the screenshot test source set. */
 @Composable
-internal fun DemoCatalogFixture(populated: Boolean) {
-    val typography = Typography()
-    MaterialTheme(
-        colorScheme = if (isSystemInDarkTheme()) {
-            darkColorScheme(primary = Color(0xFF83DBCB))
-        } else {
-            lightColorScheme(primary = Color(0xFF006B5D))
-        },
-        typography = typography.copy(
-            headlineLarge = typography.headlineLarge.copy(fontFamily = FontFamily.Serif),
-            titleMedium = typography.titleMedium.copy(fontFamily = FontFamily.Serif),
-        ),
-        shapes = Shapes(small = RoundedCornerShape(6.dp), medium = RoundedCornerShape(10.dp)),
-    ) {
+internal fun DemoCatalogFixture(populated: Boolean, longCopy: Boolean = false) {
+    CatalogPreviewTheme {
         DemoScreen(
             title = "Demo catalog",
             welcomeNote = "Choose an example to explore what this library can do.",
@@ -59,20 +82,7 @@ internal fun DemoCatalogFixture(populated: Boolean) {
         ) {
             if (populated) {
                 item {
-                    DemoCard {
-                        CardTitle("Interactive example", subtitle = "ExampleComponent", icon = playIcon)
-                        Text(
-                            "Try the interactive example and see how it responds to your input.",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        FilledTonalButton(
-                            onClick = {},
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = MaterialTheme.shapes.small,
-                        ) {
-                            Text("Open example")
-                        }
-                    }
+                    ExampleDemoCard(longCopy = longCopy)
                 }
                 item {
                     DemoCard {
@@ -83,6 +93,40 @@ internal fun DemoCatalogFixture(populated: Boolean) {
             }
         }
     }
+}
+
+@Composable
+private fun CatalogPreviewTheme(content: @Composable () -> Unit) {
+    val typography = Typography()
+    MaterialTheme(
+        colorScheme = if (isSystemInDarkTheme()) {
+            darkColorScheme(primary = Color(0xFF83DBCB))
+        } else {
+            lightColorScheme(primary = Color(0xFF006B5D))
+        },
+        typography = typography.copy(
+            headlineLarge = typography.headlineLarge.copy(fontFamily = FontFamily.Serif),
+            titleLarge = typography.titleLarge.copy(fontFamily = FontFamily.Serif),
+        ),
+        shapes = Shapes(small = RoundedCornerShape(6.dp), medium = RoundedCornerShape(10.dp)),
+        content = content,
+    )
+}
+
+@Composable
+private fun ExampleDemoCard(longCopy: Boolean = false) {
+    DemoCard(
+        title = if (longCopy) "Captura automática de ambos lados de una identificación" else "Interactive example",
+        subtitle = "ExampleComponent",
+        icon = playIcon,
+        description = if (longCopy) {
+            "Coloca la identificación dentro del marco y sigue las instrucciones para capturar ambos lados."
+        } else {
+            "Try the interactive example and see how it responds to your input."
+        },
+        actionLabel = if (longCopy) "Abrir demostración" else "Open example",
+        onClick = {},
+    )
 }
 
 private val playIcon = ImageVector.Builder("Play", 24.dp, 24.dp, 24f, 24f).apply {

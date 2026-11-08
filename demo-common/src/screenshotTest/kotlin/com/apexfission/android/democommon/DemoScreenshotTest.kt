@@ -8,10 +8,16 @@ import com.android.tools.screenshot.PreviewTest
 @PreviewTest
 @Preview(name = "populated-light", widthDp = 393, heightDp = 740, locale = "en")
 @Preview(name = "populated-dark", widthDp = 393, heightDp = 740, locale = "en", uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Preview(name = "populated-narrow-large", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1.6f)
 @Composable
 fun PopulatedCatalogScreenshot() {
     DemoCatalogFixture(populated = true)
+}
+
+@PreviewTest
+@Preview(name = "populated-narrow-large", widthDp = 320, heightDp = 640, locale = "es", fontScale = 1.6f)
+@Composable
+fun NarrowCatalogScreenshot() {
+    DemoCatalogFixture(populated = true, longCopy = true)
 }
 
 @PreviewTest
