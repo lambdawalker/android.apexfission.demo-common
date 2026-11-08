@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 
 /** An elevated card for any Compose content, including a [CardTitle], description, or actions. */
 @Composable
-fun DemoCard(
+public fun DemoCard(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(20.dp),
     itemSpacing: Dp = 12.dp,

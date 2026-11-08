@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 
 /** A heading with an optional [subtitle] and decorative [icon]. */
 @Composable
-fun CardTitle(
+public fun CardTitle(
     title: String,
     modifier: Modifier = Modifier,
     subtitle: String? = null,
@@ -43,7 +43,7 @@ fun CardTitle(
                 )
             }
         }
-        Column(Modifier.weight(1f)) {
+        Column(Modifier.weight(1f, fill = false).semantics(mergeDescendants = true) {}) {
             Text(
                 text = title,
                 modifier = Modifier.semantics { heading() },

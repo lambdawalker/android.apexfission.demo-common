@@ -141,4 +141,6 @@ def build(base):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--base', default='/android.apexfission.demo-common')
-    build(parser.parse_args().base.rstrip('/'))
+    parser.add_argument('--check', action='store_true', help='Verify site build succeeds')
+    args = parser.parse_args()
+    build(args.base.rstrip('/'))

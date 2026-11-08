@@ -1,7 +1,9 @@
 """Render installation examples only from the latest confirmed module identities."""
+import argparse
 import re
-import release_identity
 from urllib.parse import urlsplit
+
+import release_identity
 
 CENTRAL = 'https://repo.maven.apache.org/maven2'
 GOOGLE = 'https://dl.google.com/dl/android/maven2'
@@ -203,3 +205,15 @@ Choose **one** destination below and **one** dependency syntax. Each destination
             section += f'\n\n### {target}\n\nRepository: **{target}**.{notice}\n\n{_examples(module, record)}'
         sections.append(section)
     return '\n\n'.join(sections)
+
+
+def main():
+    import module_release
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--check', action='store_true', help='Verify IMPORT.md is up to date')
+    args = parser.parse_args()
+    module_release.documentation(verify=args.check)
+
+
+if __name__ == '__main__':
+    main()

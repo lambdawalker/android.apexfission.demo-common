@@ -38,7 +38,7 @@ private fun EmptyPreview() {
 
 /** Debug-only fixture shared with the screenshot test source set. */
 @Composable
-fun DemoCatalogFixture(populated: Boolean) {
+internal fun DemoCatalogFixture(populated: Boolean) {
     val typography = Typography()
     MaterialTheme(
         colorScheme = if (isSystemInDarkTheme()) {

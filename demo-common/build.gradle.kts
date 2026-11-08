@@ -17,6 +17,7 @@ android {
     }
     defaultConfig {
         minSdk = 28
+        consumerProguardFiles("consumer-rules.pro")
     }
     buildFeatures {
         compose = true
@@ -29,6 +30,7 @@ android {
 }
 
 kotlin {
+    explicitApi()
     jvmToolchain(17)
 }
 
@@ -36,7 +38,7 @@ dependencies {
     api(platform("androidx.compose:compose-bom:2026.09.00"))
     api("androidx.compose.foundation:foundation")
     api("androidx.compose.ui:ui")
-    implementation("androidx.compose.material3:material3")
+    api("androidx.compose.material3:material3")
 
     debugImplementation("androidx.compose.ui:ui-tooling-preview")
     debugImplementation("androidx.compose.ui:ui-tooling")
