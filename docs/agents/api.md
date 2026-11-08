@@ -36,7 +36,7 @@ public fun DemoCard(
 )
 ```
 
-The card fills the available width and uses the host's medium shape.
+The card fills the available width and uses the host Material 3 card defaults.
 Content owns interaction state, accessibility labels, and callbacks.
 Use a Material button in the content slot to open the selected demo.
 
@@ -57,3 +57,8 @@ public fun CardTitle(
 The title has heading semantics for TalkBack. The icon is decorative. Put essential status information in the text. The theme
 provides typography and colors. There are no callbacks, background tasks,
 Android permissions, or resources to close.
+
+The host app supplies colors, shapes, and typography through `MaterialTheme`.
+`DemoScreen` uses `headlineLarge` for its heading, and `CardTitle` uses
+`titleLarge`. Set the weights on those styles in the host theme to reproduce
+the bold screen heading and semibold card title of the welcome example.

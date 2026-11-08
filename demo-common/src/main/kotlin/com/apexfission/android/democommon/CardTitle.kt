@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 /** A heading with an optional decorative [icon]. */
@@ -46,7 +45,6 @@ public fun CardTitle(
             text = title,
             modifier = Modifier.weight(1f).semantics { heading() },
             style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.SemiBold,
         )
     }
 }

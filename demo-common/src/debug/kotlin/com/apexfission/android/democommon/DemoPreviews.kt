@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -104,8 +105,8 @@ private fun CatalogPreviewTheme(content: @Composable () -> Unit) {
             lightColorScheme(primary = Color(0xFF006B5D))
         },
         typography = typography.copy(
-            headlineLarge = typography.headlineLarge.copy(fontFamily = FontFamily.Serif),
-            titleLarge = typography.titleLarge.copy(fontFamily = FontFamily.Serif),
+            headlineLarge = typography.headlineLarge.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.Bold),
+            titleLarge = typography.titleLarge.copy(fontFamily = FontFamily.Serif, fontWeight = FontWeight.SemiBold),
         ),
         shapes = Shapes(small = RoundedCornerShape(6.dp), medium = RoundedCornerShape(10.dp)),
         content = content,
