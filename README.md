@@ -2,7 +2,7 @@
 
 Build demo catalogs with three Material 3 Compose components. `DemoScreen`
 provides a welcome header and scrolling list. `DemoCard` holds custom
-content, and `CardTitle` adds a heading, subtitle, and icon.
+content, and `CardTitle` adds a heading and optional icon.
 
 - [Documentation website](https://lambdawalker.github.io/android.apexfission.demo-common/)
 - [Confirmed installation](IMPORT.md)

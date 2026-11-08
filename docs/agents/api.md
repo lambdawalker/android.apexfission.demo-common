@@ -42,7 +42,7 @@ Use a Material button in the content slot to open the selected demo.
 
 For the standard welcome catalog card, call the overload with `title`,
 `description`, `actionLabel`, and `onClick`. It renders a `CardTitle` with
-an optional `icon` and `subtitle`, followed by the description and a
+an optional `icon`, followed by the description and a
 full-width filled tonal button. Use the content slot above for custom cards.
 
 ```kotlin
@@ -50,13 +50,10 @@ full-width filled tonal button. Use the content slot above for custom cards.
 public fun CardTitle(
     title: String,
     modifier: Modifier = Modifier,
-    subtitle: String? = null,
     icon: ImageVector? = null,
 )
 ```
 
-The title has heading semantics and merges descendants with the optional
-subtitle for TalkBack without forcing unnecessary width expansion. The icon
-is decorative. Put essential status information in the text. The theme
+The title has heading semantics for TalkBack. The icon is decorative. Put essential status information in the text. The theme
 provides typography and colors. There are no callbacks, background tasks,
 Android permissions, or resources to close.

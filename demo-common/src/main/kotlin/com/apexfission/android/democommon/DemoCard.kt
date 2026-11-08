@@ -44,10 +44,9 @@ public fun DemoCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    subtitle: String? = null,
 ) {
     DemoCard(modifier = modifier) {
-        CardTitle(title = title, subtitle = subtitle, icon = icon)
+        CardTitle(title = title, icon = icon)
         Text(
             text = description,
             style = MaterialTheme.typography.bodyMedium,
