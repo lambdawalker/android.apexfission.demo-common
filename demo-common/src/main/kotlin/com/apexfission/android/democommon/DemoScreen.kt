@@ -93,16 +93,15 @@ public fun DemoScreen(
                             modifier = Modifier.semantics { heading() },
                             style = MaterialTheme.typography.headlineLarge,
                         )
-                        Text(
-                            text = welcomeNote,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                        if (!showEmptyState) {
+                            Text(
+                                text = welcomeNote,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
                     }
                     Spacer(Modifier.height(8.dp))
-                }
-                if (showEmptyState) {
-                    item { DemoCatalogEmptyState() }
                 }
                 content()
                 if (onOpenSettings != null) {
@@ -117,6 +116,9 @@ public fun DemoScreen(
                             Text(stringResource(R.string.demo_common_app_settings))
                         }
                     }
+                }
+                if (showEmptyState) {
+                    item { DemoCatalogEmptyState() }
                 }
             }
         }
