@@ -314,6 +314,8 @@ def recover_failed_jitpack(module, tags, version, source):
 
 def abort_unconfirmed(module, version):
     """Archive stuck release-pending and release-uploading tags after verifying Central absence."""
+    if repository() != "maven-central":
+        raise ValueError("abort-unconfirmed supports Maven Central only")
     common.version_key(version)
     refresh()
     current = confirmed_record(module, remote=True)

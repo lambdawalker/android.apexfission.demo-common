@@ -2,10 +2,10 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@b3294108af351fd5ee8a7743fa641b2fc6143617",
+#     "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.0",
 # ]
 # ///
-"""Launch the shared signing wizard with Demo Common's existing vault location."""
+"""Launch the shared signing wizard with Demo Common's project secrets directory."""
 
 import argparse
 from hashlib import sha256
@@ -21,8 +21,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", default=REPOSITORY, help="GitHub repository in owner/name form")
     args = parser.parse_args()
-    repository_id = sha256(args.repo.casefold().encode()).hexdigest()[:16]
-    vault_path = Path.home() / ".demo-common-signing" / f"setup-{repository_id}.vault"
+    repository_id = sha256(f"{args.repo.casefold()}:demo-apk-release".encode()).hexdigest()[:24]
+    vault_path = Path.home() / ".projects" / args.repo.casefold().replace("/", "--") / "secrets" / f"{repository_id}.vault"
     try:
         return run_wizard(SetupConfig(repository=args.repo, vault_path=vault_path, key_alias="demo-common"))
     except ValueError as error:

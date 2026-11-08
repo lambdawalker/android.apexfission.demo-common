@@ -17,101 +17,21 @@ from hashlib import sha256
 import os
 from pathlib import Path
 
-try:
-    from filelock import FileLock, Timeout
-except ImportError:  # pragma: no cover - fallback when filelock is not installed
-    import fcntl
-
-    class Timeout(Exception):
-        pass
-
-    class FileLock:
-        def __init__(self, lock_file, timeout=0):
-            self.lock_file = str(lock_file)
-            self.timeout = timeout
-            self._fd = None
-
-        def acquire(self):
-            fd = os.open(self.lock_file, os.O_CREAT | os.O_RDWR, 0o600)
-            try:
-                fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
-            except OSError:
-                os.close(fd)
-                raise Timeout(self.lock_file) from None
-            self._fd = fd
-            return self
-
-        def release(self):
-            if self._fd is not None:
-                try:
-                    fcntl.flock(self._fd, fcntl.LOCK_UN)
-                finally:
-                    os.close(self._fd)
-                    self._fd = None
-
-        def __enter__(self):
-            return self.acquire()
-
-        def __exit__(self, *_):
-            self.release()
-
-try:
-    from textual.app import App, ComposeResult
-    from textual.containers import Horizontal, Vertical, VerticalScroll
-    from textual.widgets import Button, Footer, Header, Input, ProgressBar, Static
-except ImportError:  # pragma: no cover - fallback stubs for headless unit test environments
-    ComposeResult = object
-
-    class _Widget:
-        def __init__(self, *args, **kwargs):
-            self.id = kwargs.get('id')
-            self.value = kwargs.get('value', '')
-            self.password = kwargs.get('password', False)
-            self.placeholder = kwargs.get('placeholder', '')
-            self.label = args[0] if args else ''
-            self.disabled = False
-            self.display = True
-
-        def update(self, *args, **kwargs):
-            pass
-
-        def focus(self):
-            pass
-
-        def __enter__(self):
-            return self
-
-        def __exit__(self, *_):
-            return False
-
-    class App:
-        def __init__(self, *args, **kwargs):
-            self._widgets = {}
-
-        def query_one(self, selector, *_):
-            key = selector.lstrip('#')
-            if key not in self._widgets:
-                self._widgets[key] = _Widget(id=key)
-            return self._widgets[key]
-
-        def exit(self, *args, **kwargs):
-            pass
-
-        def run(self):
-            pass
-
-    Horizontal = Vertical = VerticalScroll = Button = Footer = Header = Input = ProgressBar = Static = _Widget
+from filelock import FileLock, Timeout
+from textual.app import App, ComposeResult
+from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.widgets import Button, Footer, Header, Input, ProgressBar, Static
 
 from github_environment_api import GitHubAPI, SetupError, validate_repository
 
 
-LOCK_DIR = Path.home() / '.demo-common-signing'
+LOCK_DIR = Path.home() / '.projects'
 
 
 def lock_path(repository, directory=LOCK_DIR):
     validate_repository(repository)
     repository_id = sha256(repository.casefold().encode()).hexdigest()[:16]
-    return Path(directory) / f'environments-{repository_id}.lock'
+    return Path(directory) / repository.casefold().replace('/', '--') / 'secrets' / f'environments-{repository_id}.lock'
 
 
 @contextmanager
@@ -173,8 +93,6 @@ class ApplyResult:
 
 
 async def verify_pre_apply_state(api, environments, settings, changes):
-    if not hasattr(api, 'snapshot'):
-        return
     touched = {settings[index].environment for index in changes} | {
         env for env, exists in environments.items() if not exists
     }

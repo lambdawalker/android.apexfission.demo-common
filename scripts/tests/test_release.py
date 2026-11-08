@@ -139,6 +139,16 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Missing Spanish translation source phrase'):
                 documentation_history.installation(entry, 'es')
 
+    @patch.dict("os.environ", {"RELEASE_REPOSITORY": "jitpack"})
+    def test_abort_unconfirmed_rejects_jitpack_before_accessing_release_state(self):
+        with patch.object(module_release, 'git') as git:
+            with patch.object(release, 'published_versions') as published:
+                with self.assertRaisesRegex(ValueError, "Maven Central only"):
+                    module_release.abort_unconfirmed('demo-common', '0.1.0')
+                git.assert_not_called()
+                published.assert_not_called()
+
+    @patch.dict("os.environ", {"RELEASE_REPOSITORY": "maven-central"})
     def test_module_release_guard_and_abort_unconfirmed(self):
         source_sha = 'b' * 40
         journal = dict(
@@ -243,17 +253,17 @@ class GitHubEnvironmentSetupTests(unittest.IsolatedAsyncioTestCase):
             'lambdawalker/android.apexfission.demo-common',
             [setting],
         )
-        wizard.stage = 'settings'
-        wizard.index = 0
-        entry = setup_github_environments.Input(id='value')
-        entry.value = '   '
-        error_label = setup_github_environments.Static(id='error')
-        next_button = setup_github_environments.Button('Continue', id='next')
-        widgets = {'#value': entry, '#error': error_label, '#next': next_button}
-        with patch.object(wizard, 'query_one', side_effect=lambda selector, *_: widgets[selector]):
+        async with wizard.run_test() as pilot:
+            wizard.stage = 'settings'
+            wizard.index = 0
+            wizard.show_setting()
+            entry = wizard.query_one('#value', setup_github_environments.Input)
+            entry.value = '   '
             await wizard.advance()
-        self.assertEqual(entry.value, '')
-        self.assertEqual(wizard.changes, {})
+            await pilot.pause()
+            self.assertEqual(entry.value, '')
+            self.assertEqual(wizard.changes, {})
+            self.assertEqual(wizard.index, 0)
 
         with tempfile.TemporaryDirectory() as folder:
             with setup_github_environments.setup_lock(

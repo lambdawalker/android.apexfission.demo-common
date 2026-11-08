@@ -124,7 +124,7 @@ def build(base):
           f'<a href="{base}/{latest}/en/index.html">Open Demo Common documentation</a>', base))
     shutil.copyfile(DEST / f'{latest}/en/IMPORT.md', DEST / 'IMPORT.md')
     shutil.copytree(DEST / f'{latest}/en/agents', DEST / 'agents')
-    write('llms.txt', f'# Demo Common\n\n- [Integration guide]({base}/agents/index.md)\\n'
+    write('llms.txt', f'# Demo Common\n\n- [Integration guide]({base}/agents/index.md)\n'
           f'- [Installation]({base}/IMPORT.md)\n')
     for name, ref, _ in versions:
         media = DEST / 'media' / name
