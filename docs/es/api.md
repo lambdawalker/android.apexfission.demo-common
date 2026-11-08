@@ -28,3 +28,7 @@ una descripción y un botón de ancho completo.
 Requiere `title` y admite `icon`. El título se anuncia como encabezado y el
 icono es decorativo. Coloca cualquier información esencial en texto. La aplicación
 anfitriona proporciona el tema y el contenido.
+
+Los componentes usan los colores, las formas y la tipografía de
+`MaterialTheme`. Define el peso de `headlineLarge` y `titleLarge` en el tema
+de la aplicación para personalizar los encabezados.
