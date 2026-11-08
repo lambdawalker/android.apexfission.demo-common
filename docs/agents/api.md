@@ -15,7 +15,9 @@ public fun DemoScreen(
     contentPadding: PaddingValues = PaddingValues(24.dp),
     contentWindowInsets: WindowInsets = ScaffoldDefaults.contentWindowInsets,
     itemSpacing: Dp = 16.dp,
-    content: LazyListScope.() -> Unit,
+    showEmptyState: Boolean = false,
+    onOpenSettings: (() -> Unit)? = null,
+    content: LazyListScope.() -> Unit = {},
 )
 ```
 
@@ -23,8 +25,12 @@ Provide localized text and declare cards with `item` or `items`. Use stable
 keys for changing lists. The screen fills available bounds, combines Scaffold
 `contentWindowInsets` with `contentPadding` without clipping edge-to-edge
 scrolling, and centers its lazy column within the configured maximum width.
-An empty slot displays the header. Give this screen bounded height and avoid
-nesting it in a vertically scrolling parent.
+Set `showEmptyState = true` when there are no demos. The empty panel uses
+the host’s Material 3 theme and localized library strings. Supply
+`onOpenSettings` to add a full-width App settings button after the catalog
+in either state. The host callback owns navigation, such as opening Android’s
+app details settings. Give this screen bounded height and avoid nesting it in
+a vertically scrolling parent.
 
 ```kotlin
 @Composable
