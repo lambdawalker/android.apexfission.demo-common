@@ -53,7 +53,7 @@ PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v
 
 Ejecuta `./setup.sh` en Linux o macOS, o `setup.bat` en Windows desde una
 terminal privada con JDK y uv. Ambos lanzadores usan la versión
-`v0.1.2` del asistente compartido
+`0.1.3` (commit `48c47560cc3e648a81bda0ec16e43ac21ad58c2e`) del asistente compartido
 [Android Repository Setup](https://github.com/lambdawalker/python.android-repo-setup)
 y abren la bóveda cifrada local en `~/.projects/lambdawalker--android.apexfission.demo-common/secrets/`.
 
