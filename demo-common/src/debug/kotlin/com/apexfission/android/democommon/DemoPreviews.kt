@@ -64,7 +64,6 @@ private fun CardTitlePreview() {
             CardTitle(
                 title = "Interactive example",
                 modifier = Modifier.padding(16.dp),
-                subtitle = "ExampleComponent",
                 icon = playIcon,
             )
         }
@@ -117,7 +116,6 @@ private fun CatalogPreviewTheme(content: @Composable () -> Unit) {
 private fun ExampleDemoCard(longCopy: Boolean = false) {
     DemoCard(
         title = if (longCopy) "Captura automática de ambos lados de una identificación" else "Interactive example",
-        subtitle = "ExampleComponent",
         icon = playIcon,
         description = if (longCopy) {
             "Coloca la identificación dentro del marco y sigue las instrucciones para capturar ambos lados."

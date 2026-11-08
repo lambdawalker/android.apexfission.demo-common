@@ -1,7 +1,6 @@
 package com.apexfission.android.democommon
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,12 +17,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
-/** A heading with an optional [subtitle] and decorative [icon]. */
+/** A heading with an optional decorative [icon]. */
 @Composable
 public fun CardTitle(
     title: String,
     modifier: Modifier = Modifier,
-    subtitle: String? = null,
     icon: ImageVector? = null,
 ) {
     Row(
@@ -44,20 +42,11 @@ public fun CardTitle(
                 )
             }
         }
-        Column(Modifier.weight(1f).semantics(mergeDescendants = true) {}) {
-            Text(
-                text = title,
-                modifier = Modifier.semantics { heading() },
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.SemiBold,
-            )
-            subtitle?.let {
-                Text(
-                    text = it,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary,
-                )
-            }
-        }
+        Text(
+            text = title,
+            modifier = Modifier.weight(1f).semantics { heading() },
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
+        )
     }
 }

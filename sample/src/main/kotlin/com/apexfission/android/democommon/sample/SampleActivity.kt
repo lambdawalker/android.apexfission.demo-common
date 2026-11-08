@@ -28,7 +28,6 @@ class SampleActivity : ComponentActivity() {
                     item(key = "interactive") {
                         DemoCard(
                             title = stringResource(R.string.demo_title),
-                            subtitle = "DemoCard",
                             description = stringResource(R.string.demo_note),
                             actionLabel = stringResource(R.string.demo_action),
                             onClick = { showDetails = !showDetails },

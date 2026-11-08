@@ -45,7 +45,7 @@ fun ExampleCatalog(onOpenExample: () -> Unit) {
     ) {
         item(key = "example") {
             DemoCard {
-                CardTitle(title = "Interactive example", subtitle = "ExampleComponent")
+                CardTitle(title = "Interactive example")
                 Text("Try the example with your own input.")
                 FilledTonalButton(
                     onClick = onOpenExample,
@@ -63,13 +63,13 @@ fun ExampleCatalog(onOpenExample: () -> Unit) {
 `DemoScreen` uses the standard `LazyListScope` DSL, so callers can declare
 individual items, keyed lists, and footers. `DemoCard` takes a `ColumnScope`
 slot for any Compose content. Use `CardTitle` inside or outside a card with an
-optional subtitle and decorative icon. The screen and card accept padding and
+optional decorative icon. The screen and card accept padding and
 spacing overrides, and the screen accepts a maximum content width.
 
 ## Preview and screenshot coverage
 
 The populated catalog exercises `DemoScreen`, `DemoCard`, and `CardTitle` with
-both an icon and subtitle and a title-only card. The empty catalog exercises
+an icon in the first card and a title-only second card. The empty catalog exercises
 `DemoScreen` without an eyebrow or items. Both scenarios cover light and dark
 mode under a fixture host theme with custom colors, type, and shapes. A narrow
 320 dp preview at 1.6× font scale exercises wrapping with a long Spanish card title, description, and action.
