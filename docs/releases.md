@@ -82,7 +82,7 @@ successful release finalization.
 Run this from a private terminal with a JDK and uv.
 
 Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
-Both launchers use version `d2d93b593141fdc32c7bc645a3477e79221677fe` of the shared
+Both launchers use version `v0.1.2` of the shared
 [Android Repository Setup wizard](https://github.com/lambdawalker/python.android-repo-setup).
 The launcher opens your existing encrypted vault in place.
 
