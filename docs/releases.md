@@ -6,7 +6,7 @@ produces Java 17 bytecode.
 ## Owner setup
 
 Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and run
-`uv run scripts/setup_github_environments.py`. Use a repository-scoped
+`uv run scripts/setup.py setup_github_environments`. Use a repository-scoped
 GitHub token with the environment administration permissions shown by
 the wizard. Review the changes before applying. Central requires
 `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`,
@@ -48,7 +48,7 @@ keep the reservation and have a maintainer reconcile it.
 If an interrupted Central attempt was never published and Central Portal
 confirms no deployment exists, archive the unconfirmed `release-pending` and
 `release-uploading` markers to `release-failed/` with
-`python3 scripts/module_release.py abort-unconfirmed --module demo-common --version X.Y.Z`
+`uv run scripts/setup.py module_release abort-unconfirmed --module demo-common --version X.Y.Z`
 (which verifies `published_versions` on Maven Central before archiving).
 
 A terminal JitPack failure with no public artifacts can be archived by a
@@ -63,11 +63,10 @@ The reservation tags preserve release state independently of the queue.
 ## Verify without publishing
 
 ```sh
-python3 -m pip install -r scripts/requirements-setup.txt -r sites/requirements.txt
-python3 scripts/publishing_config.py check
-python3 scripts/import_docs.py --check
-python3 sites/build.py --check
-PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v
+uv run scripts/setup.py publishing_config check
+uv run scripts/setup.py import_docs --check
+uv run scripts/setup.py build_docs --check
+uv run scripts/setup.py workflows --check
 ./gradlew verifyImportDocs :demo-common:testDebugUnitTest :demo-common:lintRelease :demo-common:assembleRelease
 ```
 
@@ -125,5 +124,5 @@ use a generic error message to avoid printing credential-bearing tracebacks.
 
 Credential-free regression checks:
 ```sh
-PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v
+uv run scripts/setup.py workflows --check
 ```

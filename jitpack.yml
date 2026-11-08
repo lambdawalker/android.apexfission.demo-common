@@ -3,5 +3,5 @@ jdk:
   - openjdk17
   - openjdk21
 install:
-  - python3 --version
-  - python3 scripts/jitpack_build.py
+  - pip3 install uv
+  - uv run scripts/setup.py jitpack_build

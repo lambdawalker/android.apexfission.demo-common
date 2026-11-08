@@ -32,11 +32,11 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: python3 -m pip install -r scripts/requirements-setup.txt
-      - run: python3 scripts/publishing_config.py check
-      - run: python3 -m pip install -r sites/requirements.txt
-      - run: python3 scripts/module_release.py verify
-      - run: python3 sites/build.py
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@891efdcfa385a3438c7b5fa72134a61015d43224"
+      - run: android-repo-setup publishing_config check
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@891efdcfa385a3438c7b5fa72134a61015d43224"
+      - run: android-repo-setup module_release verify
+      - run: android-repo-setup build_docs
       - run: cd docs/screenshots && sha256sum -c images.sha256
       - uses: actions/upload-pages-artifact@v5
         with:

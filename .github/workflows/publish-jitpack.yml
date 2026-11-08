@@ -43,7 +43,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: python3 -m pip install -r scripts/requirements-publishing.txt
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@891efdcfa385a3438c7b5fa72134a61015d43224"
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
@@ -59,7 +59,7 @@ jobs:
           if [[ "$ALLOW_PENDING_JITPACK" == true ]]; then
             args+=(--allow-pending-jitpack)
           fi
-          python3 scripts/module_release.py prepare --module "$RELEASE_MODULE" --version "$REQUESTED_VERSION" "${args[@]}"
+          android-repo-setup module_release prepare --module "$RELEASE_MODULE" --version "$REQUESTED_VERSION" "${args[@]}"
       - name: Check out original release source
         if: steps.release.outputs.skip != 'true'
         env:
@@ -83,7 +83,7 @@ jobs:
           SOURCE_SHA: ${{ steps.release.outputs.source }}
         run: |
           ./gradlew ":$RELEASE_MODULE:testDebugUnitTest" ":$RELEASE_MODULE:publishAllPublicationsToVerificationRepository" -PjitpackBuild=true -PjitpackScopedTag=true "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
-          python3 scripts/module_release.py check-local --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
+          android-repo-setup module_release check-local --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Reserve destination and canonical source tag atomically
         if: steps.release.outputs.skip != 'true'
         env:
@@ -96,18 +96,18 @@ jobs:
           if [[ "$ALLOW_PENDING_JITPACK" == true ]]; then
             args+=(--allow-pending-jitpack)
           fi
-          python3 scripts/module_release.py reserve --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA" "${args[@]}"
+          android-repo-setup module_release reserve --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA" "${args[@]}"
       - name: Trigger build and verify public artifacts and source
         if: steps.release.outputs.skip != 'true'
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
-        run: python3 scripts/module_release.py confirm --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --timeout 1800
+        run: android-repo-setup module_release confirm --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --timeout 1800
       - name: Generate latest available installation instructions
         if: steps.release.outputs.skip != 'true'
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: python3 scripts/module_release.py finalize --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
+        run: android-repo-setup module_release finalize --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Recovery guidance
         if: failure()
         run: |

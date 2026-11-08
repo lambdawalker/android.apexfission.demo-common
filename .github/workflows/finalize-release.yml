@@ -57,12 +57,12 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: python3 -m pip install -r scripts/requirements-publishing.txt
-      - run: python3 scripts/publishing_config.py check
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@891efdcfa385a3438c7b5fa72134a61015d43224"
+      - run: android-repo-setup publishing_config check
       - id: repository
         env:
           RELEASE_REPOSITORY: ${{ inputs.repository }}
-        run: python3 scripts/publishing_config.py resolve
+        run: android-repo-setup publishing_config resolve
 
   finalize:
     needs: configuration
@@ -87,25 +87,25 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: python3 -m pip install -r scripts/requirements-publishing.txt
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@891efdcfa385a3438c7b5fa72134a61015d43224"
       - name: Recheck remote release state after acquiring the lock
         id: release
         env:
           RELEASE_VERSION: ${{ inputs.version }}
           EXPECTED_SOURCE: ${{ inputs.source }}
-        run: python3 scripts/module_release.py prepare-finalization --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$EXPECTED_SOURCE"
+        run: android-repo-setup module_release prepare-finalization --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$EXPECTED_SOURCE"
       - name: Confirm complete public artifact set (up to 40 minutes)
         if: steps.release.outputs.skip != 'true'
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: python3 scripts/module_release.py confirm --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA" --timeout 2400
+        run: android-repo-setup module_release confirm --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA" --timeout 2400
       - name: Atomically finalize docs, source tag, and attempt markers
         if: steps.release.outputs.skip != 'true'
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SOURCE_SHA: ${{ steps.release.outputs.source }}
-        run: python3 scripts/module_release.py finalize --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
+        run: android-repo-setup module_release finalize --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Recovery guidance
         if: failure()
         run: |
