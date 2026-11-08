@@ -2,9 +2,7 @@ package com.apexfission.android.democommon
 
 import android.content.res.Configuration
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
@@ -12,7 +10,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -48,7 +45,7 @@ internal fun DemoCatalogFixture(populated: Boolean) {
         },
         typography = typography.copy(
             headlineLarge = typography.headlineLarge.copy(fontFamily = FontFamily.Serif),
-            titleMedium = typography.titleMedium.copy(fontFamily = FontFamily.Serif),
+            titleLarge = typography.titleLarge.copy(fontFamily = FontFamily.Serif),
         ),
         shapes = Shapes(small = RoundedCornerShape(6.dp), medium = RoundedCornerShape(10.dp)),
     ) {
@@ -59,20 +56,14 @@ internal fun DemoCatalogFixture(populated: Boolean) {
         ) {
             if (populated) {
                 item {
-                    DemoCard {
-                        CardTitle("Interactive example", subtitle = "ExampleComponent", icon = playIcon)
-                        Text(
-                            "Try the interactive example and see how it responds to your input.",
-                            style = MaterialTheme.typography.bodyMedium,
-                        )
-                        FilledTonalButton(
-                            onClick = {},
-                            modifier = Modifier.fillMaxWidth(),
-                            shape = MaterialTheme.shapes.small,
-                        ) {
-                            Text("Open example")
-                        }
-                    }
+                    DemoCard(
+                        title = "Interactive example",
+                        subtitle = "ExampleComponent",
+                        icon = playIcon,
+                        description = "Try the interactive example and see how it responds to your input.",
+                        actionLabel = "Open example",
+                        onClick = {},
+                    )
                 }
                 item {
                     DemoCard {

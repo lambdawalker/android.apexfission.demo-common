@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 /** A heading with an optional [subtitle] and decorative [icon]. */
@@ -39,15 +40,16 @@ public fun CardTitle(
                 Icon(
                     imageVector = it,
                     contentDescription = null,
-                    modifier = Modifier.padding(12.dp).size(24.dp),
+                    modifier = Modifier.padding(8.dp).size(18.dp),
                 )
             }
         }
-        Column(Modifier.weight(1f, fill = false).semantics(mergeDescendants = true) {}) {
+        Column(Modifier.weight(1f).semantics(mergeDescendants = true) {}) {
             Text(
                 text = title,
                 modifier = Modifier.semantics { heading() },
-                style = MaterialTheme.typography.titleMedium,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
             )
             subtitle?.let {
                 Text(
