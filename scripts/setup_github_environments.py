@@ -32,7 +32,7 @@ def lock_path(repository, directory=None):
     validate_repository(repository)
     repository_id = sha256(repository.casefold().encode()).hexdigest()[:16]
     base = (
-        Path.home() / '.projects' / repository.casefold().replace('/', '--') / 'secrets'
+        Path.home() / '.projects' / repository.split('/')[1].lower() / 'secrets'
         if directory is None
         else Path(directory)
     )

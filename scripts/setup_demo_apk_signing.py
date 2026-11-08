@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.3",
+#     "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@78b810d2e71719b381df4c6f05330cb4f06b8494",
 # ]
 # ///
 """Launch the shared signing wizard with Demo Common's project secrets directory."""

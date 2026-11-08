@@ -82,18 +82,18 @@ successful release finalization.
 Run this from a private terminal with a JDK and uv.
 
 Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
-Both launchers use version `v0.1.3` of the shared
+Both launchers use version `0.1.4` (commit `78b810d2e71719b381df4c6f05330cb4f06b8494`) of the shared
 [Android Repository Setup wizard](https://github.com/lambdawalker/python.android-repo-setup).
 The launcher opens your existing encrypted vault in place.
 
 In the terminal wizard, choose keystore creation, GitHub setup with an existing key, or both.
 The first run defaults to both. Later runs default to the incomplete steps,
-or Exit after both steps are complete. The wizard shows a 20-second countdown on non-secret prompts. Timeout
-uses the displayed default. Upload, reset, and password-reveal confirmations
+or Exit after both steps are complete. Non-secret prompts use a 20-second countdown until you type, paste, or click a field.
+After interacting, confirm manually. If untouched, the displayed default applies. Upload, reset, and password-reveal confirmations
 default to cancelling or preserving the current state. Password and token
 prompts wait for input.
 
-The per-repository vault in `~/.projects/lambdawalker--android.apexfission.demo-common/secrets/` encrypts setup
+The per-repository vault in `~/.projects/android.apexfission.demo-common/secrets/` encrypts setup
 progress, keystore details, and verified signing passwords. It can
 remember a GitHub token if you explicitly opt in. Unlock the vault with
 your separate vault password on each run. Losing that password means
@@ -104,7 +104,7 @@ Use a fine-grained GitHub token scoped to this repository with
 **Administration: read/write** and **Environments: read/write**.
 The script prepares `demo-apk-release` for the `main` branch and prompts
 for review before writing to GitHub. It defaults to the `demo-common`
-alias and `~/.projects/lambdawalker--android.apexfission.demo-common/secrets/demo-common.jks`. Keep the keystore
+alias and a repository-specific keystore filename in the project secrets folder. Keep the keystore
 outside the checkout and back it up securely.
 
 Enter separate keystore and key passwords or press Enter at either
