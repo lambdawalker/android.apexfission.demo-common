@@ -6,7 +6,7 @@ y produce bytecode compatible con Java 17.
 ## Configuración inicial
 
 Instala [uv](https://docs.astral.sh/uv/getting-started/installation/) y ejecuta
-`uv run scripts/setup_github_environments.py`. Usa un token de GitHub limitado
+`uv run scripts/setup.py setup_github_environments`. Usa un token de GitHub limitado
 a este repositorio con los permisos de administración de entornos indicados por
 el asistente. Revisa los cambios antes de aplicarlos. Maven Central requiere
 `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`
@@ -35,17 +35,16 @@ versión reservada para verificar y finalizar sin volver a subir artefactos.
 Si un intento en Maven Central nunca llegó a publicarse y Central Portal
 confirma que no existe despliegue, archiva las etiquetas `release-pending` y
 `release-uploading` en `release-failed/` mediante
-`python3 scripts/module_release.py abort-unconfirmed --module demo-common --version X.Y.Z`
+`uv run scripts/setup.py module_release abort-unconfirmed --module demo-common --version X.Y.Z`
 (que comprueba `published_versions` en Maven Central antes de archivar).
 
 ## Verificar sin publicar
 
 ```sh
-python3 -m pip install -r scripts/requirements-setup.txt -r sites/requirements.txt
-python3 scripts/publishing_config.py check
-python3 scripts/import_docs.py --check
-python3 sites/build.py --check
-PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v
+uv run scripts/setup.py publishing_config check
+uv run scripts/setup.py import_docs --check
+uv run scripts/setup.py build_docs --check
+uv run scripts/setup.py workflows --check
 ./gradlew verifyImportDocs :demo-common:testDebugUnitTest :demo-common:lintRelease :demo-common:assembleRelease
 ```
 
@@ -59,5 +58,15 @@ y abren la bóveda cifrada local en `~/.projects/android.apexfission.demo-common
 
 Comprobaciones de regresión sin credenciales:
 ```sh
-PYTHONPATH=scripts python3 -m unittest discover -s scripts/tests -v
+uv run scripts/setup.py workflows --check
 ```
+
+## Configuración local
+
+La configuración se guarda en `.project/setup/`: `config.yaml` identifica el
+proyecto y la versión de las herramientas; `repositories.yml` define los destinos;
+`repositories.properties` contiene los valores generados para Gradle y
+`workflow-generation.json` registra los hashes de los workflows generados.
+Incluye estos archivos y `.github/workflows/` en el commit. El bloqueo temporal
+se ignora. Las claves y la bóveda permanecen fuera del repositorio en
+`~/.projects/<project>/secrets/`.
