@@ -3,7 +3,7 @@ title: Demo Common
 modules:
   demo-common: Demo Common
 key_alias: demo-common
-tooling_ref: 891efdcfa385a3438c7b5fa72134a61015d43224
+tooling_ref: 745b7748c36f6b72703ad9550292dba119f2fcc7
 workflows:
   module: demo-common
   title: Demo Common

@@ -7,4 +7,4 @@ local.properties
 __pycache__/
 sites/dist/
 
-.github/workflow-generation.lock
+.project/setup/workflow-generation.lock

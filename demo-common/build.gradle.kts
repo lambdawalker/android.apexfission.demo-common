@@ -52,7 +52,7 @@ val jitpackBuild = providers.gradleProperty("jitpackBuild").map(String::toBoolea
 val groupId = providers.gradleProperty("GROUP").get()
 val artifactId = providers.gradleProperty("POM_ARTIFACT_ID").get()
 val repositoriesConfig = Properties().apply {
-    rootProject.file("publishing/repositories.properties").inputStream().use { load(it) }
+    rootProject.file(".project/setup/repositories.properties").inputStream().use { load(it) }
 }
 val destination = providers.environmentVariable("RELEASE_REPOSITORY").getOrElse("maven-central")
 val publisher = repositoriesConfig.getProperty("$destination.publisher")

@@ -60,3 +60,13 @@ Comprobaciones de regresión sin credenciales:
 ```sh
 uv run scripts/setup.py workflows --check
 ```
+
+## Configuración local
+
+La configuración se guarda en `.project/setup/`: `config.yaml` identifica el
+proyecto y la versión de las herramientas; `repositories.yml` define los destinos;
+`repositories.properties` contiene los valores generados para Gradle y
+`workflow-generation.json` registra los hashes de los workflows generados.
+Incluye estos archivos y `.github/workflows/` en el commit. El bloqueo temporal
+se ignora. Las claves y la bóveda permanecen fuera del repositorio en
+`~/.projects/<project>/secrets/`.

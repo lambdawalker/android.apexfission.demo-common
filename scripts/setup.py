@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@891efdcfa385a3438c7b5fa72134a61015d43224"]
+# dependencies = ["android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@745b7748c36f6b72703ad9550292dba119f2fcc7"]
 # ///
 """Thin launcher for the shared repository setup commands."""
 from pathlib import Path

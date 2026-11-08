@@ -126,3 +126,16 @@ Credential-free regression checks:
 ```sh
 uv run scripts/setup.py workflows --check
 ```
+
+## Local setup configuration
+
+Repository setup configuration lives in `.project/setup/`:
+
+- `config.yaml`: project identity and shared tooling version.
+- `repositories.yml`: publishing destinations.
+- `repositories.properties`: generated Gradle publishing settings.
+- `workflow-generation.json`: generated workflow hashes (created by setup).
+
+Commit these files with the generated `.github/workflows/` files. The transient
+`workflow-generation.lock` is ignored. Signing keys and the encrypted vault stay
+outside the checkout under `~/.projects/<project>/secrets/`.
