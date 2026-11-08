@@ -4,7 +4,11 @@ import re
 from urllib.parse import quote
 
 import httpx
-from nacl.public import PublicKey, SealedBox
+try:
+    from nacl.public import PublicKey, SealedBox
+except ImportError:  # pragma: no cover - optional in credential-free unit test environments
+    PublicKey = SealedBox = None
+
 
 class SetupError(Exception):
     """A safe, human-readable error containing no remote response body."""
@@ -115,6 +119,8 @@ class GitHubAPI:
     async def write_secret(self, environment, name, value):
         path = f'{self.environment_path(environment)}/secrets'
         key = await self.request('GET', path + '/public-key')
+        if SealedBox is None or PublicKey is None:
+            raise SetupError('PyNaCl is required to encrypt secrets.')
         try:
             encrypted = SealedBox(PublicKey(b64decode(key['key']))).encrypt(value.encode('utf-8'))
         except (ValueError, KeyError, TypeError):

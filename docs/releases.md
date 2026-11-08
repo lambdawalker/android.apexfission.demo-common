@@ -82,10 +82,9 @@ successful release finalization.
 Run this from a private terminal with a JDK and uv.
 
 Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
-Both launchers use version `v0.1.0` of the shared
+Both launchers use pinned revision `b3294108af351fd5ee8a7743fa641b2fc6143617` of the shared
 [Android Repository Setup wizard](https://github.com/lambdawalker/python.android-repo-setup).
-The launcher stores the encrypted vault and keystore in the local project secrets directory.
-The owner and repository name form the project directory to avoid naming collisions.
+The launcher opens your existing encrypted vault in place.
 
 In the terminal wizard, choose keystore creation, GitHub setup with an existing key, or both.
 The first run defaults to both. Later runs default to the incomplete steps,
@@ -94,7 +93,7 @@ uses the displayed default. Upload, reset, and password-reveal confirmations
 default to cancelling or preserving the current state. Password and token
 prompts wait for input.
 
-The per-repository vault in `~/.projects/lambdawalker--android.apexfission.demo-common/secrets/` encrypts setup
+The per-repository vault in `~/.projects/android.apexfission.demo-common/secrets/` encrypts setup
 progress, keystore details, and verified signing passwords. It can
 remember a GitHub token if you explicitly opt in. Unlock the vault with
 your separate vault password on each run. Losing that password means
@@ -105,7 +104,7 @@ Use a fine-grained GitHub token scoped to this repository with
 **Administration: read/write** and **Environments: read/write**.
 The script prepares `demo-apk-release` for the `main` branch and prompts
 for review before writing to GitHub. It defaults to the `demo-common`
-alias and `~/.projects/lambdawalker--android.apexfission.demo-common/secrets/demo-common.jks`. Keep the keystore
+alias and `~/.projects/android.apexfission.demo-common/secrets/demo-common.jks`. Keep the keystore
 outside the checkout and back it up securely.
 
 Enter separate keystore and key passwords or press Enter at either

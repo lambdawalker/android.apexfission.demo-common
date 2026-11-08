@@ -139,16 +139,16 @@ class ReleaseTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'Missing Spanish translation source phrase'):
                 documentation_history.installation(entry, 'es')
 
-    @patch.dict("os.environ", {"RELEASE_REPOSITORY": "jitpack"})
+    @patch.dict('os.environ', {'RELEASE_REPOSITORY': 'jitpack'})
     def test_abort_unconfirmed_rejects_jitpack_before_accessing_release_state(self):
         with patch.object(module_release, 'git') as git:
             with patch.object(release, 'published_versions') as published:
-                with self.assertRaisesRegex(ValueError, "Maven Central only"):
+                with self.assertRaisesRegex(ValueError, 'Maven Central only'):
                     module_release.abort_unconfirmed('demo-common', '0.1.0')
                 git.assert_not_called()
                 published.assert_not_called()
 
-    @patch.dict("os.environ", {"RELEASE_REPOSITORY": "maven-central"})
+    @patch.dict('os.environ', {'RELEASE_REPOSITORY': 'maven-central'})
     def test_module_release_guard_and_abort_unconfirmed(self):
         source_sha = 'b' * 40
         journal = dict(
@@ -264,6 +264,14 @@ class GitHubEnvironmentSetupTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(entry.value, '')
             self.assertEqual(wizard.changes, {})
             self.assertEqual(wizard.index, 0)
+
+        default_lock = setup_github_environments.lock_path(
+            'lambdawalker/android.apexfission.demo-common'
+        )
+        self.assertEqual(
+            default_lock.parent,
+            Path.home() / '.projects' / 'android.apexfission.demo-common' / 'secrets',
+        )
 
         with tempfile.TemporaryDirectory() as folder:
             with setup_github_environments.setup_lock(
