@@ -4,9 +4,11 @@ jdk:
   - openjdk21
 install:
   - |
-    set -eu
-    uv_dir="$(mktemp -d)"
-    trap 'rm -rf -- "$uv_dir"' EXIT
-    curl -fsSL https://astral.sh/uv/0.13.5/install.sh -o "$uv_dir/install.sh"
-    UV_UNMANAGED_INSTALL="$uv_dir" sh "$uv_dir/install.sh"
-    "$uv_dir/uv" run --managed-python scripts/setup.py jitpack_build
+    (
+      set -eu
+      uv_dir="$(mktemp -d)"
+      trap 'rm -rf -- "$uv_dir"' EXIT
+      curl -fsSL https://astral.sh/uv/0.13.5/install.sh -o "$uv_dir/install.sh"
+      UV_UNMANAGED_INSTALL="$uv_dir" sh "$uv_dir/install.sh"
+      "$uv_dir/uv" run --managed-python scripts/setup.py jitpack_build
+    )
