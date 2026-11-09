@@ -132,7 +132,7 @@ extensions.configure<org.gradle.api.publish.PublishingExtension> {
 
 val verifyPublicationReservation = tasks.register<Exec>("verifyPublicationReservation") {
     workingDir(rootDir)
-    commandLine("python3", "scripts/module_release.py", "guard",
+    commandLine("android-repo-setup", "module_release", "guard",
         "--module", project.name, "--version", releaseVersion.getOrElse(""))
     doFirst {
         require(!jitpackBuild && publisher == "central" && releaseModule.orNull == project.name) {
