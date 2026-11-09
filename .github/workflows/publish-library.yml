@@ -1,4 +1,4 @@
-name: Shared library publication
+name: SUB - Shared library publication
 
 on:
   workflow_call:
@@ -42,7 +42,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.20"
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.21"
       - run: android-repo-setup publishing_config check
       - id: repository
         env:
@@ -84,7 +84,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.20"
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.21"
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
@@ -166,7 +166,7 @@ jobs:
         if: failure()
         run: |
           echo 'Keep pending/uploading tags until the selected repository outcome is known.'
-          echo 'Run Finalize Demo Common release manually with the same repository and reserved version; it never re-uploads.'
+          echo 'Run SUB - Finalize Demo Common release manually with the same repository and reserved version; it never re-uploads.'
           echo 'See docs/releases.md for rejected, unknown, partial, or protected-branch outcomes.'
 
   propagation-delay:

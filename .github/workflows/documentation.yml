@@ -5,7 +5,7 @@ on:
   pull_request:
   workflow_dispatch:
   workflow_run:
-    workflows: ['Finalize Demo Common release', 'Publish Demo Common']
+    workflows: ['SUB - Finalize Demo Common release', 'Publish']
     types: [completed]
 permissions:
   contents: read
@@ -32,9 +32,9 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.20"
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.21"
       - run: android-repo-setup publishing_config check
-      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.20"
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.21"
       - run: android-repo-setup module_release verify
       - run: android-repo-setup build_docs
       - run: cd docs/screenshots && sha256sum -c images.sha256

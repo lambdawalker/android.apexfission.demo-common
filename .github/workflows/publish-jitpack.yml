@@ -1,4 +1,4 @@
-name: Build selected library on JitPack
+name: SUB - Build selected library on JitPack
 
 on:
   workflow_call:
@@ -43,7 +43,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
-      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.20"
+      - run: python3 -m pip install "android-repo-setup @ git+https://github.com/lambdawalker/python.android-repo-setup.git@v0.1.21"
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
@@ -112,6 +112,6 @@ jobs:
         if: failure()
         run: |
           echo 'Keep the canonical tag. Inspect the JitPack build log and public artifact state.'
-          echo 'For a successful or pending build, Finalize Demo Common release verifies the original version.'
+          echo 'For a successful or pending build, SUB - Finalize Demo Common release verifies the original version.'
           echo 'For a terminal failed build with no artifacts, merge corrected source and rerun Publish with a newer version or blank.'
           echo 'Preparation archives the proven failed journal atomically before allocating the corrected release. See docs/releases.md.'

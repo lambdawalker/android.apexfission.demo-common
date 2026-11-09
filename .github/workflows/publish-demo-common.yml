@@ -1,4 +1,4 @@
-name: Publish Demo Common
+name: Publish
 
 on:
   workflow_dispatch:
