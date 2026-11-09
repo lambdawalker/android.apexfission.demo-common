@@ -1,4 +1,7 @@
 pluginManagement {
+    val releasePluginBuild = providers.environmentVariable("ANDROID_REPO_SETUP_GRADLE_DIR")
+        .orElse("../gradle.python.android-repo-setup")
+    includeBuild(releasePluginBuild.get())
     repositories {
         google()
         mavenCentral()
