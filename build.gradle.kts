@@ -16,6 +16,6 @@ listOf("generateImportDocs" to "generate", "verifyImportDocs" to "verify").forEa
     tasks.register<Exec>(taskName) {
         group = "documentation"
         workingDir(rootDir)
-        commandLine("python3", "scripts/module_release.py", command)
+        commandLine("android-repo-setup", "module_release", command)
     }
 }
