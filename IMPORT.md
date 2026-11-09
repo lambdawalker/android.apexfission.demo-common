@@ -7,6 +7,94 @@ Only confirmed public destinations are listed. Each destination has independent 
 
 Choose one publishing destination and one dependency syntax.
 
+### maven-central
+
+Repository: **maven-central**. Confirmed version **0.1.2**. [Source commit](https://github.com/lambdawalker/android.apexfission.demo-common/commit/11d3cdce31c481fe2204f00d25b5fd93e5f9a18c).
+
+#### Gradle Kotlin DSL
+
+In `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+In the app's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation("com.apexfission.android:demo-common:0.1.2")
+}
+```
+
+#### Gradle Groovy DSL
+
+In `settings.gradle`:
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+```
+
+In the app's `build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'com.apexfission.android:demo-common:0.1.2'
+}
+```
+
+#### Version catalog
+
+Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
+
+```toml
+[libraries]
+demo-common = { module = "com.apexfission.android:demo-common", version = "0.1.2" }
+```
+
+Then use this instead of the direct dependency in the app's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation(libs.demo.common)
+}
+```
+
+#### Maven
+
+Add these repositories and dependency to `pom.xml`:
+
+```xml
+<repositories>
+  <repository>
+    <id>google</id>
+    <url>https://dl.google.com/dl/android/maven2</url>
+  </repository>
+  <repository>
+    <id>central</id>
+    <url>https://repo.maven.apache.org/maven2</url>
+  </repository>
+</repositories>
+<dependencies>
+  <dependency>
+    <groupId>com.apexfission.android</groupId>
+    <artifactId>demo-common</artifactId>
+    <version>0.1.2</version>
+    <type>aar</type>
+  </dependency>
+</dependencies>
+```
+
 ### jitpack
 
 Repository: **jitpack**. Confirmed version **0.1.2**. [Source commit](https://github.com/lambdawalker/android.apexfission.demo-common/commit/86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f).

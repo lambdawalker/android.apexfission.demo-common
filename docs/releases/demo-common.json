@@ -1,0 +1,19 @@
+{
+  "artifact": "demo-common",
+  "group": "com.apexfission.android",
+  "module": "demo-common",
+  "phase": "confirmed-public",
+  "repository": "maven-central",
+  "repository_url": "https://repo.maven.apache.org/maven2",
+  "sha256": {
+    "-javadoc.jar": "ca4b749dcab38bb14fb0e24bfa873fd17aeee209beb2722e7a1b63aae82e9276",
+    "-sources.jar": "c86a2894e289e023d084805ed52e1af177ec85edcc12e728bc40cbe60dbff2a6",
+    ".aar": "b2e86d8f0693fef318e7469414ac877b773204f49073d8e52f1df72e403aa5d2",
+    ".module": "d2c64c0b910b9bc4a551ee44b2b90b53b560eb74ba1aad84ffd2e87912118a6b",
+    ".pom": "709141123a3cedc9b5e91871e018c242d0f68bba6d1993473e5d871d357dda0a"
+  },
+  "source": "11d3cdce31c481fe2204f00d25b5fd93e5f9a18c",
+  "source_tag": "demo-common/v0.1.2-maven-central",
+  "version": "0.1.2",
+  "workflow_run": "42577759702"
+}
