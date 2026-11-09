@@ -3,8 +3,102 @@
 
 Only confirmed public destinations are listed. Each destination has independent release history.
 
-## Demo Common
+## demo-common: demo-common
 
-No confirmed release.
+Choose one publishing destination and one dependency syntax.
+
+### jitpack
+
+Repository: **jitpack**. Confirmed version **0.1.2**. [Source commit](https://github.com/lambdawalker/android.apexfission.demo-common/commit/86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f).
+
+#### Gradle Kotlin DSL
+
+In `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("https://jitpack.io") }
+    }
+}
+```
+
+In the app's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation("com.github.lambdawalker:android.apexfission.demo-common:demo-common~v0.1.2-jitpack")
+}
+```
+
+#### Gradle Groovy DSL
+
+In `settings.gradle`:
+
+```groovy
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://jitpack.io' }
+    }
+}
+```
+
+In the app's `build.gradle`:
+
+```groovy
+dependencies {
+    implementation 'com.github.lambdawalker:android.apexfission.demo-common:demo-common~v0.1.2-jitpack'
+}
+```
+
+#### Version catalog
+
+Use the dependency repositories shown above. Add to `gradle/libs.versions.toml`:
+
+```toml
+[libraries]
+demo-common = { module = "com.github.lambdawalker:android.apexfission.demo-common", version = "demo-common~v0.1.2-jitpack" }
+```
+
+Then use this instead of the direct dependency in the app's `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    implementation(libs.demo.common)
+}
+```
+
+#### Maven
+
+Add these repositories and dependency to `pom.xml`:
+
+```xml
+<repositories>
+  <repository>
+    <id>google</id>
+    <url>https://dl.google.com/dl/android/maven2</url>
+  </repository>
+  <repository>
+    <id>central</id>
+    <url>https://repo.maven.apache.org/maven2</url>
+  </repository>
+  <repository>
+    <id>confirmed-2</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+<dependencies>
+  <dependency>
+    <groupId>com.github.lambdawalker</groupId>
+    <artifactId>android.apexfission.demo-common</artifactId>
+    <version>demo-common~v0.1.2-jitpack</version>
+    <type>aar</type>
+  </dependency>
+</dependencies>
+```
 
 See the [integration guide](docs/agents/index.md) for local installation and usage.
