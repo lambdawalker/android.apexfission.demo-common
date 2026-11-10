@@ -12,3 +12,7 @@ content, and `CardTitle` adds a heading and optional icon.
 
 Android API 28+ with Compose Material 3. The repository includes light and dark
 previews and an executable screenshot suite.
+
+The `demo-common` module contains the published library. The `app` module runs
+the demo catalog with `./gradlew :app:installDebug`. Shared dependency and plugin
+versions are defined in `gradle/libs.versions.toml`.

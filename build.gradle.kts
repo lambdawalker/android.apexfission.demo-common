@@ -1,13 +1,13 @@
 buildscript {
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20")
+        classpath(libs.kotlin.gradle.plugin)
     }
 }
 
 plugins {
-    id("com.android.library") version "9.4.1" apply false
-    id("com.android.application") version "9.4.1" apply false
-    id("org.jetbrains.kotlin.plugin.compose") version "2.4.20" apply false
-    id("com.android.compose.screenshot") version "0.0.1-alpha16" apply false
-    id("com.apexfission.android-repo-setup.root")
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.kotlin.compose) apply false
+    alias(libs.plugins.compose.screenshot) apply false
+    alias(libs.plugins.android.repo.setup.root)
 }

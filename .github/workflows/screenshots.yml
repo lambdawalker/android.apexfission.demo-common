@@ -22,7 +22,7 @@ jobs:
             21
       - uses: gradle/actions/setup-gradle@v5
       - name: Build and lint the library
-        run: ./gradlew :demo-common:assembleRelease :demo-common:lintDebug :sample:assembleDebug :sample:lintDebug --no-daemon
+        run: ./gradlew :demo-common:assembleRelease :demo-common:lintDebug :app:assembleDebug :app:lintDebug --no-daemon
       - name: Render candidates or validate approved screenshots
         shell: bash
         run: |

@@ -1,7 +1,8 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("com.android.compose.screenshot")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.screenshot)
+    // The root plugin loads both setup plugins from the same published JAR.
     id("com.apexfission.android-repo-setup")
 }
 
@@ -31,18 +32,18 @@ kotlin {
 }
 
 dependencies {
-    api(platform("androidx.compose:compose-bom:2026.09.00"))
-    api("androidx.compose.foundation:foundation")
-    api("androidx.compose.ui:ui")
-    api("androidx.compose.material3:material3")
+    api(platform(libs.androidx.compose.bom))
+    api(libs.androidx.compose.foundation)
+    api(libs.androidx.compose.ui)
+    api(libs.androidx.compose.material3)
 
-    debugImplementation("androidx.compose.ui:ui-tooling-preview")
-    debugImplementation("androidx.compose.ui:ui-tooling")
-    debugImplementation("androidx.compose.ui:ui-test-manifest")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("androidx.test:runner:1.7.0")
-    screenshotTestImplementation("com.android.tools.screenshot:screenshot-validation-api:0.0.1-alpha16")
-    screenshotTestImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation(libs.androidx.compose.ui.tooling.preview)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.runner)
+    screenshotTestImplementation(libs.screenshot.validation.api)
+    screenshotTestImplementation(libs.androidx.compose.ui.tooling)
 }
 
 val projectUrl = "https://github.com/lambdawalker/android.apexfission.demo-common"
