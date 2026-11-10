@@ -1,8 +1,23 @@
 pluginManagement {
+    val releasePluginVersion = "a72a6df935"
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id in setOf(
+                    "com.apexfission.android-repo-setup",
+                    "com.apexfission.android-repo-setup.root",
+                )
+            ) {
+                useModule("com.github.lambdawalker:gradle.android-repo-setup:$releasePluginVersion")
+            }
+        }
+    }
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
+        maven("https://jitpack.io") {
+            content { includeModule("com.github.lambdawalker", "gradle.android-repo-setup") }
+        }
     }
 }
 
