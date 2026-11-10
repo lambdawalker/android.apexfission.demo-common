@@ -48,3 +48,30 @@ jobs:
           ./gradlew verifyImportDocs :demo-common:publishAllPublicationsToVerificationRepository \
             -PreleaseModule=demo-common -PreleaseVersion=9.8.7 --no-daemon
           ./setup.sh module_release check-local --module demo-common --version 9.8.7 --source "$(git rev-parse HEAD)"
+
+  verify-windows-launcher:
+    runs-on: windows-2025
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install and reuse the CLI from the checkout
+        shell: pwsh
+        run: |
+          $expected = 'android-repo-setup 0.1.4'
+          $exe = 'bin/v0.1.4/android-repo-setup.exe'
+          $first = @(.\setup.bat --version)
+          if ($LASTEXITCODE -ne 0 -or $first[-1] -ne $expected) {
+            throw "First launch failed: $first"
+          }
+          $timestamp = (Get-Item -LiteralPath $exe).LastWriteTimeUtc
+          $second = @(.\setup.bat --version)
+          if ($LASTEXITCODE -ne 0 -or $second.Count -ne 1 -or $second[0] -ne $expected) {
+            throw "Cached launch failed: $second"
+          }
+          if ((Get-Item -LiteralPath $exe).LastWriteTimeUtc -ne $timestamp) {
+            throw 'Cached executable was replaced on the second run.'
+          }
+          git check-ignore --quiet $exe
+          if ($LASTEXITCODE -ne 0) { throw 'The executable is not Git-ignored.' }
