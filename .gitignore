@@ -8,3 +8,5 @@ __pycache__/
 sites/dist/
 
 .project/setup/workflow-generation.lock
+
+/bin/

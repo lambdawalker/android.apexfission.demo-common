@@ -5,9 +5,11 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-Download [Android Repository Setup v0.1.4](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.4)
-for your platform, verify the archive checksum, and put the extracted
-executable on `PATH`. Run `android-repo-setup setup_github_environments`. Use a repository-scoped
+On Windows, run `setup.bat setup_github_environments`. The launcher downloads
+and verifies the CLI on first use and caches it under `bin/`. On Linux or macOS,
+download [Android Repository Setup v0.1.4](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.4)
+for your platform, verify the archive checksum, put the extracted executable
+on `PATH`, and run `./setup.sh setup_github_environments`. Use a repository-scoped
 GitHub token with the environment administration permissions shown by
 the wizard. Review the changes before applying. Central requires
 `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`,
@@ -83,10 +85,9 @@ successful release finalization.
 
 ## Prepare signing for a demo APK
 
-Run this from a private terminal with a JDK and the CLI on `PATH`.
-
-Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
-Both launchers use the installed Android Repository Setup CLI, which opens
+Run this from a private terminal with a JDK. Use `./setup.sh` on Linux or
+macOS with the CLI on `PATH`, or `setup.bat` on Windows. The Windows launcher
+reuses the verified CLI from the Git-ignored `bin/` directory. The CLI opens
 your existing encrypted vault in place. To open the signing wizard directly,
 run `./setup.sh signing` or `setup.bat signing`.
 
