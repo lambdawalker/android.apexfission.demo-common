@@ -1,3 +1,0 @@
-[submodule ".project/gradle.android-repo-setup"]
-	path = .project/gradle.android-repo-setup
-	url = https://github.com/lambdawalker/gradle.android-repo-setup.git

@@ -15,8 +15,6 @@ jobs:
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v7
-        with:
-          submodules: true
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
