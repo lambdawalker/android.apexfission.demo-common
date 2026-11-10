@@ -1,0 +1,50 @@
+name: Verify published Android release tooling
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      TOOLING_TAG: v0.1.4
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Install and verify the published CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive=android-repo-setup-x86_64-unknown-linux-gnu.tar.gz
+          url="https://github.com/lambdawalker/gradle.android-repo-setup/releases/download/$TOOLING_TAG"
+          mkdir "$RUNNER_TEMP/release-cli"
+          cd "$RUNNER_TEMP/release-cli"
+          curl -fsSL --retry 3 --max-time 60 "$url/$archive" -o "$archive"
+          curl -fsSL --retry 3 --max-time 60 "$url/$archive.sha256" -o "$archive.sha256"
+          sha256sum --check "$archive.sha256"
+          tar -xzf "$archive"
+          version="$(./android-repo-setup --version)"
+          test "$version" = "android-repo-setup ${TOOLING_TAG#v}"
+          echo "$RUNNER_TEMP/release-cli" >> "$GITHUB_PATH"
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: |
+            17
+            21
+      - uses: gradle/actions/setup-gradle@v5
+      - name: Build with the released plugin and verify with the released CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./setup.sh publishing_config check
+          ./setup.sh workflows --check
+          ./gradlew verifyImportDocs :demo-common:publishAllPublicationsToVerificationRepository \
+            -PreleaseModule=demo-common -PreleaseVersion=9.8.7 --no-daemon
+          ./setup.sh module_release check-local --module demo-common --version 9.8.7 --source "$(git rev-parse HEAD)"
