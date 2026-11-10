@@ -1,5 +1,5 @@
 pluginManagement {
-    val releasePluginVersion = "v0.1.4"
+    val releasePluginVersion = "v0.1.5"
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id in setOf(
