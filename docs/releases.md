@@ -5,8 +5,9 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/) and run
-`uv run scripts/setup.py setup_github_environments`. Use a repository-scoped
+Download [Android Repository Setup v0.1.4](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.4)
+for your platform, verify the archive checksum, and put the extracted
+executable on `PATH`. Run `android-repo-setup setup_github_environments`. Use a repository-scoped
 GitHub token with the environment administration permissions shown by
 the wizard. Review the changes before applying. Central requires
 `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`,
@@ -17,6 +18,8 @@ has an empty environment and requires a public GitHub repository.
 Use a 15-minute wait timer on `delayed-docs` where supported. In Settings →
 Pages, select GitHub Actions. The release token must be able to push
 release tags and confirmed documentation updates under the existing rules.
+The Maven Central guard also updates its `release-pending/*` tag when
+recording the upload marker.
 
 ## Publish
 
@@ -48,13 +51,15 @@ keep the reservation and have a maintainer reconcile it.
 If an interrupted Central attempt was never published and Central Portal
 confirms no deployment exists, archive the unconfirmed `release-pending` and
 `release-uploading` markers to `release-failed/` with
-`uv run scripts/setup.py module_release abort-unconfirmed --module demo-common --version X.Y.Z`
+`android-repo-setup module_release abort-unconfirmed --module demo-common --version X.Y.Z`
 (which verifies `published_versions` on Maven Central before archiving).
 
 A terminal JitPack failure with no public artifacts can be archived by a
 new attempt from corrected source. For JitPack only, an explicit newer
 version can opt into bypassing older pending attempts. The override retains
-those journals and checks their source provenance. Central has no bypass.
+those journals and checks their source provenance. For Central, the
+recovery override only skips the public version listing and requires an
+explicit newer version.
 
 GitHub may replace an older queued run with a newer one. The shared job
 lock serializes mutation and is released during the propagation wait.
@@ -63,10 +68,10 @@ The reservation tags preserve release state independently of the queue.
 ## Verify without publishing
 
 ```sh
-uv run scripts/setup.py publishing_config check
-uv run scripts/setup.py import_docs --check
-uv run scripts/setup.py build_docs --check
-uv run scripts/setup.py workflows --check
+android-repo-setup publishing_config check
+android-repo-setup import_docs --check
+android-repo-setup build_docs --check
+android-repo-setup workflows --check
 ./gradlew verifyImportDocs :demo-common:testDebugUnitTest :demo-common:lintRelease :demo-common:assembleRelease
 ```
 
@@ -78,12 +83,12 @@ successful release finalization.
 
 ## Prepare signing for a demo APK
 
-Run this from a private terminal with a JDK and uv.
+Run this from a private terminal with a JDK and the CLI on `PATH`.
 
 Run `./setup.sh` on Linux or macOS, or `setup.bat` on Windows.
-Both launchers use version `v0.1.4` of the shared
-[Android Repository Setup wizard](https://github.com/lambdawalker/python.android-repo-setup).
-The launcher opens your existing encrypted vault in place.
+Both launchers use the installed Android Repository Setup CLI, which opens
+your existing encrypted vault in place. To open the signing wizard directly,
+run `./setup.sh signing` or `setup.bat signing`.
 
 In the terminal wizard, choose keystore creation, GitHub setup with an existing key, or both.
 The first run defaults to both. Later runs default to the incomplete steps,
@@ -124,7 +129,7 @@ use a generic error message to avoid printing credential-bearing tracebacks.
 
 Credential-free regression checks:
 ```sh
-uv run scripts/setup.py workflows --check
+android-repo-setup workflows --check
 ```
 
 ## Local setup configuration
