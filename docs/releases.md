@@ -7,7 +7,7 @@ produces Java 17 bytecode.
 
 On Windows, run `setup.bat` to open the deployment wizard. The launcher downloads
 and verifies the CLI on first use and caches it under `bin/`. On Linux or macOS,
-download [Android Repository Setup v0.1.5](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.5)
+download [Android Repository Setup v0.1.6](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.6)
 for your platform, verify the archive checksum, put the extracted executable
 on `PATH`, and run `./setup.sh`. Use a repository-scoped
 GitHub token with the environment administration permissions shown by

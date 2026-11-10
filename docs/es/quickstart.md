@@ -14,10 +14,10 @@ La [referencia de API](api.md) enumera los parámetros.
 ## Ejecutar el ejemplo
 
 Inicia un emulador Android API 28 o superior, o conecta un dispositivo.
-Ejecuta `./gradlew :sample:installDebug` y abre **Ejemplo de Demo Common**.
+Ejecuta `./gradlew :app:installDebug` y abre **Ejemplo de Demo Common**.
 Toca **Alternar detalles** para mostrar u ocultar el contenido adicional.
 Cambia el idioma o el tema del dispositivo para probar las traducciones
 y los colores.
 
-La [actividad de ejemplo](../../sample/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
+La [actividad de ejemplo](../../app/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
 contiene la integración completa.

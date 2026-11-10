@@ -1,5 +1,4 @@
 pluginManagement {
-    val releasePluginVersion = "v0.1.5"
     resolutionStrategy {
         eachPlugin {
             if (requested.id.id in setOf(
@@ -7,7 +6,7 @@ pluginManagement {
                     "com.apexfission.android-repo-setup.root",
                 )
             ) {
-                useModule("com.github.lambdawalker:gradle.android-repo-setup:$releasePluginVersion")
+                useModule("com.github.lambdawalker:gradle.android-repo-setup:${requested.version}")
             }
         }
     }
@@ -31,4 +30,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "android.apexfission.demo-common"
 include(":demo-common")
-include(":sample")
+include(":app")

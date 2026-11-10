@@ -52,7 +52,7 @@ uv run scripts/setup.py workflows --check
 
 Ejecuta `./setup.sh` en Linux o macOS, o `setup.bat` en Windows desde una
 terminal privada con JDK y uv. Ambos lanzadores usan la versión
-`v0.1.5` del asistente compartido
+`v0.1.6` del asistente compartido
 [Android Repository Setup](https://github.com/lambdawalker/python.android-repo-setup)
 y abren la bóveda cifrada local en `~/.projects/android.apexfission.demo-common/secrets/`.
 

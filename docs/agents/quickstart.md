@@ -89,9 +89,9 @@ that all five images were generated.
 
 ## Run the sample
 
-With an API 28+ emulator or connected device, run `./gradlew :sample:installDebug`
+With an API 28+ emulator or connected device, run `./gradlew :app:installDebug`
 and open **Demo Common sample**. Tap **Toggle details** to show or hide text
 inside the demo card. Change the device theme or language to exercise the
 light/dark colors and English/Spanish strings. The
-[sample Activity](../../sample/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
+[sample Activity](../../app/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
 contains the complete integration.
