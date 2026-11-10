@@ -2,7 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.compose.screenshot)
-    alias(libs.plugins.android.repo.setup)
+    // The root plugin loads both setup plugins from the same published JAR.
+    id("com.apexfission.android-repo-setup")
 }
 
 android {

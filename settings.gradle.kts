@@ -6,7 +6,9 @@ pluginManagement {
                     "com.apexfission.android-repo-setup.root",
                 )
             ) {
-                useModule("com.github.lambdawalker:gradle.android-repo-setup:${requested.version}")
+                requested.version?.let { version ->
+                    useModule("com.github.lambdawalker:gradle.android-repo-setup:$version")
+                }
             }
         }
     }

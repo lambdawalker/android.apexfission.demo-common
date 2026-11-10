@@ -26,5 +26,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
-android-repo-setup = { id = "com.apexfission.android-repo-setup", version.ref = "androidRepoSetup" }
 android-repo-setup-root = { id = "com.apexfission.android-repo-setup.root", version.ref = "androidRepoSetup" }
