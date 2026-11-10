@@ -26,12 +26,21 @@ try {
     if (-not $match.Success) {
         throw 'The release checksum has an unexpected format.'
     }
-    if ((Get-FileHash -LiteralPath $zip -Algorithm SHA256).Hash -ne $match.Groups[1].Value) {
+    $hasher = [Security.Cryptography.SHA256]::Create()
+    $stream = [IO.File]::OpenRead($zip)
+    try {
+        $actualHash = [BitConverter]::ToString($hasher.ComputeHash($stream)).Replace('-', '')
+    } finally {
+        $stream.Dispose()
+        $hasher.Dispose()
+    }
+    if ($actualHash -ne $match.Groups[1].Value) {
         throw 'The downloaded CLI archive failed SHA-256 verification.'
     }
 
     $payload = Join-Path $stage 'payload'
-    Expand-Archive -LiteralPath $zip -DestinationPath $payload
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    [IO.Compression.ZipFile]::ExtractToDirectory($zip, $payload)
     $stagedExe = Join-Path $payload 'android-repo-setup.exe'
     $reportedVersion = & $stagedExe --version
     if ($LASTEXITCODE -ne 0 -or $reportedVersion -ne "android-repo-setup $($Version.Substring(1))") {
