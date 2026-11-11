@@ -41,7 +41,8 @@ import androidx.compose.ui.unit.dp
  * A centered, scrolling catalog with a caller-provided [title] and [welcomeNote].
  *
  * Declare cards or footers with [content]. Set [showEmptyState] when there are no demos.
- * Supply [onOpenSettings] to offer the App settings action in either state.
+ * Supply [onOpenSettings] to offer the App settings action below the header,
+ * before the demo cards or empty state.
  * The screen combines its scaffold's [contentWindowInsets] with [contentPadding] and
  * consumes those insets so edge-to-edge scrolling is not clipped.
  */
@@ -103,7 +104,6 @@ public fun DemoScreen(
                     }
                     Spacer(Modifier.height(8.dp))
                 }
-                content()
                 if (onOpenSettings != null) {
                     item {
                         OutlinedButton(onClick = onOpenSettings, modifier = Modifier.fillMaxWidth()) {
@@ -117,6 +117,7 @@ public fun DemoScreen(
                         }
                     }
                 }
+                content()
                 if (showEmptyState) {
                     item { DemoCatalogEmptyState() }
                 }

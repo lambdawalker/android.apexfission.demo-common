@@ -8,6 +8,7 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -33,6 +34,34 @@ internal class DemoInteractionTest {
         compose.onNodeWithText("No demos available").assertIsDisplayed()
         compose.onNodeWithText(welcome).assertDoesNotExist()
         compose.onNodeWithText("App settings").assertIsDisplayed().performClick()
+        compose.runOnIdle { assertEquals(1, settingsClicks) }
+    }
+
+    @Test
+    fun populatedCatalogShowsSettingsAboveCardsWithoutScrolling() {
+        var settingsClicks = 0
+        compose.setContent {
+            MaterialTheme {
+                DemoScreen(
+                    title = "Demo catalog",
+                    welcomeNote = "Choose an example",
+                    onOpenSettings = { settingsClicks++ },
+                ) {
+                    repeat(20) { index ->
+                        item(key = "demo_$index") {
+                            DemoCard { Text("Demo $index") }
+                        }
+                    }
+                }
+            }
+        }
+
+        val settings = compose.onNodeWithText("App settings").assertIsDisplayed()
+        val firstCard = compose.onNodeWithText("Demo 0").assertIsDisplayed()
+        assertTrue("Settings must appear above the first demo card",
+            settings.fetchSemanticsNode().boundsInRoot.bottom <=
+                firstCard.fetchSemanticsNode().boundsInRoot.top)
+        settings.performClick()
         compose.runOnIdle { assertEquals(1, settingsClicks) }
     }
 

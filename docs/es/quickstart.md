@@ -21,3 +21,5 @@ y los colores.
 
 La [actividad de ejemplo](../../app/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
 contiene la integración completa.
+
+El botón de ajustes aparece debajo del encabezado y antes de las tarjetas o del panel vacío. La aplicación anfitriona sigue controlando su navegación.
