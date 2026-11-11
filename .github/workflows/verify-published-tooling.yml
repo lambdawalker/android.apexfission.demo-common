@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      TOOLING_TAG: v0.1.6
+      TOOLING_TAG: v0.1.7
     steps:
       - uses: actions/checkout@v7
         with:
@@ -59,8 +59,8 @@ jobs:
       - name: Install and reuse the CLI from the checkout
         shell: pwsh
         run: |
-          $expected = 'android-repo-setup 0.1.6'
-          $exe = 'bin/v0.1.6/android-repo-setup.exe'
+          $expected = 'android-repo-setup 0.1.7'
+          $exe = 'bin/v0.1.7/android-repo-setup.exe'
           $first = @(.\setup.bat --version)
           if ($LASTEXITCODE -ne 0 -or $first[-1] -ne $expected) {
             throw "First launch failed: $first"
