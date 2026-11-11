@@ -5,6 +5,8 @@ y produce bytecode Java 17.
 
 ## Configuración del responsable
 
+Este checkout fija la versión `v0.1.7` de la CLI y de los plugins de Gradle. Los binarios descargados de la CLI no requieren Cargo; el sitio de documentación requiere además Zola 0.23.6.
+
 Ejecuta `setup.bat` en Windows o `./setup.sh` en Linux o macOS para abrir el
 asistente de despliegue. Ambos lanzadores leen `tooling_ref` de
 `.project/setup/config.yaml`. Para una etiqueta de versión estable, Windows
