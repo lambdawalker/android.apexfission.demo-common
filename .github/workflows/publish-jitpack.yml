@@ -42,7 +42,7 @@ jobs:
           fetch-depth: 0
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.6'
+          TOOLING_REF: '70344a6115903de0ad6b11784d44b8a74bca2641'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
@@ -78,6 +78,26 @@ jobs:
         if: steps.release.outputs.skip != 'true'
         with:
           cache-disabled: true
+      - name: Install pinned Zola
+        if: steps.release.outputs.skip != 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          directory="$RUNNER_TEMP/zola-0.23.6"
+          archive="$RUNNER_TEMP/zola-0.23.6.tar.gz"
+          curl --fail --show-error --silent --location --retry 3 \
+            https://github.com/getzola/zola/releases/download/v0.23.6/zola-v0.23.6-x86_64-unknown-linux-gnu.tar.gz \
+            --output "$archive"
+          echo "8f5132b3522412d04e395e0b25f6d68613ad272a873e54a2b3ebf664873024a4  $archive" | sha256sum -c -
+          mkdir -p "$directory"
+          tar -xzf "$archive" -C "$directory"
+          test "$("$directory/zola" --version)" = 'zola 0.23.6'
+          echo "$directory" >> "$GITHUB_PATH"
+      - name: Validate immutable release source
+        if: steps.release.outputs.skip != 'true'
+        env:
+          SOURCE_SHA: ${{ steps.release.outputs.source }}
+        run: "true"
       - name: Verify unsigned candidate
         if: steps.release.outputs.skip != 'true'
         env:

@@ -1,4 +1,4 @@
-name: Verify demo common
+name: Verify Demo Common
 
 on:
   pull_request:

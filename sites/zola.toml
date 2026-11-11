@@ -1,0 +1,20 @@
+# Content and the shared theme are staged by android-repo-setup build_docs.
+base_url = "https://lambdawalker.github.io/android.apexfission.demo-common"
+title = "Demo Common"
+description = "Material 3 Compose components for Android demo catalogs."
+default_language = "en"
+build_search_index = true
+generate_sitemap = true
+
+[languages.es]
+build_search_index = true
+
+[search]
+index_format = "fuse_json"
+
+[extra]
+repository = "lambdawalker/android.apexfission.demo-common"
+
+[markdown.highlighting]
+light_theme = "github-light"
+dark_theme = "github-dark"
