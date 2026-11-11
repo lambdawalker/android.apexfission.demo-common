@@ -4,6 +4,8 @@ Import these declarations from `com.apexfission.android.democommon`. Call
 them from an existing Material 3 composition. Each accepts the caller's
 `Modifier` and returns `Unit`.
 
+## DemoScreen
+
 ```kotlin
 @Composable
 public fun DemoScreen(
@@ -32,6 +34,8 @@ or empty panel. The host callback owns navigation, such as opening Android’s
 app details settings. Give this screen bounded height and avoid nesting it in
 a vertically scrolling parent.
 
+## DemoCard
+
 ```kotlin
 @Composable
 public fun DemoCard(
@@ -50,6 +54,20 @@ For the standard welcome catalog card, call the overload with `title`,
 `description`, `actionLabel`, and `onClick`. It renders a `CardTitle` with
 an optional `icon`, followed by the description and a
 full-width filled tonal button. Use the content slot above for custom cards.
+
+```kotlin
+@Composable
+public fun DemoCard(
+    title: String,
+    description: String,
+    actionLabel: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    icon: ImageVector? = null,
+)
+```
+
+## CardTitle
 
 ```kotlin
 @Composable

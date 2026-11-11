@@ -1,72 +1,186 @@
 # Publicación de Demo Common
 
-Solo se publica el AAR `release` de `:demo-common`. Gradle se ejecuta en JDK 21
-y produce bytecode compatible con Java 17.
+Solo se publica el AAR `release` de `:demo-common`. Gradle se ejecuta con JDK 21
+y produce bytecode Java 17.
 
-## Configuración inicial
+## Configuración del responsable
 
-Instala [uv](https://docs.astral.sh/uv/getting-started/installation/) y ejecuta
-`uv run scripts/setup.py setup_github_environments`. Usa un token de GitHub limitado
-a este repositorio con los permisos de administración de entornos indicados por
-el asistente. Revisa los cambios antes de aplicarlos. Maven Central requiere
+Ejecuta `setup.bat` en Windows o `./setup.sh` en Linux o macOS para abrir el
+asistente de despliegue. Ambos lanzadores leen `tooling_ref` de
+`.project/setup/config.yaml`. Para una etiqueta de versión estable, Windows
+descarga y verifica la CLI correspondiente en el primer uso y la almacena en
+caché en `bin/<tag>/`. En Linux o macOS, instala esa versión exacta desde
+[las versiones de Android Repository Setup](https://github.com/lambdawalker/gradle.android-repo-setup/releases),
+verifica la suma de comprobación del archivo y coloca el ejecutable extraído en
+`PATH`. El lanzador comprueba su versión antes de ejecutarlo. Para un SHA completo
+de commit de origen, ambos lanzadores usan Cargo para compilar esa revisión
+exacta una sola vez y guardan el ejecutable en caché en `bin/<SHA>/bin/`. Cargo es
+necesario para instalar una revisión de código fijada; las siguientes ejecuciones
+reutilizan el ejecutable en caché.
+
+Usa un token de GitHub
+limitado al repositorio con los permisos de administración de entornos indicados
+por el asistente. Revisa los cambios antes de aplicarlos. Central requiere
 `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`
-y la contraseña de firma si corresponde. Introduce la ruta al archivo de la
-clave de firma exportada. Confirma la propiedad del espacio de nombres en
-Central Portal. JitPack público usa un entorno vacío y requiere un repositorio
-público en GitHub.
+y la contraseña de firma si corresponde. Crea una clave de firma Maven en el
+asistente o selecciona una existente del llavero GnuPG local. Confirma la
+propiedad del espacio de nombres en Central Portal. JitPack público usa un
+entorno vacío y requiere un repositorio público en GitHub.
 
 Configura un temporizador de espera de 15 minutos en `delayed-docs` cuando esté
-disponible. En Settings → Pages, selecciona GitHub Actions.
+disponible. En Settings → Pages, selecciona GitHub Actions. El token de
+publicación debe poder enviar etiquetas de publicación y actualizaciones de
+documentación confirmadas conforme a las reglas existentes. La protección de
+Maven Central también actualiza su etiqueta `release-pending/*` al registrar el
+marcador de subida.
 
 ## Publicar
 
 Ejecuta **Publish Demo Common** en `main`. Elige Maven Central o JitPack y deja
 **version** en blanco. La primera versión es `0.1.0`. Si las entradas de la
-publicación no cambian, se reutilizan la última versión y revisión inmutables.
-Si cambian, se incrementa el parche.
+publicación no cambian, se reutilizan la última versión y el código fuente
+inmutables. Si cambian, se incrementa el parche. Una versión estable explícita
+debe ser estrictamente posterior a la última identidad de ese destino.
+
+Central y JitPack pueden usar la misma versión semántica desde commits distintos.
+Las etiquetas usan `demo-common/vX.Y.Z-maven-central` y
+`demo-common/vX.Y.Z-jitpack`. JitPack usa una tilde en la versión de consumo.
+La huella de publicación abarca el código de la biblioteca, las guías
+empaquetadas, la cadena de herramientas y las utilidades compartidas de
+publicación. Se excluyen los registros de confirmación generados y las
+instrucciones de instalación.
+
+El flujo de trabajo valida los artefactos locales antes de reservar una versión.
+Central escribe un marcador antes de subir y verifica los hashes y las firmas
+públicos tras la propagación. JitPack comprueba el commit de origen de la
+compilación y los artefactos públicos.
+[IMPORT.md](../IMPORT.md) solo se actualiza tras la confirmación.
 
 ## Recuperación
 
-Conserva las etiquetas canónicas, `release-pending` y `release-uploading` si se
+Conserva las etiquetas canónicas, pendientes y de inicio de subida si se
 interrumpe una ejecución. Inspecciona el registro de publicación y el estado del
 proveedor. Ejecuta **Finalize Demo Common release** con el mismo destino y la
-versión reservada para verificar y finalizar sin volver a subir artefactos.
+versión reservada. Verifica y finaliza sin volver a subir artefactos. Si la
+protección de rama rechaza el envío final, conserva la reserva y pide a un
+responsable de mantenimiento que la reconcilie.
 
-Si un intento en Maven Central nunca llegó a publicarse y Central Portal
-confirma que no existe despliegue, archiva las etiquetas `release-pending` y
-`release-uploading` en `release-failed/` mediante
-`uv run scripts/setup.py module_release abort-unconfirmed --module demo-common --version X.Y.Z`
+Si un intento interrumpido de Central nunca llegó a publicarse y Central Portal
+confirma que no existe despliegue, archiva los marcadores no confirmados
+`release-pending` y `release-uploading` en `release-failed/` mediante
+`android-repo-setup module_release abort-unconfirmed --module demo-common --version X.Y.Z`
 (que comprueba `published_versions` en Maven Central antes de archivar).
+
+Un fallo terminal de JitPack sin artefactos públicos se puede archivar mediante
+un nuevo intento desde código corregido. Solo para JitPack, una versión
+explícita posterior permite omitir intentos pendientes anteriores. Esta opción
+conserva esos registros y comprueba la procedencia de su código fuente. Para
+Central, la opción de recuperación solo omite la lista pública de versiones y
+requiere una versión explícita posterior.
+
+GitHub puede sustituir una ejecución anterior en cola por otra más reciente. El
+bloqueo compartido del trabajo serializa las modificaciones y se libera durante
+la espera de propagación. Las etiquetas de reserva conservan el estado de la
+publicación con independencia de la cola.
 
 ## Verificar sin publicar
 
 ```sh
-uv run scripts/setup.py publishing_config check
-uv run scripts/setup.py import_docs --check
-uv run scripts/setup.py build_docs --check
-uv run scripts/setup.py workflows --check
+android-repo-setup publishing_config check
+android-repo-setup import_docs --check
+android-repo-setup build_docs --check
+android-repo-setup workflows --check
 ./gradlew verifyImportDocs :demo-common:testDebugUnitTest :demo-common:lintRelease :demo-common:assembleRelease
 ```
 
+CI también genera publicaciones locales sin firmar para ambos destinos y valida
+el AAR, el código fuente, el archivo de documentación, el POM y los metadatos de
+Gradle. La compilación de Pages se ejecuta en las solicitudes de incorporación
+de cambios y se despliega desde `main`, también después de finalizar una
+publicación correctamente.
+
 ## Preparar la firma de un APK de demostración
 
-Ejecuta `./setup.sh` en Linux o macOS, o `setup.bat` en Windows desde una
-terminal privada con JDK y uv. Ambos lanzadores usan la versión
-`v0.1.6` del asistente compartido
-[Android Repository Setup](https://github.com/lambdawalker/python.android-repo-setup)
-y abren la bóveda cifrada local en `~/.projects/android.apexfission.demo-common/secrets/`.
+Ejecuta esto desde una terminal privada con JDK. Usa `./setup.sh` en Linux o
+macOS, o `setup.bat` en Windows. Ambos lanzadores usan el `tooling_ref`
+configurado y siguen las reglas de instalación y caché anteriores; Git ignora
+el directorio `bin/`. La CLI abre la bóveda cifrada existente sin moverla.
+Para abrir directamente el asistente de firma, ejecuta `./setup.sh signing` o
+`setup.bat signing`.
+
+En el asistente de terminal, elige crear un almacén de claves, configurar GitHub
+con una clave existente o ambas opciones. La primera ejecución selecciona ambas
+por defecto. Las posteriores seleccionan los pasos incompletos o Salir si ambos
+están completos. Las preguntas sin secretos usan una cuenta atrás de 20 segundos
+hasta que escribas, pegues o hagas clic en un campo. Después de interactuar,
+confirma manualmente. Si no interactúas, se aplica el valor predeterminado
+mostrado. Las confirmaciones de subida, restablecimiento y revelación de
+contraseñas cancelan o conservan el estado actual por defecto. Las preguntas de
+contraseñas y tokens esperan una respuesta.
+
+La bóveda de cada repositorio en
+`~/.projects/android.apexfission.demo-common/secrets/` cifra el progreso de la
+configuración, los datos del almacén de claves y las contraseñas de firma
+verificadas. Puede recordar un token de GitHub si lo autorizas expresamente.
+Desbloquea la bóveda con su contraseña independiente en cada ejecución. Perder
+esa contraseña implica perder el acceso a las respuestas guardadas.
+Restablecer la configuración local borra esas respuestas y conserva el almacén
+de claves y los secretos de GitHub.
+
+Usa un token de GitHub de permisos detallados limitado a este repositorio con
+**Administration: read/write** y **Environments: read/write**. El script prepara
+`demo-apk-release` para la rama `main` y pide revisar antes de escribir en GitHub.
+Usa por defecto el alias `demo-common` y un nombre de archivo del almacén de
+claves específico del repositorio dentro de la carpeta de secretos del proyecto.
+Mantén el almacén de claves fuera de la copia de trabajo y guarda una copia de
+seguridad segura.
+
+Introduce contraseñas distintas para el almacén y la clave, o pulsa Intro en
+cualquiera de las preguntas para generar una contraseña de 25 caracteres. Guarda
+las contraseñas generadas en un gestor de contraseñas cuando se te indique.
+Solo se muestran si lo autorizas, por lo que debes usar una terminal sin
+grabación de sesión. Se conservan los secretos de firma existentes. Si una
+subida se interrumpe, vuelve a ejecutar con el almacén de claves, alias y
+contraseñas originales.
+
+Esta configuración prepara el entorno de firma. Compilar y adjuntar un APK
+firmado a una publicación de GitHub corresponde a otro flujo de trabajo.
+
+El asistente permite un proceso local por repositorio para evitar actualizaciones
+simultáneas de la bóveda. Esto no coordina dispositivos distintos: configura el
+entorno remoto desde un solo dispositivo a la vez. Se vuelven a comprobar las
+reglas de despliegue exclusivo desde `main` de los entornos completados. Los
+fallos inesperados de configuración usan un mensaje genérico para evitar
+imprimir trazas que contengan credenciales.
 
 Comprobaciones de regresión sin credenciales:
 ```sh
-uv run scripts/setup.py workflows --check
+android-repo-setup workflows --check
 ```
 
 ## Configuración local
 
-La configuración se guarda en `.project/setup/`: `config.yaml` identifica el
-proyecto y la versión de las herramientas; `repositories.yml` define los destinos;
-`repositories.properties` contiene los valores generados para Gradle y
-`workflow-generation.json` registra los hashes de los workflows generados.
-Incluye estos archivos y `.github/workflows/` en el commit. El bloqueo temporal
-se ignora. Las claves y la bóveda permanecen fuera del repositorio en
+La configuración del repositorio se encuentra en `.project/setup/`:
+
+- `config.yaml`: identidad del proyecto y versión de las herramientas compartidas.
+- `repositories.yml`: destinos de publicación.
+- `repositories.properties`: valores de publicación generados para Gradle.
+- `workflow-generation.json`: hashes de los flujos generados (creado por la configuración).
+
+Incluye estos archivos y los archivos generados de `.github/workflows/` en el
+commit. Se ignora el bloqueo temporal `workflow-generation.lock`. Las claves de
+firma y la bóveda cifrada permanecen fuera de la copia de trabajo, en
 `~/.projects/<project>/secrets/`.
+
+## Sitio de documentación
+
+El sitio usa Zola 0.23.6 y la CLI Rust fijada; no requiere Python ni Node.js.
+Instala ambas herramientas en `PATH` y ejecuta
+`android-repo-setup build_docs --check` desde la raíz del repositorio. El motor
+opcional se configura en `sites/zola.toml`; la
+[guía del sitio](../sites/README.md) explica la responsabilidad sobre el contenido,
+las páginas en inglés y español por versión, los hashes de traducción revisados,
+la vista previa local y el despliegue en Pages. Los metadatos de versiones
+confirmadas siguen siendo la fuente de referencia; compilar la documentación
+nunca publica artefactos Android ni cambia las identidades históricas del código
+fuente.

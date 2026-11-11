@@ -3,8 +3,9 @@ title: Demo Common
 modules:
   demo-common: Demo Common
 key_alias: demo-common
-tooling_ref: 'v0.1.6'
+tooling_ref: '70344a6115903de0ad6b11784d44b8a74bca2641'
 workflows:
   app_module: app
   module: demo-common
   title: Demo Common
+  documentation_command: android-repo-setup build_docs --check

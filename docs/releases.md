@@ -5,11 +5,19 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-On Windows, run `setup.bat` to open the deployment wizard. The launcher downloads
-and verifies the CLI on first use and caches it under `bin/`. On Linux or macOS,
-download [Android Repository Setup v0.1.6](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.6)
-for your platform, verify the archive checksum, put the extracted executable
-on `PATH`, and run `./setup.sh`. Use a repository-scoped
+Run `setup.bat` on Windows or `./setup.sh` on Linux or macOS to open the
+deployment wizard. Both launchers read `tooling_ref` from
+`.project/setup/config.yaml`. For a stable version tag, Windows downloads and
+verifies the matching CLI on first use and caches it under `bin/<tag>/`.
+On Linux or macOS, install that exact version from
+[Android Repository Setup releases](https://github.com/lambdawalker/gradle.android-repo-setup/releases),
+verify the archive checksum, and put the extracted executable on `PATH`.
+The launcher checks its version before running it. For a full source commit SHA,
+both launchers use Cargo to compile that exact revision once and cache the
+executable under `bin/<SHA>/bin/`. Cargo is required to install a source pin;
+subsequent runs reuse the cached executable.
+
+Use a repository-scoped
 GitHub token with the environment administration permissions shown by
 the wizard. Review the changes before applying. Central requires
 `MAVEN_CENTRAL_USERNAME`, `MAVEN_CENTRAL_PASSWORD`, `SIGNING_IN_MEMORY_KEY`,
@@ -86,10 +94,10 @@ successful release finalization.
 ## Prepare signing for a demo APK
 
 Run this from a private terminal with a JDK. Use `./setup.sh` on Linux or
-macOS with the CLI on `PATH`, or `setup.bat` on Windows. The Windows launcher
-reuses the verified CLI from the Git-ignored `bin/` directory. The CLI opens
-your existing encrypted vault in place. To open the signing wizard directly,
-run `./setup.sh signing` or `setup.bat signing`.
+macOS, or `setup.bat` on Windows. Both launchers use the configured `tooling_ref`
+and follow the installation and cache rules above; the `bin/` directory is
+ignored by Git. The CLI opens your existing encrypted vault in place. To open
+the signing wizard directly, run `./setup.sh signing` or `setup.bat signing`.
 
 In the terminal wizard, choose keystore creation, GitHub setup with an existing key, or both.
 The first run defaults to both. Later runs default to the incomplete steps,
@@ -145,3 +153,8 @@ Repository setup configuration lives in `.project/setup/`:
 Commit these files with the generated `.github/workflows/` files. The transient
 `workflow-generation.lock` is ignored. Signing keys and the encrypted vault stay
 outside the checkout under `~/.projects/<project>/secrets/`.
+
+
+## Documentation website
+
+The website uses Zola 0.23.6 and the pinned Rust CLI; it requires neither Python nor Node.js. Install both tools on PATH and run `android-repo-setup build_docs --check` from the repository root. The opt-in backend is configured in `sites/zola.toml`; [the website guide](../sites/README.md) covers content ownership, versioned English/Spanish pages, reviewed translation hashes, local preview and Pages deployment. Confirmed release metadata remains authoritative; documentation builds never publish an Android artifact or change historical source identities.

@@ -1,8 +1,11 @@
 # Demo Common integration
 
 This is the Development guide. See [confirmed installation](../../IMPORT.md)
-for public release coordinates. Demo Common provides a Material 3 Compose
-catalog for Android API 28 and higher.
+for public release coordinates and their source commits. Select a confirmed
+release in the documentation site to read its archived guide; Development
+describes the current checkout. Historical guides retain their own source and
+documentation identities. Demo Common provides a Material 3 Compose catalog
+for Android API 28 and higher.
 
 | Task | API |
 | --- | --- |

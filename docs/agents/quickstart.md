@@ -9,16 +9,25 @@ The library targets Compose Material 3 and Android API 28 or later. Building thi
 repository requires Android SDK 37 and JDK 17 for compilation. CI runs Gradle
 with JDK 21. The library has no permissions, navigation, or lifecycle setup.
 
-To try it before the first release, publish the snapshot locally.
+For public dependencies, choose a destination and dependency syntax from the
+[confirmed installation instructions](../../IMPORT.md). Each destination has
+its own confirmed version and source commit; use those coordinates together.
+
+This Development guide describes the current checkout. For a released version,
+select its archived documentation and source identity in the documentation site.
+The latest installation instructions may point to a newer release than an
+archived guide. Only the library's release variant is published.
+
+To test changes from this checkout locally, publish to Maven Local:
 
 ```shell
 ./gradlew :demo-common:publishToMavenLocal
 ```
 
-Add `mavenLocal()` to the consuming project's dependency repositories, then add
-`implementation("com.apexfission.android:demo-common:0.0.0-SNAPSHOT")`. After
-a Maven Central release is available, use `mavenCentral()` and the confirmed
-release version. Only the library's release variant is published. See the release runbook for publication setup.
+Add `mavenLocal()` to the consuming project's dependency repositories and use
+the version configured for that local publication. Local publication does not
+confirm a public release. See the [release runbook](../releases.md) for
+publication setup.
 
 ## Declare a demo catalog
 
