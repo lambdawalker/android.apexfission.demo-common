@@ -14,7 +14,8 @@ elementos se muestra el encabezado. Proporciona una altura acotada y evita
 anidarlo dentro de otro contenedor de desplazamiento vertical.
 
 Usa `showEmptyState = true` cuando no haya demostraciones. Proporciona
-`onOpenSettings` para mostrar el botón de ajustes en ambos estados. La
+`onOpenSettings` para mostrar el botón de ajustes debajo del encabezado y
+antes de las tarjetas de demostración o del panel vacío. La
 aplicación anfitriona controla la navegación.
 
 ## DemoCard

@@ -71,7 +71,8 @@ spacing overrides, and the screen accepts a maximum content width.
 The populated catalog exercises `DemoScreen`, `DemoCard`, and `CardTitle` with
 an icon in the first card and a title-only second card. The empty catalog exercises
 `DemoScreen` with its themed empty panel and App settings button. The
-populated catalog also shows the settings button. Both scenarios cover light and dark
+populated catalog also shows the settings button below the header and above
+the demo cards. Both scenarios cover light and dark
 mode under a fixture host theme with custom colors, type, and shapes. A narrow
 320 dp preview at 1.6× font scale exercises wrapping with a long Spanish card title, description, and action.
 
