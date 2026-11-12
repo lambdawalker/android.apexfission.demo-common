@@ -71,12 +71,13 @@ public AAR, sources and Javadoc archives have matching verified SHA-256 hashes.
 
 Both historical archives select a reviewed bilingual documentation revision via
 `documentation_ref`. It corrects the pre-release/snapshot instructions, explains
-the original publication provenance and retains the 0.1.2 API behavior and
-screenshots. Source commits, provider tags, artifact hashes and confirmation
+the original publication provenance and retains the 0.1.2 API behavior. Catalog
+screenshots come from the exact release source in CI run 42577067647; earlier
+pre-release images were replaced. Source commits, provider tags, artifact hashes and confirmation
 records remain unchanged. Development documentation continues to describe the
 current implementation, including its newer Settings-button placement.
 
-The illustrated documentation revision is retained on `docs/demo-common-0.1.2-images` so a full
+The illustrated documentation revision is retained on `docs/demo-common-0.1.2-catalog` so a full
 history fetch can obtain it even if the integration PR is squash-merged. Keep
 that documentation branch available; its immutable commit, rather than the
 branch name, is what the archives reference.
