@@ -52,3 +52,23 @@ sh sites/tests/landing.sh
 ```
 
 Shared release identities use one documentation version with confirmed provider availability. Historical provider-specific versions retain their original routes and sources.
+
+## Corrected documentation for 0.1.2
+
+Maven Central 0.1.2 comes from `11d3cdce31c481fe2204f00d25b5fd93e5f9a18c`;
+JitPack's `demo-common~v0.1.2-jitpack` comes from
+`86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f`. The commits differ only in
+generated installation instructions and JitPack confirmation records. Their
+public AAR, sources and Javadoc archives have matching verified SHA-256 hashes.
+
+Both historical archives select a reviewed bilingual documentation revision via
+`documentation_ref`. It corrects the pre-release/snapshot instructions, explains
+the original publication provenance and retains the 0.1.2 API behavior and
+screenshots. Source commits, provider tags, artifact hashes and confirmation
+records remain unchanged. Development documentation continues to describe the
+current implementation, including its newer Settings-button placement.
+
+The documentation revision is retained on `docs/demo-common-0.1.2` so a full
+history fetch can obtain it even if the integration PR is squash-merged. Keep
+that documentation branch available; its immutable commit, rather than the
+branch name, is what the archives reference.
