@@ -7,6 +7,8 @@ build_search_index = true
 generate_sitemap = true
 
 [languages.es]
+title = "Demo Common"
+description = "Componentes de Material 3 para catálogos de demostración Android."
 build_search_index = true
 
 [search]

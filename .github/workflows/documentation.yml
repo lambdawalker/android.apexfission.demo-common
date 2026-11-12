@@ -51,7 +51,7 @@ jobs:
           tar -xzf "$archive" -C "$directory"
           test "$("$directory/zola" --version)" = 'zola 0.23.6'
           echo "$directory" >> "$GITHUB_PATH"
-      - run: "android-repo-setup build_docs --check"
+      - run: "sh sites/tests/landing.sh && android-repo-setup build_docs --check"
       - run: "cd docs/screenshots && sha256sum -c images.sha256"
       - uses: actions/upload-pages-artifact@v5
         with:

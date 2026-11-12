@@ -8,4 +8,4 @@ workflows:
   app_module: app
   module: demo-common
   title: Demo Common
-  documentation_command: android-repo-setup build_docs --check
+  documentation_command: sh sites/tests/landing.sh && android-repo-setup build_docs --check
