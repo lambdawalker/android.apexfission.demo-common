@@ -82,8 +82,7 @@ spacing overrides, and the screen accepts a maximum content width.
 The populated catalog exercises `DemoScreen`, `DemoCard`, and `CardTitle` with
 an icon in the first card and a title-only second card. The empty catalog exercises
 `DemoScreen` with its themed empty panel and App settings button. The
-populated catalog also shows the settings button below the header and above
-the demo cards. Both scenarios cover light and dark
+populated catalog also shows the settings button after the custom demo cards. Both scenarios cover light and dark
 mode under a fixture host theme with custom colors, type, and shapes. A narrow
 320 dp preview at 1.6× font scale exercises wrapping with a long Spanish card title, description, and action.
 
@@ -101,9 +100,10 @@ that all five images were generated.
 
 ## Run the sample
 
-With an API 28+ emulator or connected device, run `./gradlew :app:installDebug`
+Check out one of the published 0.1.2 source commits linked in
+[release provenance](../releases.md). With an API 28+ emulator or connected device, run `./gradlew :sample:installDebug`
 and open **Demo Common sample**. Tap **Toggle details** to show or hide text
 inside the demo card. Change the device theme or language to exercise the
 light/dark colors and English/Spanish strings. The
-[sample Activity](../../app/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
+[sample Activity](https://github.com/lambdawalker/android.apexfission.demo-common/blob/86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f/sample/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
 contains the complete integration.

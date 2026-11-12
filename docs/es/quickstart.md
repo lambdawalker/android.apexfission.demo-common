@@ -87,7 +87,7 @@ El catálogo con contenido prueba `DemoScreen`, `DemoCard` y `CardTitle`, con un
 icono en la primera tarjeta y solo un título en la segunda. El catálogo vacío
 prueba `DemoScreen` con su panel vacío adaptado al tema y el botón de ajustes de
 la aplicación. El catálogo con contenido también muestra el botón de ajustes
-debajo del encabezado y encima de las tarjetas. Ambos escenarios cubren los modos
+después de las tarjetas de demostración personalizadas. Ambos escenarios cubren los modos
 claro y oscuro con un tema anfitrión de prueba que personaliza colores,
 tipografía y formas. Una vista previa estrecha de 320 dp, con escala de fuente
 1.6×, comprueba los saltos de línea con un título de tarjeta, una descripción y
@@ -108,10 +108,12 @@ hayan generado las cinco imágenes.
 
 ## Ejecutar el ejemplo
 
-Con un emulador API 28 o superior o un dispositivo conectado, ejecuta
-`./gradlew :app:installDebug` y abre **Ejemplo de Demo Common**. Toca
+Usa uno de los commits de origen publicados de 0.1.2 enlazados en la
+[procedencia de la versión](../releases.md). Con un emulador API 28 o superior
+o un dispositivo conectado, ejecuta
+`./gradlew :sample:installDebug` y abre **Ejemplo de Demo Common**. Toca
 **Alternar detalles** para mostrar u ocultar texto dentro de la tarjeta. Cambia
 el tema o el idioma del dispositivo para probar los colores claros y oscuros y
 las cadenas en inglés y español. La
-[actividad de ejemplo](../../app/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
+[actividad de ejemplo](https://github.com/lambdawalker/android.apexfission.demo-common/blob/86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f/sample/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
 contiene la integración completa.
