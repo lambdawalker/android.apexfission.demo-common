@@ -5,10 +5,13 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-This checkout pins CLI and Gradle plugin release `v0.1.7`. Downloaded CLI binaries require no Cargo; the Zola website additionally requires Zola 0.23.6.
+This checkout pins CLI and Gradle plugin release `v0.1.9`. Downloaded CLI binaries require no Cargo; the Zola website additionally requires Zola 0.23.6.
 
 Run `setup.bat` on Windows or `./setup.sh` on Linux or macOS to open the
-deployment wizard. Both launchers read `tooling_ref` from
+iocraft deployment wizard. Use Tab and Shift+Tab to move between controls,
+Space to toggle checkboxes, and Enter to activate buttons. Password fields are
+masked; Page Up/Page Down scroll forms, and Shift+Page Up/Page Down scroll the
+progress log. Both launchers read `tooling_ref` from
 `.project/setup/config.yaml`. For a stable version tag, Windows downloads and
 verifies the matching CLI on first use and caches it under `bin/<tag>/`.
 On Linux or macOS, install that exact version from

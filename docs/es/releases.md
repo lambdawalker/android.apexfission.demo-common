@@ -5,10 +5,13 @@ y produce bytecode Java 17.
 
 ## Configuración del responsable
 
-Este checkout fija la versión `v0.1.7` de la CLI y de los plugins de Gradle. Los binarios descargados de la CLI no requieren Cargo; el sitio de documentación requiere además Zola 0.23.6.
+Este checkout fija la versión `v0.1.9` de la CLI y de los plugins de Gradle. Los binarios descargados de la CLI no requieren Cargo; el sitio de documentación requiere además Zola 0.23.6.
 
 Ejecuta `setup.bat` en Windows o `./setup.sh` en Linux o macOS para abrir el
-asistente de despliegue. Ambos lanzadores leen `tooling_ref` de
+asistente de despliegue de iocraft. Usa Tab y Mayús+Tab para cambiar de control,
+Espacio para marcar casillas e Intro para activar botones. Los campos de
+contraseña están ocultos; Re Pág/Av Pág desplazan los formularios y
+Mayús+Re Pág/Av Pág desplazan el registro de progreso. Ambos lanzadores leen `tooling_ref` de
 `.project/setup/config.yaml`. Para una etiqueta de versión estable, Windows
 descarga y verifica la CLI correspondiente en el primer uso y la almacena en
 caché en `bin/<tag>/`. En Linux o macOS, instala esa versión exacta desde

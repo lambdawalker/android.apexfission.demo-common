@@ -2,7 +2,7 @@
 
 ![Zola documentation desktop preview](preview-desktop.png)
 
-The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Install [CLI v0.1.7](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.7), pinned in `.project/setup/config.yaml`, and [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6); verify the archive checksum before placing binaries on PATH. CI installs its checksum-pinned Zola automatically.
+The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Install [CLI v0.1.9](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.9), pinned in `.project/setup/config.yaml`, and [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6); verify the archive checksum before placing binaries on PATH. CI installs its checksum-pinned Zola automatically.
 
 With the released CLI on PATH (Cargo is not required for downloaded binaries), run from the repository root:
 
