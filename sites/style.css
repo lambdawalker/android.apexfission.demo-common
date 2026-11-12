@@ -1,8 +1,0 @@
-:root { color-scheme: light dark; font-family: system-ui, sans-serif; }
-body { max-width: 64rem; margin: auto; padding: 1.5rem; line-height: 1.6; }
-nav { display: flex; gap: 1rem; flex-wrap: wrap; padding-block: .8rem; border-block-end: 1px solid GrayText; }
-main { max-width: 55rem; }
-a { color: LinkText; }
-pre { overflow: auto; padding: 1rem; background: color-mix(in srgb, CanvasText 8%, Canvas); }
-table { border-collapse: collapse; } th, td { border: 1px solid GrayText; padding: .4rem .7rem; }
-.gallery { display: flex; gap: 1rem; flex-wrap: wrap; } .gallery img { width: min(17rem, 100%); height: auto; align-self: start; }
