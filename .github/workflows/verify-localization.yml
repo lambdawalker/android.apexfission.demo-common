@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.13'
+          TOOLING_REF: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
