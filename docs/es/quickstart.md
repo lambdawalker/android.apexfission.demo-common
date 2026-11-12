@@ -9,27 +9,29 @@ La biblioteca está diseñada para Compose Material 3 y Android API 28 o posteri
 Compilar este repositorio requiere Android SDK 37 y JDK 17. CI ejecuta Gradle con
 JDK 21. La biblioteca no requiere configurar permisos, navegación ni ciclo de vida.
 
-Para usar dependencias públicas, elige un destino y una sintaxis de dependencia en
-las [instrucciones de instalación confirmadas](../../IMPORT.md). Cada destino
-tiene su propia versión confirmada y su commit de origen; usa esas coordenadas
-juntas.
+Usa la versión confirmada **0.1.2** de Maven Central o JitPack. Consulta las
+[instrucciones de instalación](../../IMPORT.md) para configurar el repositorio
+y obtener las coordenadas exactas del destino seleccionado. Ambos destinos
+contienen binarios y código fuente idénticos de la biblioteca; sus commits de
+publicación solo difieren en metadatos. Consulta la
+[procedencia de la versión](../releases.md).
 
-Esta guía de Desarrollo describe la copia de trabajo actual. Para una versión
-publicada, selecciona su documentación archivada y su identidad de código fuente
-en el sitio de documentación. Las instrucciones de instalación más recientes
-pueden apuntar a una versión posterior a la de una guía archivada. Solo se publica
-la variante `release` de la biblioteca.
+Maven Central:
 
-Para probar cambios de esta copia de trabajo localmente, publica en Maven Local:
-
-```shell
-./gradlew :demo-common:publishToMavenLocal
+```kotlin
+implementation("com.apexfission.android:demo-common:0.1.2")
 ```
 
-Agrega `mavenLocal()` a los repositorios de dependencias del proyecto consumidor
-y usa la versión configurada para esa publicación local. Publicar localmente no
-confirma una versión pública. Consulta el [manual de publicación](../releases.md)
-para configurar la publicación.
+JitPack:
+
+```kotlin
+implementation("com.github.lambdawalker:android.apexfission.demo-common:demo-common~v0.1.2-jitpack")
+```
+
+Solo se publica la variante `release` de la biblioteca. En la versión 0.1.2,
+el botón opcional de ajustes aparece después del contenido personalizado del
+catálogo. Su posición encima de las tarjetas corresponde a cambios posteriores
+de desarrollo y no forma parte de esta versión.
 
 ## Declarar un catálogo de demostraciones
 

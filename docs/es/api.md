@@ -30,8 +30,8 @@ desplazamiento de borde a borde y centra su columna diferida dentro del ancho
 máximo configurado. Usa `showEmptyState = true` cuando no haya demostraciones.
 El panel vacío usa el tema Material 3 anfitrión y las cadenas localizadas de la
 biblioteca. Proporciona `onOpenSettings` para agregar un botón de ajustes de la
-aplicación de ancho completo debajo del encabezado y antes de las tarjetas o del
-panel vacío. La función proporcionada por la aplicación anfitriona controla la
+aplicación de ancho completo después del contenido personalizado del catálogo
+y antes del panel vacío, cuando se muestra. La función proporcionada por la aplicación anfitriona controla la
 navegación, por ejemplo, abrir los ajustes de información de la aplicación en
 Android. Dale a esta pantalla una altura acotada y evita anidarla dentro de un
 contenedor con desplazamiento vertical.

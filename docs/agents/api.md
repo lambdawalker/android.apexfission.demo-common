@@ -29,8 +29,8 @@ keys for changing lists. The screen fills available bounds, combines Scaffold
 scrolling, and centers its lazy column within the configured maximum width.
 Set `showEmptyState = true` when there are no demos. The empty panel uses
 the host’s Material 3 theme and localized library strings. Supply
-`onOpenSettings` to add a full-width App settings button below the header and before the demo cards
-or empty panel. The host callback owns navigation, such as opening Android’s
+`onOpenSettings` to add a full-width App settings button after the custom
+catalog content and before the empty panel, when shown. The host callback owns navigation, such as opening Android’s
 app details settings. Give this screen bounded height and avoid nesting it in
 a vertically scrolling parent.
 

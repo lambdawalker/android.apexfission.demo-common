@@ -1,11 +1,10 @@
 # Integración de Demo Common
 
-Esta es la guía de Desarrollo. Consulta la [instalación confirmada](../../IMPORT.md)
-para ver las coordenadas de las versiones públicas y sus commits de origen.
-Selecciona una versión confirmada en el sitio de documentación para leer su guía
-archivada; Desarrollo describe la copia de trabajo actual. Las guías históricas
-conservan sus propias identidades de código fuente y documentación. Demo Common
-ofrece un catálogo Compose Material 3 para Android API 28 o superior.
+Esta guía documenta la versión confirmada **0.1.2** de Demo Common, un
+catálogo Compose Material 3 para Android API 28 o superior. Consulta las
+[instrucciones de instalación](../../IMPORT.md) para ver las coordenadas de
+este destino de publicación y la [procedencia de la versión](../releases.md)
+para comparar el código de origen en Maven Central y JitPack.
 
 | Tarea | API |
 | --- | --- |

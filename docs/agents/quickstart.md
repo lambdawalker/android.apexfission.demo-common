@@ -9,25 +9,27 @@ The library targets Compose Material 3 and Android API 28 or later. Building thi
 repository requires Android SDK 37 and JDK 17 for compilation. CI runs Gradle
 with JDK 21. The library has no permissions, navigation, or lifecycle setup.
 
-For public dependencies, choose a destination and dependency syntax from the
-[confirmed installation instructions](../../IMPORT.md). Each destination has
-its own confirmed version and source commit; use those coordinates together.
+Use the confirmed **0.1.2** release from Maven Central or JitPack. See the
+[installation instructions](../../IMPORT.md) for repository setup and the exact
+coordinates for the selected publication destination. Both destinations contain
+identical library binaries and sources; their release commits differ only in
+publication metadata. See [release provenance](../releases.md).
 
-This Development guide describes the current checkout. For a released version,
-select its archived documentation and source identity in the documentation site.
-The latest installation instructions may point to a newer release than an
-archived guide. Only the library's release variant is published.
+Maven Central:
 
-To test changes from this checkout locally, publish to Maven Local:
-
-```shell
-./gradlew :demo-common:publishToMavenLocal
+```kotlin
+implementation("com.apexfission.android:demo-common:0.1.2")
 ```
 
-Add `mavenLocal()` to the consuming project's dependency repositories and use
-the version configured for that local publication. Local publication does not
-confirm a public release. See the [release runbook](../releases.md) for
-publication setup.
+JitPack:
+
+```kotlin
+implementation("com.github.lambdawalker:android.apexfission.demo-common:demo-common~v0.1.2-jitpack")
+```
+
+Only the library's release variant is published. In version 0.1.2, the optional
+App settings button follows custom catalog content. Its placement above the
+cards belongs to later development changes and is not part of this release.
 
 ## Declare a demo catalog
 
