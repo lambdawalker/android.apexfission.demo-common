@@ -14,7 +14,10 @@ baselines and not files included in published Android artifacts.
 The English and Spanish Compose API guides show a light/dark image beside each
 component and each card overload. The retained 0.1.2 documentation uses these
 same standalone card/title captures, whose implementations are unchanged, but
-keeps its original catalog captures to illustrate its own Settings-button order.
+uses captures from the exact release source to illustrate its own Settings-button
+order. Those originals are from run 42577067647 at release commit
+`86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f`. The earlier retained catalog images
+predated 0.1.2 and have been replaced.
 
 Run `./gradlew :demo-common:updateDebugScreenshotTest` to generate new
 candidates. CI renders 11 candidates: populated and empty screens in light/dark,
