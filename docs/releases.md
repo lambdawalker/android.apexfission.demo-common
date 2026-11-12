@@ -5,7 +5,10 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-This checkout pins CLI and Gradle plugin release `v0.1.9`. Downloaded CLI binaries require no Cargo; the Zola website additionally requires Zola 0.23.6.
+This checkout pins the shared-identity CLI to an immutable tooling commit in
+`.project/setup/config.yaml`. Cargo builds that revision once; subsequent runs
+reuse the cached executable. The Gradle plugin remains at released `v0.1.9`.
+The documentation website additionally requires Zola 0.23.6.
 
 Run `setup.bat` on Windows or `./setup.sh` on Linux or macOS to open the
 iocraft deployment wizard. Use Tab and Shift+Tab to move between controls,
@@ -39,16 +42,29 @@ recording the upload marker.
 ## Publish
 
 Run **Publish Demo Common** on `main`. Choose Maven Central or JitPack and
-leave **version** blank. The first release is `0.1.0`. Unchanged release
-inputs reuse the latest immutable version and source. Changed inputs
-advance the patch. An explicit stable version must be strictly newer than
-the latest identity at that destination.
+leave **version** blank. New releases share one immutable source commit and
+build-input fingerprint across destinations. Matching inputs reuse that module
+version and its exact source; changed inputs advance the patch. An explicit
+existing shared version is accepted only when the inputs match. A new explicit
+version must be newer than the module's existing release history.
 
-Central and JitPack can use the same semantic version from different commits.
-Tags use `demo-common/vX.Y.Z-maven-central` and `demo-common/vX.Y.Z-jitpack`.
-JitPack uses a tilde in the consumer version. The release fingerprint covers
-library sources, packaged guides, toolchain, and shared release helpers.
-Generated confirmation records and installation instructions are excluded.
+The first publication atomically reserves
+`release-identity/demo-common/X.Y.Z` with its destination journal. Publishing
+the same version to the other destination reuses this identity. Provider tags
+`demo-common/vX.Y.Z-maven-central` and `demo-common/vX.Y.Z-jitpack` and their
+publication statuses remain independent. JitPack uses a tilde in the consumer
+version. Signing and provider metadata can differ, so matching artifact bytes
+are not required across destinations.
+
+The release fingerprint covers library sources, packaged guides, toolchain,
+tracked build configuration and shared release helpers. Generated confirmation
+records and installation instructions are excluded. Failed attempts keep their
+immutable shared version; they never free it for different source code.
+
+Historical releases such as `0.1.2` retain their original provider-specific
+source identities. They are not merged retroactively. New shared versions start
+above the existing module history, and confirmed destinations appear together
+under one documentation version.
 
 The workflow validates local artifacts before reserving a version. Central
 writes an upload marker before upload and verifies public hashes and signatures

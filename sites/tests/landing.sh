@@ -55,6 +55,20 @@ render
 grep -Fq 'data-latest-version="0.10.0"' "$fixture/public/index.html"
 grep -Fq 'class="hero-source primary-docs" href="/new/"' "$fixture/public/index.html"
 grep -Fq 'href="/central-old/"' "$fixture/public/index.html"
+# A shared canonical release has one bilingual route and provider availability.
+cat > "$fixture/scopes.json" <<'JSON'
+[
+ {"module":"demo-common","language":"en","version":"0.1.11","development":false,"root":"/shared/en/","pages":[],"destinations":["jitpack","maven-central"]},
+ {"module":"demo-common","language":"es","version":"0.1.11","development":false,"root":"/shared/es/","pages":[],"destinations":["jitpack","maven-central"]}
+]
+JSON
+render
+grep -Fq 'data-latest-version="0.1.11"' "$fixture/public/index.html"
+grep -Fq 'class="hero-source primary-docs" href="/shared/en/"' "$fixture/public/index.html"
+grep -Fq 'class="confirmed-destinations"' "$fixture/public/index.html"
+grep -Fq 'Maven Central' "$fixture/public/index.html"
+grep -Fq 'JitPack' "$fixture/public/index.html"
+grep -Fq 'href="/shared/es/"' "$fixture/public/index.html"
 # Development is never presented as a confirmed release.
 cat > "$fixture/scopes.json" <<'JSON'
 [{"module":"demo-common","language":"en","version":"development","development":true,"root":"/dev/","pages":[]}]

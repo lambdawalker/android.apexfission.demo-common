@@ -5,7 +5,7 @@ on:
       version:
         description: Validated Rust tooling tag or full commit SHA
         required: true
-        default: 'v0.1.9'
+        default: '2e35856e7e2fb39e13bbc213dec2097e31626b3a'
 permissions:
   contents: read
 jobs:
