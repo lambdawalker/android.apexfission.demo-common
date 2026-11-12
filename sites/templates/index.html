@@ -1,99 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
-{# Release routes include a destination suffix. Compare numeric version parts,
-   then retain each destination's exact route and source identity. #}
-{% set_global latest = "" %}
-{% set_global major = -1 %}{% set_global minor = -1 %}{% set_global patch = -1 %}
+{% set_global target = "" %}{% set_global major = -1 %}{% set_global minor = -1 %}{% set_global patch = -1 %}{% set_global rank = -1 %}
 {% for candidate in scopes %}
-  {% if candidate.module == "demo-common" and not candidate.development %}
-    {% set version = candidate.version | split(pat="-") | first %}
-    {% set parts = version | split(pat=".") %}
+  {% if candidate.module == "demo-common" and candidate.language == language and not candidate.development %}
+    {% set version = candidate.version | split(pat="-") | first %}{% set parts = version | split(pat=".") %}
     {% set a = parts[0] | int %}{% set b = parts[1] | int %}{% set c = parts[2] | int %}
-    {% if a > major or (a == major and b > minor) or (a == major and b == minor and c > patch) %}
-      {% set_global latest = version %}
-      {% set_global major = a %}{% set_global minor = b %}{% set_global patch = c %}
+    {% set candidate_rank = 0 %}{% if candidate.version == version %}{% set candidate_rank = 2 %}{% elif candidate.version == version ~ "-maven-central" %}{% set candidate_rank = 1 %}{% endif %}
+    {% if a > major or (a == major and b > minor) or (a == major and b == minor and c > patch) or (a == major and b == minor and c == patch and candidate_rank > rank) %}
+      {% set_global target = candidate.root %}{% set_global major = a %}{% set_global minor = b %}{% set_global patch = c %}{% set_global rank = candidate_rank %}
     {% endif %}
   {% endif %}
 {% endfor %}
-{% set maven_version = latest ~ "-maven-central" %}
-{% set_global primary_root = "" %}{% set_global primary_index = 0 %}
-{% for candidate in scopes %}
-  {% set version = candidate.version | split(pat="-") | first %}
-  {% if candidate.module == "demo-common" and not candidate.development and version == latest and candidate.language == language %}
-    {% if primary_root == "" or candidate.version == maven_version %}
-      {% set_global primary_root = candidate.root %}{% set_global primary_index = loop.index0 %}
-    {% endif %}
-  {% endif %}
-{% endfor %}
-<link rel="stylesheet" href="{{ get_url(path='landing.css') }}">
-<main id="main" class="catalog release-landing">
-  <div class="hero">
-    <span class="eyebrow">APEXFISSION / ANDROID LIBRARIES</span>
-    <h1>{{ config.title }}</h1>
-    <p>{% if spanish %}Componentes de Material 3 para tus aplicaciones de demostración Android. Empieza con la documentación de la última versión publicada.{% else %}Material 3 components for your Android demo apps. Start with the documentation for the latest published release.{% endif %}</p>
-  </div>
-  <section class="current-release" aria-labelledby="latest-heading" data-latest-version="{{ latest }}">
-    {% if latest != "" %}
-      <div class="release-intro">
-        <div><span class="eyebrow">{% if spanish %}Última versión publicada{% else %}Latest release{% endif %}</span><h2 id="latest-heading">v{{ latest }}</h2></div>
-        <span class="release-badge">{% if spanish %}Publicación confirmada{% else %}Confirmed release{% endif %}</span>
-      </div>
-      <p>{% if spanish %}Guías de integración, instalación y referencia de API de esta versión.{% else %}Integration guides, installation instructions and API reference for this release.{% endif %}</p>
-      {% if scopes[primary_index].destinations is defined and scopes[primary_index].version == latest %}
-        <p class="confirmed-destinations">{% if spanish %}Disponible en{% else %}Available on{% endif %}:
-          {% for destination in scopes[primary_index].destinations %}<strong>{% if destination == "maven-central" %}Maven Central{% elif destination == "jitpack" %}JitPack{% else %}{{ destination }}{% endif %}</strong>{% if not loop.last %} · {% endif %}{% endfor %}
-        </p>
-      {% endif %}
-      {% if primary_root != "" %}
-        <a class="hero-source primary-docs" href="{{ primary_root }}">{% if spanish %}Leer documentación{% else %}Read documentation{% endif %} <span aria-hidden="true">→</span></a>
-        <nav class="guide-links" aria-label="{% if spanish %}Guías de la última versión{% else %}Latest release guides{% endif %}">
-          {% for guide in scopes[primary_index].pages %}{% if guide.slug in ["quickstart", "installation", "api"] %}
-            <a href="{{ guide.href }}">{% if guide.slug == "quickstart" %}{% if spanish %}Primeros pasos{% else %}Quick start{% endif %}{% elif guide.slug == "installation" %}{% if spanish %}Instalación{% else %}Installation{% endif %}{% else %}{% if spanish %}Referencia de API{% else %}API reference{% endif %}{% endif %}</a>
-          {% endif %}{% endfor %}
-        </nav>
-      {% endif %}
-      <div class="release-destinations">
-        <h3>{% if spanish %}Documentación por destino e idioma{% else %}Documentation by destination and language{% endif %}</h3>
-        {% for destination in ["maven-central", "jitpack", "release"] %}
-          {% set_global destination_visible = false %}
-          {% set destination_version = latest ~ "-" ~ destination %}
-          {% for candidate in scopes %}
-            {% set version = candidate.version | split(pat="-") | first %}
-            {% if candidate.module == "demo-common" and not candidate.development and version == latest %}
-              {% if candidate.version == destination_version or (destination == "release" and candidate.version == version) %}
-                {% if not destination_visible %}
-                  {% set_global destination_visible = true %}
-                  <div class="destination-row"><strong>{% if destination == "maven-central" %}Maven Central{% elif destination == "jitpack" %}JitPack{% else %}v{{ latest }}{% endif %}</strong><nav aria-label="{{ destination }}">
-                {% endif %}
-                <a href="{{ candidate.root }}" hreflang="{{ candidate.language }}" lang="{{ candidate.language }}">{% if candidate.language == "es" %}Español{% else %}English{% endif %} <span aria-hidden="true">→</span></a>
-              {% endif %}
-            {% endif %}
-          {% endfor %}
-          {% if destination_visible %}</nav></div>{% endif %}
-        {% endfor %}
-      </div>
-      <script>document.body.dataset.scope = "{{ primary_index }}";</script>
-    {% else %}
-      <h2 id="latest-heading">{% if spanish %}Todavía no hay una versión publicada{% else %}No confirmed release yet{% endif %}</h2>
-      <p>{% if spanish %}Consulta la documentación de desarrollo a continuación.{% else %}Development documentation is available below.{% endif %}</p>
-    {% endif %}
-  </section>
-  <details class="other-versions">
-    <summary>{% if spanish %}Otras versiones y desarrollo{% else %}Other versions and development{% endif %}</summary>
-    <p>{% if spanish %}Las versiones anteriores conservan la documentación de su código fuente. El desarrollo puede incluir cambios sin publicar.{% else %}Older releases retain documentation for their exact source. Development may include unpublished changes.{% endif %}</p>
-    {% for representative in scopes %}
-      {% if representative.module == "demo-common" and representative.language == "en" %}
-      {% set version = representative.version %}
-      {% set numeric_version = version | split(pat="-") | first %}
-      {% set provider = version | replace(from=numeric_version ~ "-", to="") %}
-      {% if numeric_version != latest or version == "development" %}
-        <div class="version-row"><div><strong>{% if version == "development" %}{% if spanish %}Desarrollo{% else %}Development{% endif %}{% else %}v{{ numeric_version }}{% endif %}</strong><span>{% if version == "development" %}{% if spanish %}Sin publicar{% else %}Unreleased{% endif %}{% elif provider == "maven-central" %}Maven Central{% elif provider == "jitpack" %}JitPack{% endif %}</span></div><nav aria-label="{{ version }}">
-          {% for candidate in scopes %}{% if candidate.module == "demo-common" and candidate.version == version %}<a href="{{ candidate.root }}" hreflang="{{ candidate.language }}" lang="{{ candidate.language }}">{% if candidate.language == "es" %}Español{% else %}English{% endif %} <span aria-hidden="true">→</span></a>{% endif %}{% endfor %}
-        </nav></div>
-      {% endif %}
-      {% endif %}
-    {% endfor %}
-  </details>
-  <footer class="catalog-footer"><span>Apexfission</span><span>{% if spanish %}Documentación vinculada a su código fuente.{% else %}Documentation tied to its source.{% endif %}</span><a href="https://github.com/{{ config.extra.repository }}">GitHub ↗</a></footer>
+{% if target == "" %}{% for candidate in scopes %}{% if candidate.module == "demo-common" and candidate.language == language and candidate.development %}{% set_global target = candidate.root %}{% endif %}{% endfor %}{% endif %}
+<main id="main">
+{% if target != "" %}
+  <meta http-equiv="refresh" content="0;url={{ target }}">
+  <script>location.replace({{ target | json_encode | safe }} + location.search + location.hash);</script>
+  <p><a href="{{ target }}">{% if spanish %}Abrir documentación{% else %}Open documentation{% endif %}</a></p>
+{% else %}
+  <h1>{% if spanish %}Documentación no disponible{% else %}Documentation unavailable{% endif %}</h1>
+{% endif %}
 </main>
 {% endblock content %}

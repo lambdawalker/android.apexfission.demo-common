@@ -1,7 +1,5 @@
 # Documentation website
 
-![Zola documentation desktop preview](preview-desktop.png)
-
 The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Use the immutable CLI commit pinned in `.project/setup/config.yaml` through `./setup.sh` or `setup.bat`; Cargo compiles a source pin once and caches it. Install [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6) on PATH and verify its archive checksum. CI installs its checksum-pinned Zola automatically.
 
 With Zola on PATH, run the pinned CLI from the repository root:
@@ -34,24 +32,33 @@ The Documentation workflow builds and checks PRs and publishes only main through
 
 Do not edit generated output. For repository-specific layout changes, override bundled template files under `sites/templates/` or static assets under `sites/static/` and rerun the complete build/check.
 
-## Landing page
+## Direct documentation and version families
 
-`sites/templates/index.html` and `sites/static/landing.css` present the newest
-confirmed Demo Common release first. The version is selected numerically from
-the CLI-generated scopes, so `0.1.10` follows `0.1.9`. Maven Central and JitPack
-retain their own documentation links and source identities, with English and
-Spanish links grouped together. Maven Central is the primary link when both
-destinations have the newest version. Older releases and unreleased development
-documentation remain under **Other versions and development**. Landing-page
-search uses the highlighted release.
+The home URL opens the latest released documentation immediately, without a
+catalog or presentation cards. `/es/` opens the Spanish release. Selection uses
+numeric versions, so `0.1.10` follows `0.1.9`; canonical releases take precedence,
+then Maven Central when both historical destinations have the newest patch.
+Development is used only when that language has no confirmed release.
+
+The version selector has one entry per minor series, such as **0.1.x**, opening
+its newest released patch. **Development** remains a separate, unreleased entry.
+The exact patch and confirmed repositories appear above every guide; publication
+source commits remain available under **Publication details**. Language switching,
+search and guide navigation keep using the original scopes and routes.
+
+`sites/templates/` contains the home, guide and availability overrides;
+`sites/static/release-docs.css` styles the availability line. Historical 0.1.2
+publications are grouped using the explicitly verified sources and matching
+artifact hashes in `sites/static/release-equivalence.json`. Version equality
+alone never establishes equivalence. Future canonical releases read their
+confirmed repositories directly from the shared release metadata. Existing
+provider-specific deep links, raw Markdown and historical records stay valid.
 
 Run the template regressions with Zola on `PATH`:
 
 ```sh
 sh sites/tests/landing.sh
 ```
-
-Shared release identities use one documentation version with confirmed provider availability. Historical provider-specific versions retain their original routes and sources.
 
 ## Corrected documentation for 0.1.2
 

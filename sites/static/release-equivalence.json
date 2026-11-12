@@ -1,0 +1,15 @@
+[
+  {
+    "module": "demo-common",
+    "version": "0.1.2",
+    "sources": {
+      "maven-central": "11d3cdce31c481fe2204f00d25b5fd93e5f9a18c",
+      "jitpack": "86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f"
+    },
+    "sha256": {
+      ".aar": "b2e86d8f0693fef318e7469414ac877b773204f49073d8e52f1df72e403aa5d2",
+      "-sources.jar": "c86a2894e289e023d084805ed52e1af177ec85edcc12e728bc40cbe60dbff2a6",
+      "-javadoc.jar": "ca4b749dcab38bb14fb0e24bfa873fd17aeee209beb2722e7a1b63aae82e9276"
+    }
+  }
+]
