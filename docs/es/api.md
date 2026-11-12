@@ -4,7 +4,13 @@ Importa estas declaraciones de `com.apexfission.android.democommon`. Llámalas
 desde una composición Material 3 existente. Todas aceptan el `Modifier` de la
 aplicación que las llama y devuelven `Unit`.
 
+Todas las imágenes usan el tema Material 3 de la aplicación de ejemplo; los componentes adoptan el tema de tu aplicación.
+
 ## DemoScreen
+
+| Claro | Oscuro |
+| --- | --- |
+| ![DemoScreen — claro](../screenshots/catalog-light.png) | ![DemoScreen — oscuro](../screenshots/catalog-dark.png) |
 
 ```kotlin
 @Composable
@@ -38,6 +44,12 @@ contenedor con desplazamiento vertical.
 
 ## DemoCard
 
+Sobrecarga de contenido personalizado.
+
+| Claro | Oscuro |
+| --- | --- |
+| ![DemoCard — contenido personalizado — claro](../screenshots/custom-card-light.png) | ![DemoCard — contenido personalizado — oscuro](../screenshots/custom-card-dark.png) |
+
 ```kotlin
 @Composable
 public fun DemoCard(
@@ -59,6 +71,12 @@ Para la tarjeta estándar del catálogo de bienvenida, llama a la sobrecarga con
 `icon` opcional, seguido de la descripción y un botón tonal relleno de ancho
 completo. Usa el bloque de contenido anterior para tarjetas personalizadas.
 
+Sobrecarga con título, descripción y acción.
+
+| Claro | Oscuro |
+| --- | --- |
+| ![DemoCard — acción estándar — claro](../screenshots/card-light.png) | ![DemoCard — acción estándar — oscuro](../screenshots/card-dark.png) |
+
 ```kotlin
 @Composable
 public fun DemoCard(
@@ -72,6 +90,10 @@ public fun DemoCard(
 ```
 
 ## CardTitle
+
+| Claro | Oscuro |
+| --- | --- |
+| ![CardTitle — claro](../screenshots/card-title-light.png) | ![CardTitle — oscuro](../screenshots/card-title-dark.png) |
 
 ```kotlin
 @Composable
