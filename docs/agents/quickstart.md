@@ -9,27 +9,25 @@ The library targets Compose Material 3 and Android API 28 or later. Building thi
 repository requires Android SDK 37 and JDK 17 for compilation. CI runs Gradle
 with JDK 21. The library has no permissions, navigation, or lifecycle setup.
 
-Use the confirmed **0.1.2** release from Maven Central or JitPack. See the
-[installation instructions](../../IMPORT.md) for repository setup and the exact
-coordinates for the selected publication destination. Both destinations contain
-identical library binaries and sources; their release commits differ only in
-publication metadata. See [release provenance](../releases.md).
+For public dependencies, choose a destination and dependency syntax from the
+[confirmed installation instructions](../../IMPORT.md). Each destination has
+its own confirmed version and source commit; use those coordinates together.
 
-Maven Central:
+This Development guide describes the current checkout. For a released version,
+select its archived documentation and source identity in the documentation site.
+The latest installation instructions may point to a newer release than an
+archived guide. Only the library's release variant is published.
 
-```kotlin
-implementation("com.apexfission.android:demo-common:0.1.2")
+To test changes from this checkout locally, publish to Maven Local:
+
+```shell
+./gradlew :demo-common:publishToMavenLocal
 ```
 
-JitPack:
-
-```kotlin
-implementation("com.github.lambdawalker:android.apexfission.demo-common:demo-common~v0.1.2-jitpack")
-```
-
-Only the library's release variant is published. In version 0.1.2, the optional
-App settings button follows custom catalog content. Its placement above the
-cards belongs to later development changes and is not part of this release.
+Add `mavenLocal()` to the consuming project's dependency repositories and use
+the version configured for that local publication. Local publication does not
+confirm a public release. See the [release runbook](../releases.md) for
+publication setup.
 
 ## Declare a demo catalog
 
@@ -82,7 +80,8 @@ spacing overrides, and the screen accepts a maximum content width.
 The populated catalog exercises `DemoScreen`, `DemoCard`, and `CardTitle` with
 an icon in the first card and a title-only second card. The empty catalog exercises
 `DemoScreen` with its themed empty panel and App settings button. The
-populated catalog also shows the settings button after the custom demo cards. Both scenarios cover light and dark
+populated catalog also shows the settings button below the header and above
+the demo cards. Both scenarios cover light and dark
 mode under a fixture host theme with custom colors, type, and shapes. A narrow
 320 dp preview at 1.6× font scale exercises wrapping with a long Spanish card title, description, and action.
 
@@ -100,10 +99,9 @@ that all five images were generated.
 
 ## Run the sample
 
-Check out one of the published 0.1.2 source commits linked in
-[release provenance](../releases.md). With an API 28+ emulator or connected device, run `./gradlew :sample:installDebug`
+With an API 28+ emulator or connected device, run `./gradlew :app:installDebug`
 and open **Demo Common sample**. Tap **Toggle details** to show or hide text
 inside the demo card. Change the device theme or language to exercise the
 light/dark colors and English/Spanish strings. The
-[sample Activity](https://github.com/lambdawalker/android.apexfission.demo-common/blob/86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f/sample/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
+[sample Activity](../../app/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
 contains the complete integration.

@@ -9,29 +9,27 @@ La biblioteca está diseñada para Compose Material 3 y Android API 28 o posteri
 Compilar este repositorio requiere Android SDK 37 y JDK 17. CI ejecuta Gradle con
 JDK 21. La biblioteca no requiere configurar permisos, navegación ni ciclo de vida.
 
-Usa la versión confirmada **0.1.2** de Maven Central o JitPack. Consulta las
-[instrucciones de instalación](../../IMPORT.md) para configurar el repositorio
-y obtener las coordenadas exactas del destino seleccionado. Ambos destinos
-contienen binarios y código fuente idénticos de la biblioteca; sus commits de
-publicación solo difieren en metadatos. Consulta la
-[procedencia de la versión](../releases.md).
+Para usar dependencias públicas, elige un destino y una sintaxis de dependencia en
+las [instrucciones de instalación confirmadas](../../IMPORT.md). Cada destino
+tiene su propia versión confirmada y su commit de origen; usa esas coordenadas
+juntas.
 
-Maven Central:
+Esta guía de Desarrollo describe la copia de trabajo actual. Para una versión
+publicada, selecciona su documentación archivada y su identidad de código fuente
+en el sitio de documentación. Las instrucciones de instalación más recientes
+pueden apuntar a una versión posterior a la de una guía archivada. Solo se publica
+la variante `release` de la biblioteca.
 
-```kotlin
-implementation("com.apexfission.android:demo-common:0.1.2")
+Para probar cambios de esta copia de trabajo localmente, publica en Maven Local:
+
+```shell
+./gradlew :demo-common:publishToMavenLocal
 ```
 
-JitPack:
-
-```kotlin
-implementation("com.github.lambdawalker:android.apexfission.demo-common:demo-common~v0.1.2-jitpack")
-```
-
-Solo se publica la variante `release` de la biblioteca. En la versión 0.1.2,
-el botón opcional de ajustes aparece después del contenido personalizado del
-catálogo. Su posición encima de las tarjetas corresponde a cambios posteriores
-de desarrollo y no forma parte de esta versión.
+Agrega `mavenLocal()` a los repositorios de dependencias del proyecto consumidor
+y usa la versión configurada para esa publicación local. Publicar localmente no
+confirma una versión pública. Consulta el [manual de publicación](../releases.md)
+para configurar la publicación.
 
 ## Declarar un catálogo de demostraciones
 
@@ -87,7 +85,7 @@ El catálogo con contenido prueba `DemoScreen`, `DemoCard` y `CardTitle`, con un
 icono en la primera tarjeta y solo un título en la segunda. El catálogo vacío
 prueba `DemoScreen` con su panel vacío adaptado al tema y el botón de ajustes de
 la aplicación. El catálogo con contenido también muestra el botón de ajustes
-después de las tarjetas de demostración personalizadas. Ambos escenarios cubren los modos
+debajo del encabezado y encima de las tarjetas. Ambos escenarios cubren los modos
 claro y oscuro con un tema anfitrión de prueba que personaliza colores,
 tipografía y formas. Una vista previa estrecha de 320 dp, con escala de fuente
 1.6×, comprueba los saltos de línea con un título de tarjeta, una descripción y
@@ -108,12 +106,10 @@ hayan generado las cinco imágenes.
 
 ## Ejecutar el ejemplo
 
-Usa uno de los commits de origen publicados de 0.1.2 enlazados en la
-[procedencia de la versión](../releases.md). Con un emulador API 28 o superior
-o un dispositivo conectado, ejecuta
-`./gradlew :sample:installDebug` y abre **Ejemplo de Demo Common**. Toca
+Con un emulador API 28 o superior o un dispositivo conectado, ejecuta
+`./gradlew :app:installDebug` y abre **Ejemplo de Demo Common**. Toca
 **Alternar detalles** para mostrar u ocultar texto dentro de la tarjeta. Cambia
 el tema o el idioma del dispositivo para probar los colores claros y oscuros y
 las cadenas en inglés y español. La
-[actividad de ejemplo](https://github.com/lambdawalker/android.apexfission.demo-common/blob/86b43bd7ee858ceb09642ec755f0dc99e7eb5a2f/sample/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
+[actividad de ejemplo](../../app/src/main/kotlin/com/apexfission/android/democommon/sample/SampleActivity.kt)
 contiene la integración completa.
