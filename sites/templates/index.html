@@ -39,6 +39,11 @@
         <span class="release-badge">{% if spanish %}Publicación confirmada{% else %}Confirmed release{% endif %}</span>
       </div>
       <p>{% if spanish %}Guías de integración, instalación y referencia de API de esta versión.{% else %}Integration guides, installation instructions and API reference for this release.{% endif %}</p>
+      {% if scopes[primary_index].destinations is defined and scopes[primary_index].version == latest %}
+        <p class="confirmed-destinations">{% if spanish %}Disponible en{% else %}Available on{% endif %}:
+          {% for destination in scopes[primary_index].destinations %}<strong>{% if destination == "maven-central" %}Maven Central{% elif destination == "jitpack" %}JitPack{% else %}{{ destination }}{% endif %}</strong>{% if not loop.last %} · {% endif %}{% endfor %}
+        </p>
+      {% endif %}
       {% if primary_root != "" %}
         <a class="hero-source primary-docs" href="{{ primary_root }}">{% if spanish %}Leer documentación{% else %}Read documentation{% endif %} <span aria-hidden="true">→</span></a>
         <nav class="guide-links" aria-label="{% if spanish %}Guías de la última versión{% else %}Latest release guides{% endif %}">
@@ -58,7 +63,7 @@
               {% if candidate.version == destination_version or (destination == "release" and candidate.version == version) %}
                 {% if not destination_visible %}
                   {% set_global destination_visible = true %}
-                  <div class="destination-row"><strong>{% if destination == "maven-central" %}Maven Central{% elif destination == "jitpack" %}JitPack{% else %}{% if spanish %}Versión publicada{% else %}Release{% endif %}{% endif %}</strong><nav aria-label="{{ destination }}">
+                  <div class="destination-row"><strong>{% if destination == "maven-central" %}Maven Central{% elif destination == "jitpack" %}JitPack{% else %}v{{ latest }}{% endif %}</strong><nav aria-label="{{ destination }}">
                 {% endif %}
                 <a href="{{ candidate.root }}" hreflang="{{ candidate.language }}" lang="{{ candidate.language }}">{% if candidate.language == "es" %}Español{% else %}English{% endif %} <span aria-hidden="true">→</span></a>
               {% endif %}

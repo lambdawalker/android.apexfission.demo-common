@@ -2,12 +2,12 @@
 
 ![Zola documentation desktop preview](preview-desktop.png)
 
-The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Install [CLI v0.1.9](https://github.com/lambdawalker/gradle.android-repo-setup/releases/tag/v0.1.9), pinned in `.project/setup/config.yaml`, and [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6); verify the archive checksum before placing binaries on PATH. CI installs its checksum-pinned Zola automatically.
+The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Use the immutable CLI commit pinned in `.project/setup/config.yaml` through `./setup.sh` or `setup.bat`; Cargo compiles a source pin once and caches it. Install [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6) on PATH and verify its archive checksum. CI installs its checksum-pinned Zola automatically.
 
-With the released CLI on PATH (Cargo is not required for downloaded binaries), run from the repository root:
+With Zola on PATH, run the pinned CLI from the repository root:
 
 ```sh
-android-repo-setup build_docs --check
+./setup.sh build_docs --check
 ```
 
 Output is `sites/dist/`, including search indexes and raw Markdown. To inspect it locally, serve the repository root with any static HTTP server and open `/sites/dist/`; use a build with `--base /sites/dist` for that preview. Production uses `/android.apexfission.demo-common` as its URL base. The base path must match the directory your server exposes.
@@ -50,3 +50,5 @@ Run the template regressions with Zola on `PATH`:
 ```sh
 sh sites/tests/landing.sh
 ```
+
+Shared release identities use one documentation version with confirmed provider availability. Historical provider-specific versions retain their original routes and sources.

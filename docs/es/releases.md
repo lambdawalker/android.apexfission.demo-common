@@ -5,7 +5,11 @@ y produce bytecode Java 17.
 
 ## Configuración del responsable
 
-Este checkout fija la versión `v0.1.9` de la CLI y de los plugins de Gradle. Los binarios descargados de la CLI no requieren Cargo; el sitio de documentación requiere además Zola 0.23.6.
+Este checkout fija la CLI con identidad compartida a un commit inmutable de las
+herramientas en `.project/setup/config.yaml`. Cargo compila esa revisión una
+sola vez; las siguientes ejecuciones reutilizan el ejecutable en caché. El
+plugin de Gradle conserva la versión publicada `v0.1.9`. El sitio de
+documentación requiere además Zola 0.23.6.
 
 Ejecuta `setup.bat` en Windows o `./setup.sh` en Linux o macOS para abrir el
 asistente de despliegue de iocraft. Usa Tab y Mayús+Tab para cambiar de control,
@@ -42,18 +46,31 @@ marcador de subida.
 ## Publicar
 
 Ejecuta **Publish Demo Common** en `main`. Elige Maven Central o JitPack y deja
-**version** en blanco. La primera versión es `0.1.0`. Si las entradas de la
-publicación no cambian, se reutilizan la última versión y el código fuente
-inmutables. Si cambian, se incrementa el parche. Una versión estable explícita
-debe ser estrictamente posterior a la última identidad de ese destino.
+**version** en blanco. Las nuevas versiones comparten un commit de origen
+inmutable y una huella de las entradas de compilación entre destinos. Si las
+entradas coinciden, se reutilizan esa versión del módulo y su código exacto;
+si cambian, se incrementa el parche. Solo se acepta una versión compartida
+existente explícita si sus entradas coinciden. Una versión explícita nueva
+debe ser posterior al historial de publicación del módulo.
 
-Central y JitPack pueden usar la misma versión semántica desde commits distintos.
-Las etiquetas usan `demo-common/vX.Y.Z-maven-central` y
-`demo-common/vX.Y.Z-jitpack`. JitPack usa una tilde en la versión de consumo.
-La huella de publicación abarca el código de la biblioteca, las guías
-empaquetadas, la cadena de herramientas y las utilidades compartidas de
-publicación. Se excluyen los registros de confirmación generados y las
-instrucciones de instalación.
+La primera publicación reserva atómicamente
+`release-identity/demo-common/X.Y.Z` junto con el registro del destino. Publicar
+la misma versión en el otro destino reutiliza esa identidad. Las etiquetas
+`demo-common/vX.Y.Z-maven-central` y `demo-common/vX.Y.Z-jitpack` y sus estados
+de publicación siguen siendo independientes. JitPack usa una tilde en la
+versión de consumo. La firma y los metadatos pueden variar entre destinos;
+no se exige que los bytes de sus artefactos sean idénticos.
+
+La huella abarca el código de la biblioteca, las guías empaquetadas, la cadena
+de herramientas, la configuración de compilación versionada y las utilidades
+compartidas de publicación. Se excluyen los registros de confirmación generados
+y las instrucciones de instalación. Los intentos fallidos conservan su versión
+compartida inmutable; nunca la liberan para otro código fuente.
+
+Las versiones históricas como `0.1.2` conservan sus identidades de origen por
+destino. No se combinan retroactivamente. Las versiones compartidas nuevas
+empiezan después del historial existente del módulo y agrupan los destinos
+confirmados en una sola versión de documentación.
 
 El flujo de trabajo valida los artefactos locales antes de reservar una versión.
 Central escribe un marcador antes de subir y verifica los hashes y las firmas
