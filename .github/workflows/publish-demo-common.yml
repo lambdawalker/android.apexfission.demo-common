@@ -33,6 +33,6 @@ jobs:
     secrets: inherit
     with:
       repository: ${{ inputs.repository }}
-      module: demo-common
+      module: 'demo-common'
       version: ${{ inputs.version }}
       bypass_version_verification: ${{ inputs.bypass_version_verification }}

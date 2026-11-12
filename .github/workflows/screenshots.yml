@@ -35,6 +35,7 @@ jobs:
           ./gradlew "$task" --no-daemon
           mkdir -p screenshot-manifest
           git rev-parse HEAD > screenshot-manifest/source.txt
+          : > screenshot-manifest/images.sha256
           if [[ -d "$reference" ]]; then
             find "$reference" -name '*.png' -type f -print0 | sort -z |
               xargs -0 -r sha256sum > screenshot-manifest/images.sha256
