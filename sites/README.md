@@ -33,3 +33,20 @@ The Documentation workflow builds and checks PRs and publishes only main through
 `build_docs --check` validates local generated links, anchors, images and raw Markdown endpoints; it does not verify external network availability or render Android UI. Site controls provide theme preference, scoped search and version/language switching that preserves the guide when available. If a guide is missing in the target scope, the selector explains the index fallback.
 
 Do not edit generated output. For repository-specific layout changes, override bundled template files under `sites/templates/` or static assets under `sites/static/` and rerun the complete build/check.
+
+## Landing page
+
+`sites/templates/index.html` and `sites/static/landing.css` present the newest
+confirmed Demo Common release first. The version is selected numerically from
+the CLI-generated scopes, so `0.1.10` follows `0.1.9`. Maven Central and JitPack
+retain their own documentation links and source identities, with English and
+Spanish links grouped together. Maven Central is the primary link when both
+destinations have the newest version. Older releases and unreleased development
+documentation remain under **Other versions and development**. Landing-page
+search uses the highlighted release.
+
+Run the template regressions with Zola on `PATH`:
+
+```sh
+sh sites/tests/landing.sh
+```
