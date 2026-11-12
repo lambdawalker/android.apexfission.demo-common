@@ -6,7 +6,7 @@
   "publish-jitpack.yml": "a7a8786e51a27a9552f42824ffebb05165a84cafe9abda3558b40ad26254f496",
   "publish-library.yml": "9adf359b01ea3ca175b2ec20fa1135b2eb9edab618b478e800644092d3f9505b",
   "reconcile-failed-jitpack.yml": "27ac04e2da0e7a2f632aa34c6f4c8dc7a0a07c951436627adcb04c7b6e474e12",
-  "screenshots.yml": "3a91e77fa51960729b45662d2b156fa801869a2333d9dfb90d25eee656080c86",
+  "screenshots.yml": "1f31d8edece1cc76753e1e9d5c1faf91391a8ebefafddc7a88e5bd7d194b246a",
   "unit-tests.yml": "68976a2b2eefd4a6cb3a1ba0f2212c3b6900694edd97ae797f8aff1a2621c880",
   "update-workflows.yml": "96e4059b3a61f615889403db414c806bcf8d4612d637505af6f0ac8ff1557c4a",
   "verify-release-tooling.yml": "a9d0f22e99d59d9bde4d7937277b99970683f717dd3138f623470f0f26ab125b"

@@ -76,7 +76,11 @@ screenshots. Source commits, provider tags, artifact hashes and confirmation
 records remain unchanged. Development documentation continues to describe the
 current implementation, including its newer Settings-button placement.
 
-The documentation revision is retained on `docs/demo-common-0.1.2` so a full
+The illustrated documentation revision is retained on `docs/demo-common-0.1.2-images` so a full
 history fetch can obtain it even if the integration PR is squash-merged. Keep
 that documentation branch available; its immutable commit, rather than the
 branch name, is what the archives reference.
+
+The Compose API guide includes reviewed light/dark images for the screen, both
+card overloads and title. Component screenshot provenance and reproduction steps
+are in `docs/screenshots/README.md`.

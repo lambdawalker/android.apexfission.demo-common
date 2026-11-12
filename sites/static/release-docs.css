@@ -6,3 +6,6 @@
 .publication-details ul { padding-left: 1.2rem; }
 .publication-details li { margin: .5rem 0; overflow-wrap: anywhere; }
 .publication-details code { font-size: .75rem; }
+
+body[data-guide="api"] .prose table { display: table; width: 100%; table-layout: fixed; }
+.prose table img { display: block; max-height: 420px; width: auto; margin: auto; }
