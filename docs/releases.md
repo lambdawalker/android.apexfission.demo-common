@@ -5,7 +5,7 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-This checkout pins the shared-identity CLI to released `v0.1.11` in
+This checkout pins the shared-identity CLI to released `v0.1.13` in
 `.project/setup/config.yaml`. The Gradle plugin remains at released `v0.1.9`.
 The documentation website additionally requires Zola 0.23.6.
 

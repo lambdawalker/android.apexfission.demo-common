@@ -5,7 +5,7 @@ on:
       version:
         description: Validated Rust tooling tag or full commit SHA
         required: true
-        default: 'v0.1.11'
+        default: 'v0.1.13'
 permissions:
   contents: read
 jobs:
@@ -40,6 +40,9 @@ jobs:
           git add .project/setup/config.yaml .github/workflows .project/setup/workflow-generation.json
           if [[ -f .project/setup/repositories.properties ]]; then
             git add .project/setup/repositories.properties
+          fi
+          if [[ -f .project/setup/modules.properties ]]; then
+            git add .project/setup/modules.properties
           fi
           git diff --cached --binary > workflow-update.patch
       - uses: actions/upload-artifact@v6
