@@ -1,0 +1,37 @@
+{% set_global central = false %}{% set_global jitpack = false %}
+{% set_global central_source = scope.source %}{% set_global jitpack_source = scope.source %}
+{% set_global central_root = scope.root %}{% set_global jitpack_root = scope.root %}
+{% set_global equivalent_sources = false %}
+{% if not scope.development %}
+  {% set verified = load_data(path="static/release-equivalence.json") %}
+  {% for record in verified %}
+    {% if record.module == scope.module and record.version == patch_version %}
+      {% if scope.version == patch_version ~ "-maven-central" and scope.source == record.sources["maven-central"] %}{% set_global equivalent_sources = true %}{% endif %}
+      {% if scope.version == patch_version ~ "-jitpack" and scope.source == record.sources.jitpack %}{% set_global equivalent_sources = true %}{% endif %}
+      {% if equivalent_sources %}
+        {% for peer in scopes %}
+          {% if peer.module == scope.module and peer.language == scope.language %}
+            {% if peer.version == patch_version ~ "-maven-central" and peer.source == record.sources["maven-central"] %}{% set_global central = true %}{% set_global central_source = peer.source %}{% set_global central_root = peer.root %}{% endif %}
+            {% if peer.version == patch_version ~ "-jitpack" and peer.source == record.sources.jitpack %}{% set_global jitpack = true %}{% set_global jitpack_source = peer.source %}{% set_global jitpack_root = peer.root %}{% endif %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+  {% if scope.version == patch_version ~ "-maven-central" %}{% set_global central = true %}{% endif %}
+  {% if scope.version == patch_version ~ "-jitpack" %}{% set_global jitpack = true %}{% endif %}
+  {% if scope.destinations is defined %}{% for destination in scope.destinations %}{% if destination == "maven-central" %}{% set_global central = true %}{% elif destination == "jitpack" %}{% set_global jitpack = true %}{% endif %}{% endfor %}{% endif %}
+{% endif %}
+<div class="release-availability">
+  <p>{% if scope.development %}<strong>{% if spanish %}Desarrollo · sin publicar{% else %}Development · unreleased{% endif %}</strong>{% else %}<strong>{{ patch_version }}</strong> · {% if spanish %}Disponible en{% else %}Available on{% endif %} {% if central %}<a href="{{ central_root }}installation/">Maven Central</a>{% endif %}{% if central and jitpack %} {% if spanish %}y{% else %}and{% endif %} {% endif %}{% if jitpack %}<a href="{{ jitpack_root }}installation/">JitPack</a>{% endif %}{% if not central and not jitpack %}{% if spanish %}una publicación confirmada{% else %}a confirmed publication{% endif %}{% endif %}{% endif %}</p>
+  <details class="publication-details"><summary>{% if spanish %}Detalles de publicación{% else %}Publication details{% endif %}</summary>
+    <ul>
+      {% if central %}<li>Maven Central · <a href="https://github.com/{{ config.extra.repository }}/commit/{{ central_source }}"><code>{{ central_source }}</code></a></li>{% endif %}
+      {% if jitpack %}<li>JitPack · <a href="https://github.com/{{ config.extra.repository }}/commit/{{ jitpack_source }}"><code>{{ jitpack_source }}</code></a></li>{% endif %}
+      {% if not central and not jitpack %}<li>{% if spanish %}Código fuente{% else %}Source{% endif %} · <a href="https://github.com/{{ config.extra.repository }}/commit/{{ scope.source }}"><code>{{ scope.source }}</code></a></li>{% endif %}
+      <li>{% if spanish %}Documentación{% else %}Documentation{% endif %} · <a href="https://github.com/{{ config.extra.repository }}/commit/{{ scope.documentation_ref }}"><code>{{ scope.documentation_ref }}</code></a></li>
+      {% if scope.translation_tree is defined %}<li>{% if spanish %}Traducción{% else %}Translation{% endif %} · <code>{{ scope.translation_tree }}</code></li>{% endif %}
+    </ul>
+    {% if equivalent_sources and central and jitpack %}<p>{% if spanish %}Los archivos AAR, fuentes y Javadoc de {{ patch_version }} son idénticos en ambos repositorios.{% else %}The {{ patch_version }} AAR, sources and Javadoc archives are identical in both repositories.{% endif %} <a href="{{ get_url(path='release-equivalence.json') }}">SHA-256</a></p>{% endif %}
+  </details>
+</div>
