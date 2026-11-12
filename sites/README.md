@@ -32,7 +32,7 @@ The Documentation workflow builds and checks PRs and publishes only main through
 
 Do not edit generated output. For repository-specific layout changes, override bundled template files under `sites/templates/` or static assets under `sites/static/` and rerun the complete build/check.
 
-## Direct documentation and version families
+## Direct documentation and release versions
 
 The home URL opens the latest released documentation immediately, without a
 catalog or presentation cards. `/es/` opens the Spanish release. Selection uses
@@ -40,8 +40,9 @@ numeric versions, so `0.1.10` follows `0.1.9`; canonical releases take precedenc
 then Maven Central when both historical destinations have the newest patch.
 Development is used only when that language has no confirmed release.
 
-The version selector has one entry per minor series, such as **0.1.x**, opening
-its newest released patch. **Development** remains a separate, unreleased entry.
+The version selector shows exact releases, such as **0.1.2**, with one entry
+for equivalent Maven Central and JitPack publications of that patch. Older
+patch releases remain individually selectable. **Development** remains a separate, unreleased entry.
 The exact patch and confirmed repositories appear above every guide; publication
 source commits remain available under **Publication details**. Language switching,
 search and guide navigation keep using the original scopes and routes.

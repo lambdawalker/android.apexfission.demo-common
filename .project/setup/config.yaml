@@ -5,6 +5,7 @@ modules:
 key_alias: demo-common
 tooling_ref: '2e35856e7e2fb39e13bbc213dec2097e31626b3a'
 workflows:
+  screenshot_count: 11
   app_module: app
   module: demo-common
   title: Demo Common

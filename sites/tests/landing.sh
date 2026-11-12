@@ -67,8 +67,8 @@ render
 grep -Fq 'content="0;url=/dev/"' "$fixture/public/index.html"
 grep -Fq 'Documentación no disponible' "$fixture/public/es/index.html"
 
-# Render the real documentation template: version families preserve original scope
-# indices, choose the latest patch numerically, and expose only verified providers.
+# Render the real documentation template: release options preserve original scope
+# indices, keep exact patches, and expose only verified providers.
 cp "$repository/sites/templates/page.html" "$repository/sites/templates/release_availability.html" "$fixture/templates/"
 mkdir -p "$fixture/static"
 cp "$repository/sites/static/release-equivalence.json" "$fixture/static/"
@@ -101,8 +101,10 @@ cat > "$fixture/scopes.json" <<'JSON'
 JSON
 render
 html="$fixture/public/guide/index.html"
-grep -Fq '<option value="4" selected>0.1.x</option>' "$html"
-test "$(grep -o '>0.1.x</option>' "$html" | wc -l)" -eq 1
+grep -Fq '<option value="1" selected>0.1.2</option>' "$html"
+grep -Fq '<option value="3" >0.1.9</option>' "$html"
+grep -Fq '<option value="4" >0.1.10</option>' "$html"
+test "$(grep -o '>0.1.2</option>' "$html" | wc -l)" -eq 1
 grep -Fq '>Development</option>' "$html"
 grep -Fq 'href="/central/installation/">Maven Central</a>' "$html"
 grep -Fq 'href="/jitpack/installation/">JitPack</a>' "$html"
@@ -127,4 +129,4 @@ render
 grep -Fq ' · Disponible en' "$html"
 grep -Fq '>Desarrollo</option>' "$html"
 grep -Fq 'https://example.test/es' "$html"
-printf 'Direct documentation, numeric release selection, version families and verified availability pass.\n'
+printf 'Direct documentation, numeric release selection, exact release versions and verified availability pass.\n'
