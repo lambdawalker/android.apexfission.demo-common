@@ -1,6 +1,6 @@
 # Documentation website
 
-The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Use the immutable CLI commit pinned in `.project/setup/config.yaml` through `./setup.sh` or `setup.bat`; Cargo compiles a source pin once and caches it. Install [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6) on PATH and verify its archive checksum. CI installs its checksum-pinned Zola automatically.
+The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Use CLI v0.1.11 pinned in `.project/setup/config.yaml` through `./setup.sh` or `setup.bat`; Windows downloads and caches the verified release; on Linux/macOS, install the matching release binary on PATH. Install [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6) on PATH and verify its archive checksum. CI installs its checksum-pinned Zola automatically.
 
 With Zola on PATH, run the pinned CLI from the repository root:
 
