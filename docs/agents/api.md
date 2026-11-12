@@ -4,7 +4,13 @@ Import these declarations from `com.apexfission.android.democommon`. Call
 them from an existing Material 3 composition. Each accepts the caller's
 `Modifier` and returns `Unit`.
 
+Images use the example host’s Material 3 theme; the components adopt your app’s theme.
+
 ## DemoScreen
+
+| Light | Dark |
+| --- | --- |
+| ![DemoScreen — light](../screenshots/catalog-light.png) | ![DemoScreen — dark](../screenshots/catalog-dark.png) |
 
 ```kotlin
 @Composable
@@ -36,6 +42,12 @@ a vertically scrolling parent.
 
 ## DemoCard
 
+Custom-content overload.
+
+| Light | Dark |
+| --- | --- |
+| ![DemoCard — custom content — light](../screenshots/custom-card-light.png) | ![DemoCard — custom content — dark](../screenshots/custom-card-dark.png) |
+
 ```kotlin
 @Composable
 public fun DemoCard(
@@ -55,6 +67,12 @@ For the standard welcome catalog card, call the overload with `title`,
 an optional `icon`, followed by the description and a
 full-width filled tonal button. Use the content slot above for custom cards.
 
+Title, description and action overload.
+
+| Light | Dark |
+| --- | --- |
+| ![DemoCard — standard action — light](../screenshots/card-light.png) | ![DemoCard — standard action — dark](../screenshots/card-dark.png) |
+
 ```kotlin
 @Composable
 public fun DemoCard(
@@ -68,6 +86,10 @@ public fun DemoCard(
 ```
 
 ## CardTitle
+
+| Light | Dark |
+| --- | --- |
+| ![CardTitle — light](../screenshots/card-title-light.png) | ![CardTitle — dark](../screenshots/card-title-dark.png) |
 
 ```kotlin
 @Composable

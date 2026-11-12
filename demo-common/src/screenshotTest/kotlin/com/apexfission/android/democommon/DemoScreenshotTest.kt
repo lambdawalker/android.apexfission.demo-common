@@ -27,3 +27,27 @@ fun NarrowCatalogScreenshot() {
 fun EmptyCatalogScreenshot() {
     DemoCatalogFixture(populated = false)
 }
+
+@PreviewTest
+@Preview(name = "democard-light", widthDp = 360, locale = "en")
+@Preview(name = "democard-dark", widthDp = 360, locale = "en", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun DemoCardScreenshot() {
+    DemoCardPreview()
+}
+
+@PreviewTest
+@Preview(name = "customdemocard-light", widthDp = 360, locale = "en")
+@Preview(name = "customdemocard-dark", widthDp = 360, locale = "en", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun CustomDemoCardScreenshot() {
+    CustomDemoCardFixture()
+}
+
+@PreviewTest
+@Preview(name = "cardtitle-light", widthDp = 360, locale = "en")
+@Preview(name = "cardtitle-dark", widthDp = 360, locale = "en", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun CardTitleScreenshot() {
+    CardTitlePreview()
+}

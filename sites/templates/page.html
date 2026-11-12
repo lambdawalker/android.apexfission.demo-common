@@ -1,9 +1,7 @@
 {% extends "base.html" %}
-{% block title %}{{ page.title }} · {{ scope.label }}{% if not scope.development %} {% set parts = scope.version | split(pat=".") %}{{ parts[0] }}.{{ parts[1] }}.x{% endif %}{% endblock title %}
+{% block title %}{{ page.title }} · {{ scope.label }}{% if not scope.development %} {{ scope.version | split(pat="-") | first }}{% endif %}{% endblock title %}
 {% block content %}
 {% set patch_version = scope.version | split(pat="-") | first %}
-{% set parts = patch_version | split(pat=".") %}
-{% set family = scope.version %}{% if not scope.development %}{% set family = parts[0] ~ "." ~ parts[1] ~ ".x" %}{% endif %}
 <link rel="stylesheet" href="{{ get_url(path='release-docs.css') }}">
 <div class="docs-layout">
   <aside class="sidebar" id="sidebar" aria-label="{% if spanish %}Navegación de documentación{% else %}Documentation navigation{% endif %}">
@@ -14,19 +12,18 @@
       <select id="version-select" aria-label="{% if spanish %}Versión{% else %}Version{% endif %}">
         {% for candidate in scopes | reverse %}
           {% if candidate.module == scope.module and candidate.language == scope.language and not candidate.development %}
-            {% set v = candidate.version | split(pat="-") | first %}{% set p = v | split(pat=".") %}{% set f = p[0] ~ "." ~ p[1] ~ ".x" %}
-            {% set_global best_root = "" %}{% set_global best_patch = -1 %}{% set_global best_rank = -1 %}{% set_global best_index = 0 %}
+            {% set v = candidate.version | split(pat="-") | first %}
+            {% set_global best_root = "" %}{% set_global best_rank = -1 %}{% set_global best_index = 0 %}
             {% for alternative in scopes %}
               {% if alternative.module == scope.module and alternative.language == scope.language and not alternative.development %}
-                {% set av = alternative.version | split(pat="-") | first %}{% set ap = av | split(pat=".") %}
-                {% if ap[0] == p[0] and ap[1] == p[1] %}
+                {% set av = alternative.version | split(pat="-") | first %}
+                {% if av == v %}
                   {% set ar = 0 %}{% if alternative.version == av %}{% set ar = 2 %}{% elif alternative.version == av ~ "-maven-central" %}{% set ar = 1 %}{% endif %}
-                  {% set n = ap[2] | int %}
-                  {% if n > best_patch or (n == best_patch and ar > best_rank) %}{% set_global best_root = alternative.root %}{% set_global best_patch = n %}{% set_global best_rank = ar %}{% set_global best_index = loop.index0 %}{% endif %}
+                  {% if ar > best_rank %}{% set_global best_root = alternative.root %}{% set_global best_rank = ar %}{% set_global best_index = loop.index0 %}{% endif %}
                 {% endif %}
               {% endif %}
             {% endfor %}
-            {% if candidate.root == best_root %}<option value="{{ best_index }}" {% if not scope.development and f == family %}selected{% endif %}>{{ f }}</option>{% endif %}
+            {% if candidate.root == best_root %}<option value="{{ best_index }}" {% if not scope.development and v == patch_version %}selected{% endif %}>{{ v }}</option>{% endif %}
           {% endif %}
         {% endfor %}
         {% for candidate in scopes %}{% if candidate.module == scope.module and candidate.language == scope.language and candidate.development %}<option value="{{ loop.index0 }}" {% if scope.development %}selected{% endif %}>{% if spanish %}Desarrollo{% else %}Development{% endif %}</option>{% endif %}{% endfor %}
@@ -37,10 +34,10 @@
     <nav class="guide-nav" aria-label="{% if spanish %}Guías{% else %}Guides{% endif %}"><p class="nav-label">{% if spanish %}DOCUMENTACIÓN{% else %}DOCUMENTATION{% endif %}</p>{% for guide in scope.pages %}<a href="{{ guide.href }}" {% if guide.slug == page.extra.guide %}aria-current="page"{% endif %}>{{ guide.title }}<span aria-hidden="true">›</span></a>{% endfor %}</nav>
     <div class="sidebar-foot">{% if spanish %}Creado para Android.<br>Diseñado para avanzar.{% else %}Built for Android.<br>Designed to move you forward.{% endif %}</div>
   </aside>
-  <main id="main" class="article-main"><div class="breadcrumbs"><span>{{ scope.label }}</span><span aria-hidden="true">/</span><span>{% if scope.development %}{% if spanish %}Desarrollo{% else %}Development{% endif %}{% else %}{{ family }}{% endif %}</span><span aria-hidden="true">/</span><span>{{ page.title }}</span></div>
+  <main id="main" class="article-main"><div class="breadcrumbs"><span>{{ scope.label }}</span><span aria-hidden="true">/</span><span>{% if scope.development %}{% if spanish %}Desarrollo{% else %}Development{% endif %}{% else %}{{ patch_version }}{% endif %}</span><span aria-hidden="true">/</span><span>{{ page.title }}</span></div>
     {% include "release_availability.html" %}
     {% if page.extra.fallback %}<div class="fallback-notice" role="status">{% if spanish %}Esta guía aún no está disponible en español. Se muestra el contenido original en inglés.{% else %}This guide is not available in this language yet. The original English content is shown.{% endif %}</div>{% endif %}
-    <div class="article-heading"><span class="eyebrow">{{ scope.label }} / {% if scope.development %}{% if spanish %}Desarrollo{% else %}Development{% endif %}{% else %}{{ family }}{% endif %}</span><h1{% if page.extra.title_anchor is defined %} id="{{ page.extra.title_anchor }}"{% endif %}>{{ page.title }}</h1></div>
+    <div class="article-heading"><span class="eyebrow">{{ scope.label }} / {% if scope.development %}{% if spanish %}Desarrollo{% else %}Development{% endif %}{% else %}{{ patch_version }}{% endif %}</span><h1{% if page.extra.title_anchor is defined %} id="{{ page.extra.title_anchor }}"{% endif %}>{{ page.title }}</h1></div>
     <article class="prose">{{ page.content | safe }}</article>
     {% if scope.images is defined and page.extra.guide == "" and scope.images | length > 0 %}<section class="screenshots" aria-labelledby="screenshots-title"><h2 id="screenshots-title">{% if spanish %}Capturas de pantalla{% else %}Screenshots{% endif %}</h2><div class="screenshot-grid">{% for picture in scope.images %}<a href="{{ picture.src }}"><img src="{{ picture.src }}" alt="{{ picture.alt }}" loading="lazy"></a>{% endfor %}</div></section>{% endif %}
     <footer class="article-footer">{% for guide in scope.pages %}{% if guide.slug == page.extra.guide %}<a href="{{ guide.raw }}" class="raw-link">{% if spanish %}Ver Markdown original{% else %}View raw Markdown{% endif %} <span aria-hidden="true">↗</span></a>{% endif %}{% endfor %}<span>Apexfission · {% if spanish %}Documentación{% else %}Documentation{% endif %}</span></footer>

@@ -39,7 +39,7 @@ jobs:
             find "$reference" -name '*.png' -type f -print0 | sort -z |
               xargs -0 -r sha256sum > screenshot-manifest/images.sha256
           fi
-          test "$(wc -l < screenshot-manifest/images.sha256)" -eq 5
+          test "$(wc -l < screenshot-manifest/images.sha256)" -eq 11
       - name: Upload screenshots and test reports
         if: always()
         uses: actions/upload-artifact@v7

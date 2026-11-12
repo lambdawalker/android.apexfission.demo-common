@@ -46,7 +46,7 @@ private fun EmptyPreview() {
 @Preview(name = "Card light", widthDp = 360, showBackground = true)
 @Preview(name = "Card dark", widthDp = 360, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun DemoCardPreview() {
+internal fun DemoCardPreview() {
     CatalogPreviewTheme {
         Surface {
             Column(Modifier.padding(16.dp)) {
@@ -59,7 +59,7 @@ private fun DemoCardPreview() {
 @Preview(name = "Title light", widthDp = 360, showBackground = true)
 @Preview(name = "Title dark", widthDp = 360, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun CardTitlePreview() {
+internal fun CardTitlePreview() {
     CatalogPreviewTheme {
         Surface {
             CardTitle(
@@ -138,3 +138,18 @@ private val playIcon = ImageVector.Builder("Play", 24.dp, 24.dp, 24f, 24f).apply
         close()
     }
 }.build()
+
+/** Custom-content overload rendered independently for the API guide. */
+@Composable
+internal fun CustomDemoCardFixture() {
+    CatalogPreviewTheme {
+        Surface {
+            Column(Modifier.padding(16.dp)) {
+                DemoCard {
+                    CardTitle("Read the setup guide")
+                    Text("A card can contain any Compose content.")
+                }
+            }
+        }
+    }
+}
