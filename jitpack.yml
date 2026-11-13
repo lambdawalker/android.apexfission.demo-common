@@ -1,6 +1,6 @@
-# Gradle/AGP run on 21; library bytecode and Kotlin toolchains remain Java 17.
 jdk:
-  - openjdk17
-  - openjdk21
+- openjdk17
+- openjdk21
 install:
-  - ./gradlew --no-daemon :demo-common:publishJitPack
+- if ! command -v cargo >/dev/null 2>&1; then curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal; fi
+- if [ -f "$HOME/.cargo/env" ]; then . "$HOME/.cargo/env"; fi; ANDROID_REPO_SETUP_SOURCE=1 sh ./setup.sh jitpack-build

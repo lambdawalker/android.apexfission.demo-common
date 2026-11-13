@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "scope": "Existing reviewed documentation images; no new capture or source provenance is claimed.",
+  "images": [
+    {
+      "file": "card-dark.png",
+      "sha256": "30db0d2b52d4f286287753be11855abfcc38f625dbe4c9c5381a12fb542087ad",
+      "width": 945,
+      "height": 575
+    },
+    {
+      "file": "card-light.png",
+      "sha256": "fc685d7835e1312f953a9fed0b44f13492310fe42063fc1f18ff44a6f75896ed",
+      "width": 945,
+      "height": 575
+    },
+    {
+      "file": "card-title-dark.png",
+      "sha256": "434babb4286cc509ad2ee201c1ee0baffd1f6918cd49fc701aa39f7655f77636",
+      "width": 945,
+      "height": 173
+    },
+    {
+      "file": "card-title-light.png",
+      "sha256": "cd6ec98a808e2ac04d8fdc407130b339ded66e46c17a28ebda740489aa891443",
+      "width": 945,
+      "height": 173
+    },
+    {
+      "file": "catalog-dark.png",
+      "sha256": "50c166ae3a076fbdc2839f2e50088141e527bfb599c53a0db39bd40c2452097d",
+      "width": 1032,
+      "height": 1943
+    },
+    {
+      "file": "catalog-light.png",
+      "sha256": "6d20b15bdf693f73d0a418b3e91eacbcae7f6097bbf6124889ac9adb5566f04e",
+      "width": 1032,
+      "height": 1943
+    },
+    {
+      "file": "custom-card-dark.png",
+      "sha256": "7b19616272ace9a207fb57f14b5c604574ef753b7e233f95aa945fddaf7936a6",
+      "width": 945,
+      "height": 422
+    },
+    {
+      "file": "custom-card-light.png",
+      "sha256": "e925d59ffc1ca138c8bea42965e15dcba0cd32e3c06bbb70be04e65341470706",
+      "width": 945,
+      "height": 422
+    }
+  ]
+}

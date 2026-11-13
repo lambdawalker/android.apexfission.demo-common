@@ -1,0 +1,32 @@
+schema: 1
+repository: lambdawalker/android.apexfission.demo-common
+title: Demo Common
+modules:
+  demo-common: Demo Common
+tooling_ref: v0.1.16
+sources:
+  roots:
+  - demo-common/src/main/kotlin
+  manifest: docs/api-inputs.json
+  groups:
+  - include:
+    - '**/*.kt'
+    intro: .project/docs/introductions/api.md
+    output: docs/agents/source-reference.md
+  examples: []
+media:
+  manifests:
+  - path: docs/screenshots/manifest.json
+    base: docs/screenshots
+    collection: images
+    file_key: file
+    required_files:
+    - card-dark.png
+    - card-light.png
+    - card-title-dark.png
+    - card-title-light.png
+    - catalog-dark.png
+    - catalog-light.png
+    - custom-card-dark.png
+    - custom-card-light.png
+    require_dimensions: true

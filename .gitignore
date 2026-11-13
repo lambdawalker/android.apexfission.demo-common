@@ -10,3 +10,5 @@ sites/dist/
 .project/setup/workflow-generation.lock
 
 /bin/
+/.project/setup/cache/
+/.project/docs/cache/

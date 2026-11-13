@@ -42,10 +42,11 @@ jobs:
           fetch-depth: 0
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.13'
+          TOOLING_REF: '263b1ddfbe0596b6e1655293fac6ff26a547b890'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.16 android-repo-docs
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
@@ -93,6 +94,12 @@ jobs:
           tar -xzf "$archive" -C "$directory"
           test "$("$directory/zola" --version)" = 'zola 0.23.6'
           echo "$directory" >> "$GITHUB_PATH"
+      - name: Prepare immutable release assets
+        if: steps.release.outputs.skip != 'true'
+        env:
+          RELEASE_MODULE: ${{ inputs.module }}
+          SOURCE_SHA: ${{ steps.release.outputs.source }}
+        run: android-repo-setup assets prepare --module "$RELEASE_MODULE" --source "$SOURCE_SHA"
       - name: Validate immutable release source
         if: steps.release.outputs.skip != 'true'
         env:

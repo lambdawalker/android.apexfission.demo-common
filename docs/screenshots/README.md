@@ -7,7 +7,7 @@ source recorded by the artifact is `c0450af6cc2f7952b620ac6ab5c52114a61f89c4`.
 
 The populated `DemoScreen` viewport is 393 × 740 dp. Standalone `DemoCard`
 (both overloads) and `CardTitle` previews are 360 dp wide and wrap their content.
-All use the fixture host theme and default font scale. `images.sha256` records
+All use the fixture host theme and default font scale. `manifest.json` records
 the exact original PNGs. These are documentation assets, not approved comparison
 baselines and not files included in published Android artifacts.
 
@@ -22,4 +22,4 @@ predated 0.1.2 and have been replaced.
 Run `./gradlew :demo-common:updateDebugScreenshotTest` to generate new
 candidates. CI renders 11 candidates: populated and empty screens in light/dark,
 a narrow large-text screen, and the six standalone component images. Review the
-originals and update this provenance and checksum when refreshing documentation.
+originals and update this provenance and manifest when refreshing documentation. Run `sh ./docs.sh check` to verify the accepted documentation image hashes and dimensions.

@@ -5,24 +5,17 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-This checkout pins the shared-identity CLI to released `v0.1.13` in
-`.project/setup/config.yaml`. The Gradle plugin remains at released `v0.1.9`.
-The documentation website additionally requires Zola 0.23.6.
+The CLI is pinned to the exact reviewed source commit in `.project/setup/config.yaml`.
+The Gradle plugin remains at released `v0.1.9`. The documentation site requires Zola 0.23.6.
 
-Run `setup.bat` on Windows or `./setup.sh` on Linux or macOS to open the
-iocraft deployment wizard. Use Tab and Shift+Tab to move between controls,
-Space to toggle checkboxes, and Enter to activate buttons. Password fields are
-masked; Page Up/Page Down scroll forms, and Shift+Page Up/Page Down scroll the
-progress log. Both launchers read `tooling_ref` from
-`.project/setup/config.yaml`. For a stable version tag, Windows downloads and
-verifies the matching CLI on first use and caches it under `bin/<tag>/`.
-On Linux or macOS, install that exact version from
-[Android Repository Setup releases](https://github.com/lambdawalker/gradle.android-repo-setup/releases),
-verify the archive checksum, and put the extracted executable on `PATH`.
-The launcher checks its version before running it. For a full source commit SHA,
-both launchers use Cargo to compile that exact revision once and cache the
-executable under `bin/<SHA>/bin/`. Cargo is required to install a source pin;
-subsequent runs reuse the cached executable.
+Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. The generated
+launchers install and validate the configured CLI, cache it under
+`.project/setup/cache/`, and forward arguments. Release pins download verified
+binaries; full commit pins build with Cargo. Run `setup check` to validate setup.
+See [shared setup](shared-setup.md) for regeneration and pin updates.
+
+The interactive wizard supports Tab/Shift+Tab navigation, Space to toggle
+checkboxes, and Enter to activate buttons. Password fields are masked.
 
 Use a repository-scoped
 GitHub token with the environment administration permissions shown by
@@ -100,7 +93,7 @@ The reservation tags preserve release state independently of the queue.
 ```sh
 android-repo-setup publishing_config check
 android-repo-setup import_docs --check
-android-repo-setup build_docs --check
+android-repo-docs build --check
 android-repo-setup workflows --check
 ./gradlew verifyImportDocs :demo-common:testDebugUnitTest :demo-common:lintRelease :demo-common:assembleRelease
 ```
@@ -115,7 +108,7 @@ successful release finalization.
 
 Run this from a private terminal with a JDK. Use `./setup.sh` on Linux or
 macOS, or `setup.bat` on Windows. Both launchers use the configured `tooling_ref`
-and follow the installation and cache rules above; the `bin/` directory is
+and follow the installation and cache rules above; the `.project/setup/cache/` directory is
 ignored by Git. The CLI opens your existing encrypted vault in place. To open
 the signing wizard directly, run `./setup.sh signing` or `setup.bat signing`.
 
@@ -177,4 +170,4 @@ outside the checkout under `~/.projects/<project>/secrets/`.
 
 ## Documentation website
 
-The website uses Zola 0.23.6 and the pinned Rust CLI; it requires neither Python nor Node.js. Install both tools on PATH and run `android-repo-setup build_docs --check` from the repository root. The opt-in backend is configured in `sites/zola.toml`; [the website guide](../sites/README.md) covers content ownership, versioned English/Spanish pages, reviewed translation hashes, local preview and Pages deployment. Confirmed release metadata remains authoritative; documentation builds never publish an Android artifact or change historical source identities.
+The website uses Zola 0.23.6 and the pinned Rust CLI; it requires neither Python nor Node.js. Install both tools on PATH and run `android-repo-docs build --check` from the repository root. The opt-in backend is configured in `sites/zola.toml`; [the website guide](../sites/README.md) covers content ownership, versioned English/Spanish pages, reviewed translation hashes, local preview and Pages deployment. Confirmed release metadata remains authoritative; documentation builds never publish an Android artifact or change historical source identities.

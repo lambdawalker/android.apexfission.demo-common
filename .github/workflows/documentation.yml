@@ -27,16 +27,12 @@ jobs:
         with:
           ref: ${{ github.event_name == 'pull_request' && github.ref || 'main' }}
           fetch-depth: 0
+          lfs: true
       - id: source
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-      - name: Install pinned Rust tooling
-        env:
-          TOOLING_REF: 'v0.1.13'
-        run: |
-          if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
-          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
-      - run: android-repo-setup publishing_config check
-      - run: android-repo-setup module_release verify
+      - name: Install pinned documentation tooling
+        run: cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.16 android-repo-docs
+      - run: android-repo-docs check
       - name: Install pinned Zola
         shell: bash
         run: |
@@ -51,8 +47,8 @@ jobs:
           tar -xzf "$archive" -C "$directory"
           test "$("$directory/zola" --version)" = 'zola 0.23.6'
           echo "$directory" >> "$GITHUB_PATH"
-      - run: "sh sites/tests/landing.sh && android-repo-setup build_docs --check"
-      - run: "cd docs/screenshots && sha256sum -c images.sha256"
+      - run: "sh sites/tests/landing.sh && android-repo-docs build --check"
+      - run: "android-repo-docs check"
       - uses: actions/upload-pages-artifact@v5
         with:
           path: sites/dist

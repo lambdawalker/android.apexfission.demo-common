@@ -1,5 +1,7 @@
 # Compose API
 
+[Complete source declaration reference](source-reference.md) · Checked against the current library sources.
+
 Import these declarations from `com.apexfission.android.democommon`. Call
 them from an existing Material 3 composition. Each accepts the caller's
 `Modifier` and returns `Unit`.
