@@ -56,7 +56,7 @@ jobs:
           ref: main
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'dd5c16b76a960d080dadf3445f4dd5e2c33e7a9d'
+          TOOLING_REF: 'v0.1.16'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
@@ -88,7 +88,7 @@ jobs:
           lfs: false
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'dd5c16b76a960d080dadf3445f4dd5e2c33e7a9d'
+          TOOLING_REF: 'v0.1.16'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup

@@ -31,7 +31,7 @@ jobs:
       - id: source
         run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
       - name: Install pinned documentation tooling
-        run: cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --rev 8e7d731e798ff9defcd71b2b146958e0ab3e146a android-repo-docs
+        run: cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.16 android-repo-docs
       - run: android-repo-docs check
       - name: Install pinned Zola
         shell: bash

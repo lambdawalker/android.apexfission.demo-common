@@ -3,7 +3,7 @@ repository: lambdawalker/android.apexfission.demo-common
 title: Demo Common
 modules:
   demo-common: Demo Common
-tooling_ref: 8e7d731e798ff9defcd71b2b146958e0ab3e146a
+tooling_ref: v0.1.16
 sources:
   roots:
   - demo-common/src/main/kotlin
