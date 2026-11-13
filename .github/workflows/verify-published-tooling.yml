@@ -24,7 +24,7 @@ jobs:
             21
       - uses: gradle/actions/setup-gradle@v5
       - name: Install CLI for Gradle child tasks
-        run: cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --rev 8e7d731e798ff9defcd71b2b146958e0ab3e146a android-repo-setup
+        run: cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --rev dd5c16b76a960d080dadf3445f4dd5e2c33e7a9d android-repo-setup
       - name: Build with the released plugin and verify with the pinned CLI
         shell: bash
         run: |
