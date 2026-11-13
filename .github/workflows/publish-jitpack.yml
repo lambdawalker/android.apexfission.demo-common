@@ -42,16 +42,16 @@ jobs:
           fetch-depth: 0
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.17'
+          TOOLING_REF: 'v0.1.20'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
-          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.16 android-repo-docs
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.20 android-repo-docs
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-      - name: Resolve version and reconcile failed JitPack attempt
+      - name: Reconcile previous attempts and resolve version
         id: release
         env:
           REQUESTED_VERSION: ${{ inputs.version }}
@@ -115,6 +115,7 @@ jobs:
           ./gradlew "$MODULE_PATH:testDebugUnitTest" "$MODULE_PATH:publishAllPublicationsToVerificationRepository" -PjitpackBuild=true -PjitpackScopedTag=true "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
           android-repo-setup module_release check-local --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Reserve destination and canonical source tag atomically
+        id: reserve
         if: steps.release.outputs.skip != 'true'
         env:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
@@ -139,6 +140,11 @@ jobs:
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
           SOURCE_SHA: ${{ steps.release.outputs.source }}
         run: android-repo-setup module_release finalize --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
+      - name: Reconcile unsuccessful release attempt
+        if: failure() && steps.reserve.outcome == 'success'
+        env:
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: android-repo-setup module_release reconcile --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --apply
       - name: Recovery guidance
         if: failure()
         env:

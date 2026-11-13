@@ -41,11 +41,11 @@ jobs:
           ref: ${{ github.sha }}
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.17'
+          TOOLING_REF: 'v0.1.20'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
-          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.16 android-repo-docs
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.20 android-repo-docs
       - run: android-repo-setup publishing_config check
       - id: repository
         env:
@@ -86,11 +86,11 @@ jobs:
           fetch-depth: 0
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.17'
+          TOOLING_REF: 'v0.1.20'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
-          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.16 android-repo-docs
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.20 android-repo-docs
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
@@ -101,10 +101,12 @@ jobs:
           MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           SIGNING_IN_MEMORY_KEY: ${{ secrets.SIGNING_IN_MEMORY_KEY }}
         run: android-repo-setup publishing_config preflight
-      - name: Choose release version
+      - name: Reconcile previous attempts and choose release version
         id: release
         env:
           RELEASE_MODULE: ${{ inputs.module }}
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           REQUESTED_VERSION: ${{ inputs.version }}
           BYPASS_VERSION_VERIFICATION: ${{ inputs.bypass_version_verification }}
         shell: bash
@@ -168,6 +170,7 @@ jobs:
           ./gradlew verifyImportDocs "$MODULE_PATH:lintRelease" "$MODULE_PATH:assembleRelease" "$MODULE_PATH:publishAllPublicationsToVerificationRepository" "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon
           android-repo-setup module_release check-local --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --source "$SOURCE_SHA"
       - name: Reserve immutable version, source, and artifact hashes
+        id: reserve
         if: steps.release.outputs.skip != 'true'
         env:
           RELEASE_MODULE: ${{ inputs.module }}
@@ -195,7 +198,7 @@ jobs:
             *) echo 'Unknown repository'; exit 1 ;;
           esac
           MODULE_PATH=$(android-repo-setup module-path "$RELEASE_MODULE")
-          ./gradlew "$MODULE_PATH:$task" "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon --console=plain 2>&1 | tee "$RUNNER_TEMP/repository-publish.log"
+          ./gradlew "$MODULE_PATH:$task" "-PreleaseModule=$RELEASE_MODULE" "-PreleaseVersion=$RELEASE_VERSION" --no-daemon --console=plain 2>&1 | tee "$RUNNER_TEMP/repository-publish.log" | android-repo-setup module_release track-central-upload --module "$RELEASE_MODULE" --version "$RELEASE_VERSION"
       - name: Retain deployment log
         if: always()
         uses: actions/upload-artifact@v7
@@ -204,6 +207,14 @@ jobs:
           path: ${{ runner.temp }}/repository-publish.log
           if-no-files-found: ignore
           retention-days: 30
+      - name: Reconcile unsuccessful release attempt
+        if: failure() && steps.reserve.outcome == 'success'
+        env:
+          RELEASE_MODULE: ${{ inputs.module }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+          MAVEN_CENTRAL_USERNAME: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          MAVEN_CENTRAL_PASSWORD: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        run: android-repo-setup module_release reconcile --module "$RELEASE_MODULE" --version "$RELEASE_VERSION" --apply
       - name: Recovery guidance
         if: failure()
         env:
@@ -218,7 +229,7 @@ jobs:
               failure|cancelled) echo 'The upload step ran and its result is uncertain. Inspect Central Portal. If the upload exists, use **SUB - Finalize Demo Common release** with the destination and version above.' ;;
               *) echo 'The upload step did not start. Fix the failed step and check for a reservation before retrying.' ;;
             esac
-            echo 'Keep pending and uploading tags until the outcome is known. See docs/releases.md.'
+            echo 'Review the reconciliation report above. Verified failures are archived; published artifacts are finalized without upload. Active or uncertain attempts remain pending. The next run checks again. See docs/releases.md.'
           } >> "$GITHUB_STEP_SUMMARY"
 
   propagation-delay:

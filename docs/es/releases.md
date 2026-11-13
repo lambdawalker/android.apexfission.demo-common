@@ -5,27 +5,20 @@ y produce bytecode Java 17.
 
 ## Configuración del responsable
 
-Este checkout fija la CLI con identidad compartida a un commit inmutable de las
-herramientas en `.project/setup/config.yaml`. Cargo compila esa revisión una
-sola vez; las siguientes ejecuciones reutilizan el ejecutable en caché. El
-plugin de Gradle conserva la versión publicada `v0.1.9`. El sitio de
-documentación requiere además Zola 0.23.6.
+La CLI está fijada en la versión publicada `v0.1.20` mediante
+`.project/setup/config.yaml`. El plugin de Gradle conserva la versión publicada
+`v0.1.9`. El sitio de documentación requiere Zola 0.23.6.
 
-Ejecuta `setup.bat` en Windows o `./setup.sh` en Linux o macOS para abrir el
-asistente de despliegue de iocraft. Usa Tab y Mayús+Tab para cambiar de control,
-Espacio para marcar casillas e Intro para activar botones. Los campos de
-contraseña están ocultos; Re Pág/Av Pág desplazan los formularios y
-Mayús+Re Pág/Av Pág desplazan el registro de progreso. Ambos lanzadores leen `tooling_ref` de
-`.project/setup/config.yaml`. Para una etiqueta de versión estable, Windows
-descarga y verifica la CLI correspondiente en el primer uso y la almacena en
-caché en `bin/<tag>/`. En Linux o macOS, instala esa versión exacta desde
-[las versiones de Android Repository Setup](https://github.com/lambdawalker/gradle.android-repo-setup/releases),
-verifica la suma de comprobación del archivo y coloca el ejecutable extraído en
-`PATH`. El lanzador comprueba su versión antes de ejecutarlo. Para un SHA completo
-de commit de origen, ambos lanzadores usan Cargo para compilar esa revisión
-exacta una sola vez y guardan el ejecutable en caché en `bin/<SHA>/bin/`. Cargo es
-necesario para instalar una revisión de código fijada; las siguientes ejecuciones
-reutilizan el ejecutable en caché.
+Ejecuta `setup.bat` en Windows o `sh ./setup.sh` en Linux/macOS. Los lanzadores
+generados instalan y validan la CLI configurada, la guardan en
+`.project/setup/cache/` y reenvían los argumentos. Las versiones publicadas
+descargan binarios verificados; los commits completos se compilan con Cargo.
+Ejecuta `setup check` para validar la configuración. Consulta la
+[configuración compartida](../shared-setup.md) para regenerar archivos y
+actualizar las versiones fijadas.
+
+El asistente interactivo permite navegar con Tab/Mayús+Tab, marcar casillas
+con Espacio y activar botones con Intro. Los campos de contraseña están ocultos.
 
 Usa un token de GitHub
 limitado al repositorio con los permisos de administración de entornos indicados
@@ -87,14 +80,35 @@ versión reservada. Verifica y finaliza sin volver a subir artefactos. Si la
 protección de rama rechaza el envío final, conserva la reserva y pide a un
 responsable de mantenimiento que la reconcilie.
 
-Si un intento interrumpido de Central nunca llegó a publicarse y Central Portal
-confirma que no existe despliegue, archiva los marcadores no confirmados
-`release-pending` y `release-uploading` en `release-failed/` mediante
-`android-repo-setup module_release abort-unconfirmed --module demo-common --version X.Y.Z`
-(que comprueba `published_versions` en Maven Central antes de archivar).
+Los flujos de publicación generados reconcilian el módulo y el destino
+seleccionados antes de elegir una versión y después de que falle un intento
+reservado. Para una recuperación manual, previsualiza la versión exacta, revisa
+el informe y aplica los cambios elegibles. Maven Central es el destino
+predeterminado; establece `RELEASE_REPOSITORY=jitpack` para JitPack. Ejecuta bajo
+el bloqueo de concurrencia de publicaciones del repositorio, sin otra operación
+de publicación en curso. Aplicar cambios requiere permiso para enviar las
+referencias de los registros y los metadatos verificados de publicación a `main`.
 
-Un fallo terminal de JitPack sin artefactos públicos se puede archivar mediante
-un nuevo intento desde código corregido. Solo para JitPack, una versión
+```sh
+android-repo-setup module_release reconcile --module demo-common --version X.Y.Z
+android-repo-setup module_release reconcile --module demo-common --version X.Y.Z --apply
+```
+
+La reconciliación archiva una reserva abandonada de Central solo cuando el
+nuevo protocolo de subida demuestra que nunca se ejecutó la protección de
+subida y no existen artefactos. Un intento de Central cuya subida se inició
+requiere el estado `FAILED` del despliegue correspondiente al recibo y la ausencia
+de artefactos públicos; JitPack requiere un fallo terminal para el commit
+reservado y la ausencia de artefactos públicos. El estado del proveedor se
+comprueba de nuevo antes de archivar. Los artefactos públicos completamente
+verificados se finalizan sin volver a subirlos. Los intentos activos o inciertos
+siguen pendientes. La falta de un recibo o despliegue, la ausencia en una lista
+pública de versiones, la antigüedad o un fallo de Actions no demuestran un fallo
+del proveedor. Consulta la
+[guía compartida de reconciliación](https://github.com/lambdawalker/gradle.android-repo-setup/blob/v0.1.20/docs/release-reconciliation.md)
+para conocer los requisitos de evidencia y los estados del informe.
+
+Solo para JitPack, una versión
 explícita posterior permite omitir intentos pendientes anteriores. Esta opción
 conserva esos registros y comprueba la procedencia de su código fuente. Para
 Central, la opción de recuperación solo omite la lista pública de versiones y
@@ -126,7 +140,7 @@ publicación correctamente.
 Ejecuta esto desde una terminal privada con JDK. Usa `./setup.sh` en Linux o
 macOS, o `setup.bat` en Windows. Ambos lanzadores usan el `tooling_ref`
 configurado y siguen las reglas de instalación y caché anteriores; Git ignora
-el directorio `bin/`. La CLI abre la bóveda cifrada existente sin moverla.
+el directorio `.project/setup/cache/`. La CLI abre la bóveda cifrada existente sin moverla.
 Para abrir directamente el asistente de firma, ejecuta `./setup.sh signing` o
 `setup.bat signing`.
 

@@ -5,7 +5,7 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-The CLI is pinned to the exact reviewed source commit in `.project/setup/config.yaml`.
+The CLI is pinned to released `v0.1.20` in `.project/setup/config.yaml`.
 The Gradle plugin remains at released `v0.1.9`. The documentation site requires Zola 0.23.6.
 
 Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. The generated
@@ -71,14 +71,32 @@ release** with the same destination and reserved version. It verifies and
 finalizes without another upload. If branch protection rejects a final push,
 keep the reservation and have a maintainer reconcile it.
 
-If an interrupted Central attempt was never published and Central Portal
-confirms no deployment exists, archive the unconfirmed `release-pending` and
-`release-uploading` markers to `release-failed/` with
-`android-repo-setup module_release abort-unconfirmed --module demo-common --version X.Y.Z`
-(which verifies `published_versions` on Maven Central before archiving).
+Generated publishing workflows reconcile the selected module and destination
+before choosing a version and after a reserved attempt fails. For manual
+recovery, preview the exact version, review the report, then apply eligible
+changes. Maven Central is the default destination; set
+`RELEASE_REPOSITORY=jitpack` for JitPack. Run under the repository release
+concurrency lock, with no other release operation running. Applying changes
+requires permission to push journal refs and verified release metadata to `main`.
 
-A terminal JitPack failure with no public artifacts can be archived by a
-new attempt from corrected source. For JitPack only, an explicit newer
+```sh
+android-repo-setup module_release reconcile --module demo-common --version X.Y.Z
+android-repo-setup module_release reconcile --module demo-common --version X.Y.Z --apply
+```
+
+Reconciliation archives an abandoned Central reservation only when the new
+upload protocol proves its upload guard never ran and no artifacts exist. An
+upload-started Central attempt requires `FAILED` status for the matching
+deployment receipt and no public artifacts; JitPack requires a terminal failure
+for the reserved commit and no public artifacts. Provider status is checked
+again before archiving. Fully verified public artifacts are finalized without
+another upload. Active or uncertain attempts remain pending. A missing receipt
+or deployment, absence from a public version listing, age, or an Actions failure
+is not proof of provider failure. See the
+[shared reconciliation guide](https://github.com/lambdawalker/gradle.android-repo-setup/blob/v0.1.20/docs/release-reconciliation.md)
+for evidence requirements and report states.
+
+For JitPack only, an explicit newer
 version can opt into bypassing older pending attempts. The override retains
 those journals and checks their source provenance. For Central, the
 recovery override only skips the public version listing and requires an
