@@ -110,7 +110,7 @@ publicación con independencia de la cola.
 ```sh
 android-repo-setup publishing_config check
 android-repo-setup import_docs --check
-android-repo-setup build_docs --check
+android-repo-docs build --check
 android-repo-setup workflows --check
 ./gradlew verifyImportDocs :demo-common:testDebugUnitTest :demo-common:lintRelease :demo-common:assembleRelease
 ```
@@ -198,7 +198,7 @@ firma y la bóveda cifrada permanecen fuera de la copia de trabajo, en
 
 El sitio usa Zola 0.23.6 y la CLI Rust fijada; no requiere Python ni Node.js.
 Instala ambas herramientas en `PATH` y ejecuta
-`android-repo-setup build_docs --check` desde la raíz del repositorio. El motor
+`android-repo-docs build --check` desde la raíz del repositorio. El motor
 opcional se configura en `sites/zola.toml`; la
 [guía del sitio](../sites/README.md) explica la responsabilidad sobre el contenido,
 las páginas en inglés y español por versión, los hashes de traducción revisados,

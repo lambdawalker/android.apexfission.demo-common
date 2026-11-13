@@ -3,13 +3,13 @@ title: Demo Common
 modules:
   demo-common: Demo Common
 key_alias: demo-common
-tooling_ref: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
+tooling_ref: '8e7d731e798ff9defcd71b2b146958e0ab3e146a'
 workflows:
   screenshot_count: 11
   app_module: app
   module: demo-common
   title: Demo Common
-  documentation_command: sh sites/tests/landing.sh && android-repo-setup build_docs --check
-
+  documentation_command: sh sites/tests/landing.sh && android-repo-docs build --check
+  screenshot_check_command: android-repo-docs check
 bootstrap:
   jitpack: true

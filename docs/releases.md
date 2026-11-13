@@ -93,7 +93,7 @@ The reservation tags preserve release state independently of the queue.
 ```sh
 android-repo-setup publishing_config check
 android-repo-setup import_docs --check
-android-repo-setup build_docs --check
+android-repo-docs build --check
 android-repo-setup workflows --check
 ./gradlew verifyImportDocs :demo-common:testDebugUnitTest :demo-common:lintRelease :demo-common:assembleRelease
 ```
@@ -170,4 +170,4 @@ outside the checkout under `~/.projects/<project>/secrets/`.
 
 ## Documentation website
 
-The website uses Zola 0.23.6 and the pinned Rust CLI; it requires neither Python nor Node.js. Install both tools on PATH and run `android-repo-setup build_docs --check` from the repository root. The opt-in backend is configured in `sites/zola.toml`; [the website guide](../sites/README.md) covers content ownership, versioned English/Spanish pages, reviewed translation hashes, local preview and Pages deployment. Confirmed release metadata remains authoritative; documentation builds never publish an Android artifact or change historical source identities.
+The website uses Zola 0.23.6 and the pinned Rust CLI; it requires neither Python nor Node.js. Install both tools on PATH and run `android-repo-docs build --check` from the repository root. The opt-in backend is configured in `sites/zola.toml`; [the website guide](../sites/README.md) covers content ownership, versioned English/Spanish pages, reviewed translation hashes, local preview and Pages deployment. Confirmed release metadata remains authoritative; documentation builds never publish an Android artifact or change historical source identities.

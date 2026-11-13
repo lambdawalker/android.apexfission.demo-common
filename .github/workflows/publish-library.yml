@@ -41,10 +41,11 @@ jobs:
           ref: ${{ github.sha }}
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
+          TOOLING_REF: '8e7d731e798ff9defcd71b2b146958e0ab3e146a'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --rev 8e7d731e798ff9defcd71b2b146958e0ab3e146a android-repo-docs
       - run: android-repo-setup publishing_config check
       - id: repository
         env:
@@ -85,10 +86,11 @@ jobs:
           fetch-depth: 0
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: '56c61d9e5dc5283788b44b7f8e393cff90d9db2f'
+          TOOLING_REF: '8e7d731e798ff9defcd71b2b146958e0ab3e146a'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --rev 8e7d731e798ff9defcd71b2b146958e0ab3e146a android-repo-docs
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'

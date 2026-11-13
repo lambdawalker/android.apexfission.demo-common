@@ -1,0 +1,20 @@
+[
+  {
+    "guide": "docs/agents/source-reference.md",
+    "path": "demo-common/src/main/kotlin/com/apexfission/android/democommon/CardTitle.kt",
+    "sha256": "f41a4dfe3627bcd15ae23b28647816ad9543ba98e33b95f1e7ac307f44137af4",
+    "visibility": "public"
+  },
+  {
+    "guide": "docs/agents/source-reference.md",
+    "path": "demo-common/src/main/kotlin/com/apexfission/android/democommon/DemoCard.kt",
+    "sha256": "e1006870f0ac23bd48deb312ba44806fcf8228d646b3e5a8ae12dcc382fdd318",
+    "visibility": "public"
+  },
+  {
+    "guide": "docs/agents/source-reference.md",
+    "path": "demo-common/src/main/kotlin/com/apexfission/android/democommon/DemoScreen.kt",
+    "sha256": "222b621fa9d1331b782f47e160e7a700d194c73e5e456f21274910889aa89018",
+    "visibility": "public"
+  }
+]

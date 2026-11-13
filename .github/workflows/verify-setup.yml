@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          lfs: true
       - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-java@v5
         with:
@@ -24,9 +25,12 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sh ./setup.sh setup check
-          sh ./setup.sh module-release verify
-          sh ./setup.sh documentation-history verify
+          sh ./docs.sh check
       - name: Smoke test Windows launcher and verify bootstrap
         if: runner.os == 'Windows'
         shell: cmd
         run: setup.bat bootstrap check
+      - name: Verify standalone Windows documentation launcher
+        if: runner.os == 'Windows'
+        shell: cmd
+        run: docs.bat bootstrap check

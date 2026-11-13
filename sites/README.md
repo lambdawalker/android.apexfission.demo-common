@@ -5,7 +5,7 @@ The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with t
 With Zola on PATH, run the pinned CLI from the repository root:
 
 ```sh
-./setup.sh build_docs --check
+./docs.sh build --check
 ```
 
 Output is `sites/dist/`, including search indexes and raw Markdown. To inspect it locally, serve the repository root with any static HTTP server and open `/sites/dist/`; use a build with `--base /sites/dist` for that preview. Production uses `/android.apexfission.demo-common` as its URL base. The base path must match the directory your server exposes.
