@@ -41,11 +41,11 @@ jobs:
           ref: ${{ github.sha }}
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.20'
+          TOOLING_REF: '1da53392b262c7c3129d2bd645dfd7b34ead81e1'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
-          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.20 android-repo-docs
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --rev 1da53392b262c7c3129d2bd645dfd7b34ead81e1 android-repo-docs
       - run: android-repo-setup publishing_config check
       - id: repository
         env:
@@ -86,11 +86,11 @@ jobs:
           fetch-depth: 0
       - name: Install pinned Rust tooling
         env:
-          TOOLING_REF: 'v0.1.20'
+          TOOLING_REF: '1da53392b262c7c3129d2bd645dfd7b34ead81e1'
         run: |
           if [[ "$TOOLING_REF" == v* ]]; then ref=(--tag "$TOOLING_REF"); else ref=(--rev "$TOOLING_REF"); fi
           cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git "${ref[@]}" android-repo-setup
-          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --tag v0.1.20 android-repo-docs
+          cargo install --locked --git https://github.com/lambdawalker/gradle.android-repo-setup.git --rev 1da53392b262c7c3129d2bd645dfd7b34ead81e1 android-repo-docs
       - name: Configure release identity
         run: |
           git config user.name 'github-actions[bot]'
@@ -132,21 +132,11 @@ jobs:
         if: steps.release.outputs.skip != 'true'
         with:
           cache-disabled: true
-      - name: Install pinned Zola
+      - uses: actions/setup-node@v7
         if: steps.release.outputs.skip != 'true'
-        shell: bash
-        run: |
-          set -euo pipefail
-          directory="$RUNNER_TEMP/zola-0.23.6"
-          archive="$RUNNER_TEMP/zola-0.23.6.tar.gz"
-          curl --fail --show-error --silent --location --retry 3 \
-            https://github.com/getzola/zola/releases/download/v0.23.6/zola-v0.23.6-x86_64-unknown-linux-gnu.tar.gz \
-            --output "$archive"
-          echo "8f5132b3522412d04e395e0b25f6d68613ad272a873e54a2b3ebf664873024a4  $archive" | sha256sum -c -
-          mkdir -p "$directory"
-          tar -xzf "$archive" -C "$directory"
-          test "$("$directory/zola" --version)" = 'zola 0.23.6'
-          echo "$directory" >> "$GITHUB_PATH"
+        with:
+          node-version: '24'
+          package-manager-cache: false
       - name: Prepare immutable release assets
         if: steps.release.outputs.skip != 'true'
         env:

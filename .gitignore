@@ -12,3 +12,5 @@ sites/dist/
 /bin/
 /.project/setup/cache/
 /.project/docs/cache/
+/sites/.astro-app-*/
+/sites/.astro-build-*/

@@ -3,7 +3,7 @@ repository: lambdawalker/android.apexfission.demo-common
 title: Demo Common
 modules:
   demo-common: Demo Common
-tooling_ref: v0.1.20
+tooling_ref: 1da53392b262c7c3129d2bd645dfd7b34ead81e1
 sources:
   roots:
   - demo-common/src/main/kotlin
@@ -30,3 +30,6 @@ media:
     - custom-card-dark.png
     - custom-card-light.png
     require_dimensions: true
+site:
+  backend: astro
+  base_url: https://lambdawalker.github.io/android.apexfission.demo-common/

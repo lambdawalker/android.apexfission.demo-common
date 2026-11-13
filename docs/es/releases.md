@@ -5,9 +5,9 @@ y produce bytecode Java 17.
 
 ## Configuración del responsable
 
-La CLI está fijada en la versión publicada `v0.1.20` mediante
+La revisión de la CLI está fijada mediante
 `.project/setup/config.yaml`. El plugin de Gradle conserva la versión publicada
-`v0.1.9`. El sitio de documentación requiere Zola 0.23.6.
+`v0.1.9`. El sitio de documentación requiere Node.js 24 y npm.
 
 Ejecuta `setup.bat` en Windows o `sh ./setup.sh` en Linux/macOS. Los lanzadores
 generados instalan y validan la CLI configurada, la guardan en
@@ -69,7 +69,7 @@ El flujo de trabajo valida los artefactos locales antes de reservar una versión
 Central escribe un marcador antes de subir y verifica los hashes y las firmas
 públicos tras la propagación. JitPack comprueba el commit de origen de la
 compilación y los artefactos públicos.
-[IMPORT.md](../IMPORT.md) solo se actualiza tras la confirmación.
+[IMPORT.md](../../IMPORT.md) solo se actualiza tras la confirmación.
 
 ## Recuperación
 
@@ -105,7 +105,7 @@ verificados se finalizan sin volver a subirlos. Los intentos activos o inciertos
 siguen pendientes. La falta de un recibo o despliegue, la ausencia en una lista
 pública de versiones, la antigüedad o un fallo de Actions no demuestran un fallo
 del proveedor. Consulta la
-[guía compartida de reconciliación](https://github.com/lambdawalker/gradle.android-repo-setup/blob/v0.1.20/docs/release-reconciliation.md)
+[guía compartida de reconciliación](https://github.com/lambdawalker/gradle.android-repo-setup/blob/v0.1.21/docs/release-reconciliation.md)
 para conocer los requisitos de evidencia y los estados del informe.
 
 Solo para JitPack, una versión
@@ -210,11 +210,11 @@ firma y la bóveda cifrada permanecen fuera de la copia de trabajo, en
 
 ## Sitio de documentación
 
-El sitio usa Zola 0.23.6 y la CLI Rust fijada; no requiere Python ni Node.js.
-Instala ambas herramientas en `PATH` y ejecuta
+El sitio usa el motor Astro compartido y la CLI Rust fijada.
+Instala Node.js 24 y npm en `PATH` y ejecuta
 `android-repo-docs build --check` desde la raíz del repositorio. El motor
-opcional se configura en `sites/zola.toml`; la
-[guía del sitio](../sites/README.md) explica la responsabilidad sobre el contenido,
+se configura en `.project/docs/config.yaml`; la
+[guía del sitio](../../sites/README.md) explica la responsabilidad sobre el contenido,
 las páginas en inglés y español por versión, los hashes de traducción revisados,
 la vista previa local y el despliegue en Pages. Los metadatos de versiones
 confirmadas siguen siendo la fuente de referencia; compilar la documentación
