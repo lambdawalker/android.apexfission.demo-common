@@ -1,6 +1,6 @@
 # Documentation website
 
-The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Use CLI v0.1.13 pinned in `.project/setup/config.yaml` through `./setup.sh` or `setup.bat`; Windows downloads and caches the verified release; on Linux/macOS, install the matching release binary on PATH. Install [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6) on PATH and verify its archive checksum. CI installs its checksum-pinned Zola automatically.
+The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Use documentation CLI v0.1.20 pinned in `.project/docs/config.yaml` through `./docs.sh` or `docs.bat`; the launchers download and cache the checksum-verified release binary on supported platforms. Install [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6) on PATH and verify its archive checksum. CI installs its checksum-pinned Zola automatically.
 
 With Zola on PATH, run the pinned CLI from the repository root:
 
@@ -28,7 +28,7 @@ Canonical pages use `/en/demo-common/<version>/` and `/es/demo-common/<version>/
 
 The Documentation workflow builds and checks PRs and publishes only main through GitHub Pages. Release completion also triggers documentation. Never publish a new Android artifact merely to retry a website build. Keep Pages configured to use GitHub Actions.
 
-`build_docs --check` validates local generated links, anchors, images and raw Markdown endpoints; it does not verify external network availability or render Android UI. Site controls provide theme preference, scoped search and version/language switching that preserves the guide when available. If a guide is missing in the target scope, the selector explains the index fallback.
+`build --check` validates local generated links, anchors, images and raw Markdown endpoints; it does not verify external network availability or render Android UI. Site controls provide theme preference, scoped search and version/language switching that preserves the guide when available. If a guide is missing in the target scope, the selector explains the index fallback.
 
 Do not edit generated output. For repository-specific layout changes, override bundled template files under `sites/templates/` or static assets under `sites/static/` and rerun the complete build/check.
 

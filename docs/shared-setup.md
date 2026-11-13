@@ -15,7 +15,8 @@ is ignored. Release pins use checksum-verified binaries. Full commit pins requir
 Rust/Cargo and use a cached source build. JitPack installs the same pinned source
 and delegates module/tag checks to the CLI, preserving project Java setup.
 
-This migration pins an exact CLI source commit so it can be tested before the next
-binary release. Gradle plugin versions remain at their existing released pins.
-After a CLI release, use Update GitHub workflows to change the pin and regenerate
-both workflows and adopted bootstrap files in one reviewable patch.
+Setup and documentation use released CLI v0.1.20, pinned independently in
+`.project/setup/config.yaml` and `.project/docs/config.yaml`. Gradle plugin
+versions remain at their existing released pins. After a CLI release, use Update
+GitHub workflows to change the pins and regenerate both workflows and adopted
+bootstrap files in one reviewable patch.
