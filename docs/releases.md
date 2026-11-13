@@ -5,8 +5,8 @@ produces Java 17 bytecode.
 
 ## Owner setup
 
-The CLI is pinned to released `v0.1.20` in `.project/setup/config.yaml`.
-The Gradle plugin remains at released `v0.1.9`. The documentation site requires Zola 0.23.6.
+The CLI revision is pinned in `.project/setup/config.yaml`.
+The Gradle plugin remains at released `v0.1.9`. The documentation site requires Node.js 24 and npm.
 
 Run `setup.bat` on Windows or `sh ./setup.sh` on Linux/macOS. The generated
 launchers install and validate the configured CLI, cache it under
@@ -93,7 +93,7 @@ again before archiving. Fully verified public artifacts are finalized without
 another upload. Active or uncertain attempts remain pending. A missing receipt
 or deployment, absence from a public version listing, age, or an Actions failure
 is not proof of provider failure. See the
-[shared reconciliation guide](https://github.com/lambdawalker/gradle.android-repo-setup/blob/v0.1.20/docs/release-reconciliation.md)
+[shared reconciliation guide](https://github.com/lambdawalker/gradle.android-repo-setup/blob/v0.1.21/docs/release-reconciliation.md)
 for evidence requirements and report states.
 
 For JitPack only, an explicit newer
@@ -188,4 +188,4 @@ outside the checkout under `~/.projects/<project>/secrets/`.
 
 ## Documentation website
 
-The website uses Zola 0.23.6 and the pinned Rust CLI; it requires neither Python nor Node.js. Install both tools on PATH and run `android-repo-docs build --check` from the repository root. The opt-in backend is configured in `sites/zola.toml`; [the website guide](../sites/README.md) covers content ownership, versioned English/Spanish pages, reviewed translation hashes, local preview and Pages deployment. Confirmed release metadata remains authoritative; documentation builds never publish an Android artifact or change historical source identities.
+The website uses the shared Astro runtime and the pinned Rust CLI. Install Node.js 24 and npm on PATH and run `android-repo-docs build --check` from the repository root. The backend is configured in `.project/docs/config.yaml`; [the website guide](../sites/README.md) covers content ownership, versioned English/Spanish pages, reviewed translation hashes, local preview and Pages deployment. Confirmed release metadata remains authoritative; documentation builds never publish an Android artifact or change historical source identities.

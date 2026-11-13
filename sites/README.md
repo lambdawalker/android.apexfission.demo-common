@@ -1,11 +1,10 @@
 # Documentation website
 
-The shared Rust CLI prepares versioned content and Zola 0.23.6 renders it with the bundled Apexfission documentation theme. No Python or Node.js is required to build this website. Use documentation CLI v0.1.20 pinned in `.project/docs/config.yaml` through `./docs.sh` or `docs.bat`; the launchers download and cache the checksum-verified release binary on supported platforms. Install [Zola 0.23.6](https://github.com/getzola/zola/releases/tag/v0.23.6) on PATH and verify its archive checksum. CI installs its checksum-pinned Zola automatically.
-
-With Zola on PATH, run the pinned CLI from the repository root:
+The documentation CLI pinned in `.project/docs/config.yaml` owns the Astro/Starlight renderer, Markdown preparation, route generation and search. Install it through `./docs.sh --help`; builds require Node.js 24, npm and Git with full history. The current `sites/static/` assets and legacy aliases are copied by the shared build. No consumer npm renderer is maintained. Run from the repository root:
 
 ```sh
 ./docs.sh build --check
+sh sites/tests/landing.sh
 ```
 
 Output is `sites/dist/`, including search indexes and raw Markdown. To inspect it locally, serve the repository root with any static HTTP server and open `/sites/dist/`; use a build with `--base /sites/dist` for that preview. Production uses `/android.apexfission.demo-common` as its URL base. The base path must match the directory your server exposes.
@@ -19,8 +18,8 @@ Output is `sites/dist/`, including search indexes and raw Markdown. To inspect i
 | Reviewed translation freshness | `docs/es/translations.json`, SHA-256 of each exact English source |
 | Confirmed releases and provenance | `docs/releases/history/demo-common/` |
 | Current installation | Generated `IMPORT.md`, using `docs/templates/MODULE_IMPORT.md.template` |
-| Build configuration | `sites/zola.toml` |
-| Shared layout, styling and browser controls | `gradle.android-repo-setup/cli/site-theme/` |
+| Build configuration | `.project/docs/config.yaml` |
+| Shared layout, styling and browser controls | `gradle.android-repo-setup/cli/docs/astro-theme/` |
 
 The CLI stages Markdown and theme files in a temporary directory. Builds never execute historical scripts or rewrite canonical guides. Historical code and documentation revisions remain visible separately. Provider-specific installation instructions come only from that release's confirmed destinations. Development is explicitly unreleased, and missing/stale translations show English from the selected revision with a visible fallback notice. Corrections may use a retained translation tree without changing the release's code identity.
 
@@ -28,9 +27,9 @@ Canonical pages use `/en/demo-common/<version>/` and `/es/demo-common/<version>/
 
 The Documentation workflow builds and checks PRs and publishes only main through GitHub Pages. Release completion also triggers documentation. Never publish a new Android artifact merely to retry a website build. Keep Pages configured to use GitHub Actions.
 
-`build --check` validates local generated links, anchors, images and raw Markdown endpoints; it does not verify external network availability or render Android UI. Site controls provide theme preference, scoped search and version/language switching that preserves the guide when available. If a guide is missing in the target scope, the selector explains the index fallback.
+`build --check` validates local generated links, anchors, images and raw Markdown endpoints; it does not verify external network availability or render Android UI. Site controls provide theme preference, scoped search and version/language switching that preserves the guide when available. If a guide is missing in the target scope, the selector opens that scope’s overview.
 
-Do not edit generated output. For repository-specific layout changes, override bundled template files under `sites/templates/` or static assets under `sites/static/` and rerun the complete build/check.
+Do not edit generated output. For repository-specific presentation, use current overrides under `sites/astro/components/`, `sites/astro/styles/` or `sites/astro/public/`; rerun the complete build/check.
 
 ## Direct documentation and release versions
 
@@ -47,15 +46,14 @@ The exact patch and confirmed repositories appear above every guide; publication
 source commits remain available under **Publication details**. Language switching,
 search and guide navigation keep using the original scopes and routes.
 
-`sites/templates/` contains the home, guide and availability overrides;
-`sites/static/release-docs.css` styles the availability line. Historical 0.1.2
+`sites/astro/components/ScopeBanner.astro` adds publication details to the shared selectors. `ReleasePresentation.mjs` groups only verified equivalent publications. Historical 0.1.2
 publications are grouped using the explicitly verified sources and matching
 artifact hashes in `sites/static/release-equivalence.json`. Version equality
 alone never establishes equivalence. Future canonical releases read their
 confirmed repositories directly from the shared release metadata. Existing
 provider-specific deep links, raw Markdown and historical records stay valid.
 
-Run the template regressions with Zola on `PATH`:
+Run the output and provider-evidence regressions with Node.js 24 and the pinned CLI on `PATH`:
 
 ```sh
 sh sites/tests/landing.sh
@@ -85,3 +83,5 @@ branch name, is what the archives reference.
 The Compose API guide includes reviewed light/dark images for the screen, both
 card overloads and title. Component screenshot provenance and reproduction steps
 are in `docs/screenshots/README.md`.
+
+The CLI pins use corrective source revision `1da53392b262c7c3129d2bd645dfd7b34ead81e1`, built from the shared CLI after v0.1.21. This revision preserves current static assets and aliases and supports Astro builds across filesystems; the official v0.1.21 release alone does not include these fixes. Full source pins require Rust/Cargo.
